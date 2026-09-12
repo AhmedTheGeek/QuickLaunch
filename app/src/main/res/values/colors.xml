@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="card">#F21C1C1E</color>
+    <color name="card_border">#1AFFFFFF</color>
+    <color name="divider">#14FFFFFF</color>
+    <color name="text_primary">#F2F2F7</color>
+    <color name="text_secondary">#8E8E93</color>
+    <color name="text_hint">#636366</color>
+    <color name="row_selected">#14FFFFFF</color>
+    <color name="row_pressed">#1FFFFFFF</color>
+    <color name="icon_placeholder">#2C2C2E</color>
+    <color name="cursor">#F2F2F7</color>
+    <color name="transparent">#00000000</color>
+</resources>

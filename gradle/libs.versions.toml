@@ -1,0 +1,17 @@
+[versions]
+agp = "8.10.1"
+kotlin = "2.1.21"
+core = "1.16.0"
+profileinstaller = "1.4.1"
+junit = "4.13.2"
+play-publisher = "3.12.1"
+
+[libraries]
+androidx-core = { module = "androidx.core:core", version.ref = "core" }
+androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
+junit = { module = "junit:junit", version.ref = "junit" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+play-publisher = { id = "com.github.triplet.play", version.ref = "play-publisher" }

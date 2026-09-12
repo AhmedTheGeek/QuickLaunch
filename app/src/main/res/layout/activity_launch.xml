@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <LinearLayout
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginStart="@dimen/card_margin_h"
+        android:layout_marginEnd="@dimen/card_margin_h"
+        android:background="@drawable/bg_card"
+        android:clipToOutline="true"
+        android:elevation="12dp"
+        android:orientation="vertical"
+        android:padding="@dimen/card_padding">
+
+        <EditText
+            android:id="@+id/input"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/input_height"
+            android:background="@null"
+            android:drawableStart="@drawable/ic_search"
+            android:drawablePadding="14dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:gravity="center_vertical"
+            android:hint="@string/search_hint"
+            android:textColorHint="@color/text_hint"
+            android:textColor="@color/text_primary"
+            android:textCursorDrawable="@null"
+            android:textSize="20sp"
+            android:inputType="text|textNoSuggestions"
+            android:imeOptions="actionGo|flagNoExtractUi|flagNoFullscreen"
+            android:importantForAutofill="no"
+            android:maxLines="1"
+            android:singleLine="true" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@color/divider" />
+
+        <com.ahmedgeek.quicklaunch.ui.ResultsView
+            android:id="@+id/results"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/row_height"
+            android:gravity="center"
+            android:text="@string/no_results"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/usage_hint"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/row_height"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_row"
+            android:clickable="true"
+            android:focusable="false"
+            android:gravity="center_vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="@string/usage_hint"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/shortcut_hint"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/row_height"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_row"
+            android:clickable="true"
+            android:focusable="false"
+            android:gravity="center_vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="@string/shortcut_hint"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/hint_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="6dp"
+            android:text="@string/hint_bar"
+            android:textColor="@color/text_hint"
+            android:textSize="12sp"
+            android:letterSpacing="0.02" />
+    </LinearLayout>
+</FrameLayout>

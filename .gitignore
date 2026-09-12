@@ -1,0 +1,22 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build
+/app/build
+/captures
+.externalNativeBuild
+.cxx
+*.apk
+*.aab
+
+# Release signing (never commit)
+/keystore/
+/keystore.properties
+
+# Play Console service account (never commit)
+/play/
+
+# Local release staging (APK copies, tweet drafts)
+/release/

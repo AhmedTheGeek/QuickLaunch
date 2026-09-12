@@ -1,0 +1,25 @@
+Quick Launch is a keyboard-first app launcher. Summon it, type two or three letters, press Enter. The app opens. Nothing to tap.
+
+It is not a home screen replacement. It is a small search card that appears over whatever you are doing and disappears the moment you launch something.
+
+HOW IT WORKS
+• Results update on every keystroke, ranked so exact and prefix matches come first, then word starts, then initials (type "mbs" for Meta Business Suite, "yt" for YouTube).
+• Enter launches the top result. Up and Down (or Tab, Ctrl+N, Ctrl+P) move the selection. Esc, Back, Home or a tap outside closes it.
+• Your own launches are remembered, so the apps you open most rise to the top. With Usage access granted, your most used apps are listed before you even type.
+• Long-press a result and drag it to open it in split screen next to the current app.
+• Work profile apps are included and badged.
+
+BUILT FOR SPEED
+• Appears within a frame of the trigger when Display over other apps is granted (instant mode).
+• Search runs in under a millisecond per keystroke. No lists to scroll, no spinners.
+• Tiny app, no background service, no network access, no analytics, no ads.
+
+WORKS GREAT WITH
+• Physical keyboards, DeX, foldables and tablets: the card is centered and sized for large screens.
+• Samsung Good Lock One Hand Operation+, the side key, or any keyboard shortcut that can open an app.
+
+PERMISSIONS
+• Display over other apps (optional): lets the card appear instantly instead of with the standard app-open animation.
+• Usage access (optional): lets the empty list show your most used apps. Usage data never leaves the device.
+
+Quick Launch stores everything locally and sends nothing anywhere.

@@ -1,0 +1,2 @@
+HSPLcom/ahmedgeek/quicklaunch/**->**(**)**
+Lcom/ahmedgeek/quicklaunch/**

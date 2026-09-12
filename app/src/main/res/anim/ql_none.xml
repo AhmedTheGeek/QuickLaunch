@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A real zero-length animation. @null means "unset" to WM Shell, which then falls back to the
+     default 250 ms task-open fade; a 0 ms animation resource is honored as "no animation". -->
+<alpha xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromAlpha="1.0"
+    android:toAlpha="1.0"
+    android:duration="0" />
