@@ -1,138 +1,74 @@
-# Quick Launch
+<div align="center">
 
-Keyboard-first app launcher overlay for Android. Summon it, type a few letters, press Enter.
-Not a home screen replacement.
+# ⚡ Quick Launch
 
-```
-mes█
-  Messenger      ↵
-  Messages
-  Meta Business Suite
-```
+**Type a few letters. Press Enter. The app opens.**
+
+A Spotlight-style app launcher for Android. Keyboard-first, instant, and out of your way.
+
+[**Download the APK**](https://github.com/AhmedTheGeek/QuickLaunch/releases/latest) · [How it works](docs/TECHNICAL.md) · GPL-3.0
+
+<img src="docs/demo.gif" width="360" alt="Typing 'yt' shows YT Music, typing 'clo' shows Clock, Enter opens it">
+
+</div>
+
+---
+
+## Why
+
+Finding an app on Android means scrolling a grid or opening a search that still makes you tap the
+result. Quick Launch treats your phone like a computer: summon it, type two or three letters, press
+Enter. Done. Touch is optional.
+
+It is not a home screen replacement. It is a small card that appears over whatever you are doing and
+disappears the moment you launch something.
+
+## What you get
+
+- **Instant.** Appears on the very next frame after you trigger it. No animation, no spinner.
+- **Smart matching.** Exact and prefix matches first, then word starts, then initials.
+  `mbs` finds Meta Business Suite, `yt` finds YouTube.
+- **Learns from you.** Apps you launch often rise to the top. Grant *Usage access* and your most used
+  apps are already listed before you type.
+- **Keyboard first.** Ctrl+Space opens it from any app. ↑ ↓ to move, Enter to launch, Esc to close.
+  Tab, Ctrl+N and Ctrl+P work too.
+- **Split screen by drag.** Long-press a result and drag it to open it next to the current app.
+- **Big screens welcome.** A centered palette on tablets, foldables and DeX. Full width on phones.
+- **Private by design.** No internet permission. No analytics. No ads. About 90 KB.
 
 ## Install
 
-Download the latest APK from the [Releases](https://github.com/AhmedTheGeek/QuickLaunch/releases) page
-and open it on your phone (allow "Install unknown apps" for your browser or file manager when asked).
-Then open Quick Launch once and tap the ⚡ row to grant *Display over other apps* for instant mode.
+1. Download the APK from the [latest release](https://github.com/AhmedTheGeek/QuickLaunch/releases/latest)
+   and open it on your phone. Allow installing from your browser when asked.
+2. Open Quick Launch once and tap the **⚡ row** to allow *Display over other apps*. That is what makes
+   it instant.
+3. Optional: tap the **⌨ row** to enable Ctrl+Space, and the **★ row** to show your most used apps.
 
-## What it does
+Android 8.0 or newer. The blur behind the card needs Android 12 or newer.
 
-- Searches installed apps (personal and work profile) as you type. Ranking: exact > prefix >
-  word prefix > initials (`mbs` → Meta Business Suite, `yt` → YouTube) > substring > fuzzy,
-  with a boost for apps you launch often (7-day half-life).
-- **Most used apps before you type.** With *Usage access* granted (tap the ★ row once, or
-  Settings → Apps → Special access → Usage access), the empty list is ordered by device-wide usage
-  over the last 14 days, blended with your Quick Launch history. Your own launches win after a few
-  uses; without the permission the list falls back to Quick Launch history, then alphabetical.
-- Enter launches the top or arrow-selected result. Up/Down (also Tab, Ctrl+N/P, Ctrl+J/K) move
-  the selection. Esc, Back, tapping outside, Home or Recents close it.
-- **Long-press a result and drag it** to open it in split screen next to the app you came from.
-  This uses the same system drag protocol a launcher uses, so Android shows its own drop zones.
-  Personal profile apps only, Android 12+, and it needs instant mode: in the fallback activity the
-  system pairs the drop with our own window, so the app simply opens full screen.
-- Dark translucent card with blur behind (Android 12+). Full width on phones; on tablets, foldables
-  and landscape it is a centered 560dp palette.
-- No settings, no network, no analytics.
+## How to trigger it
 
-## Two ways it can appear
-
-| Mode | How | Appearance |
-|---|---|---|
-| **Instant** (recommended) | Grant **Display over other apps**. Tap the hint at the bottom of the card, or Settings → Apps → Quick Launch → Display over other apps. | Drawn as a system overlay window: shows on the next frame, no animation at all. |
-| Fallback | Nothing to grant. | Android forces a ~330 ms fade on activities that open in their own task, and apps cannot override it. Everything else is identical. |
-
-Instant mode also falls back automatically over apps that hide non-system overlays (Settings,
-permission dialogs, some secure screens): if the overlay is not focused within ~0.9 s of drawing,
-it steps aside and the activity host opens instead.
-
-## Ctrl+Space from any app (physical keyboards)
-
-Enable **Quick Launch keyboard shortcut** under Settings → Accessibility → Installed apps (the card
-offers a ⌨ row that takes you there). Ctrl+Space then opens Quick Launch from anywhere, and a second
-Ctrl+Space closes it.
-
-**If the switch is greyed out with "Restricted setting":** Android 13+ blocks accessibility services
-for apps installed outside an app store until you allow it once. Open Settings → Apps → Quick Launch →
-⋮ (top right) → *Allow restricted settings*, then go back to Accessibility and enable it.
-
-Two more things to know:
-
-- Android normally uses Ctrl+Space to switch keyboard language. While the shortcut is on, Quick Launch
-  takes it instead.
-- This works through an accessibility service because that is the only hook that sees a key before the
-  system does. The service filters exactly one key combination, subscribes to no accessibility events,
-  and cannot read screen content (`canRetrieveWindowContent="false"`). Because it never starts an
-  activity, video apps do not drop into picture-in-picture when you open Quick Launch this way.
-
-## Triggering it on Samsung
-
-- **Good Lock → One Hand Operation+**: pick a gesture → *Open app* → Quick Launch.
-- **Side key**: Settings → Advanced features → Side button → Double press → Open app → Quick Launch.
-- **Android 16 / One UI 8 keyboards**: Settings → General management → Physical keyboard →
-  Keyboard shortcuts → assign Meta + a key to Quick Launch.
-- Add Quick Launch to *Battery → Never sleeping apps* so One UI keeps the process warm.
-
-## Performance (release build, API 36 emulator, instant mode)
-
-| Metric | Result |
+| You have | Do this |
 |---|---|
-| Trigger → overlay on screen, process warm | 60–90 ms |
-| Trigger → overlay on screen, process cold (AOT compiled) | 120–190 ms |
-| Our own code in `Application.onCreate` | < 1 ms |
-| Keystroke → list updated | < 1 ms, no frames over 16 ms |
-| Enter → target activity started | ~9 ms |
-| Keyboard after the card (Gboard, emulator) | 200–300 ms, does not block the card |
+| A physical keyboard | Enable the **⌨ Ctrl+Space** shortcut from the card. |
+| A Samsung phone | Good Lock → **One Hand Operation+** → any gesture → *Open app* → Quick Launch. Or Settings → Advanced features → Side button → double press → Quick Launch. |
+| Android 16 with a keyboard | Settings → Physical keyboard → Keyboard shortcuts → assign Meta + a key to Quick Launch. |
+| Anything else | Tap the Quick Launch icon like any app, or put it in your dock. |
 
-Why the keyboard is requested *after* the first frame: on Android 15+ an IME requested at window
-creation joins the pending window transition, and WindowManager then holds the overlay until the
-keyboard has drawn. Requesting it one frame later cut trigger-to-visible from ~300 ms to ~70 ms.
+> **Ctrl+Space greyed out with "Restricted setting"?** Android 13+ asks you to allow it once for
+> apps installed outside a store: Settings → Apps → Quick Launch → ⋮ → *Allow restricted settings*.
 
-A baseline profile is bundled and installed on first run; Android compiles it during the next idle
-background dexopt (usually overnight while charging). To get the fast cold start immediately:
+## Good to know
 
-```
-adb shell cmd package compile -m speed-profile -f com.ahmedgeek.quicklaunch
-```
+- Opening Quick Launch over a playing video app sends that app into picture-in-picture, the same as
+  any launcher-style app does. The Ctrl+Space shortcut avoids it.
+- Over Settings and some secure screens Android hides overlays, so the card appears with the normal
+  app animation there instead of instantly.
 
-## Build
+## For the curious
 
-```
-JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:assembleRelease :app:testDebugUnitTest
-adb install -r app/build/outputs/apk/release/app-release.apk
-```
-
-Release builds are signed with the key in `keystore.properties` when present, otherwise debug-signed
-so the project builds on any machine. minSdk 26, targetSdk 35, Kotlin, Android Views only (no Compose, AppCompat,
-Material or RecyclerView: fewer classes to load on a cold start).
-
-## Layout
-
-```
-QuickLaunchApp        Application: singletons, cache warm-up, LauncherApps callback
-EntryActivity         launcher entry, never draws: shows the overlay or the fallback activity
-LaunchActivity        fallback host for the panel (activity window)
-overlay/              OverlayController (TYPE_APPLICATION_OVERLAY window), OverlayRootView
-ui/LauncherPanel      the search UI shared by both hosts: input, ranking, keys, launch
-ui/ResultsView        8 pre-inflated rows, no adapter, no animations
-ui/IconLoader         icons rasterized off-main, memory + disk cache
-index/                AppIndex (enumerate, revalidate, snapshot), IndexStore (binary cache)
-search/               TextNormalizer, Ranker (tiered scorer), FrecencyStore
-launch/AppLauncher    LauncherApps.startMainActivity, handles work profiles
-```
-
-## Known limits
-
-- Opening Quick Launch over a video app that auto-enters picture-in-picture (YouTube) sends that
-  app into PiP. Any activity launched into a new task pauses the foreground app with "user leaving"
-  semantics, which is the PiP trigger, and only the caller could suppress it. Deliberately left as
-  is; the fix would be an assistant-role or Quick Settings tile trigger, which never start an activity.
-
-- Background-activity-launch from an overlay relies on the "visible overlay window" exemption.
-  Android logs it as allowed on API 36; if a future release removes it, the fallback activity
-  mode still works.
-- Gboard rebuilds its keyboard view on every show (150–500 ms on the emulator). Samsung Keyboard
-  behaves differently; measure on device.
+Architecture, the measurements behind "instant", and how to build it:
+**[docs/TECHNICAL.md](docs/TECHNICAL.md)**.
 
 ## License
 
