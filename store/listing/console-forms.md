@@ -12,7 +12,7 @@ repo can prepare is already done: signed AAB, listing text, graphics, privacy po
 | App or game | App |
 | Free or paid | Free (cannot be changed to paid later) |
 | Category | Tools |
-| Contact email | ahussein@awesomemotive.com |
+| Contact email | me@ahmedgeek.com |
 | Privacy policy URL | https://ahmedthegeek.github.io/QuickLaunch/privacy-policy.html |
 | Package name | com.ahmedgeek.quicklaunch |
 | Upload artifact | `release/QuickLaunch-v0.1.1.aab` (versionCode 2, versionName 0.1.1), signed with `keystore/upload-keystore.jks` |

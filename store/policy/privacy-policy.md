@@ -35,4 +35,4 @@ Quick Launch is a general-purpose utility, not directed at children, and collect
 
 ## Changes and contact
 
-If this policy changes, the updated version will be published at the same address with a new date. Questions: ahussein@awesomemotive.com
+If this policy changes, the updated version will be published at the same address with a new date. Questions: me@ahmedgeek.com
