@@ -66,25 +66,6 @@
             android:visibility="gone" />
 
         <TextView
-            android:id="@+id/usage_hint"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/bg_row"
-            android:clickable="true"
-            android:focusable="false"
-            android:gravity="center_vertical"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:text="@string/usage_hint"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:visibility="gone" />
-
-        <TextView
             android:id="@+id/shortcut_hint"
             android:layout_width="match_parent"
             android:layout_height="@dimen/row_height"
@@ -97,6 +78,25 @@
             android:paddingStart="14dp"
             android:paddingEnd="14dp"
             android:text="@string/shortcut_hint"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/usage_hint"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/row_height"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/bg_row"
+            android:clickable="true"
+            android:focusable="false"
+            android:gravity="center_vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="@string/usage_hint"
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
             android:maxLines="1"

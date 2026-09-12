@@ -117,6 +117,10 @@ class LauncherPanel(
         }
         shortcutHint.setOnClickListener {
             prefs.edit().putBoolean(PREF_SHORTCUT_HINT_TAPPED, true).apply()
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                // Sideloaded apps hit Android's "Restricted setting" block on the accessibility toggle.
+                Toast.makeText(app, R.string.shortcut_restricted_tip, Toast.LENGTH_LONG).show()
+            }
             try {
                 app.startActivity(com.ahmedgeek.quicklaunch.shortcut.KeyboardShortcutService.settingsIntent())
             } catch (e: RuntimeException) {
@@ -130,10 +134,9 @@ class LauncherPanel(
     private fun updateUsageHint() {
         val show = query.isEmpty() && !prefs.getBoolean(PREF_USAGE_HINT_TAPPED, false) && !index.usagePermitted()
         val visibility = if (show) View.VISIBLE else View.GONE
-        // Only one hint row at a time; the shortcut hint appears once a physical keyboard is attached.
-        val showShortcut = !show && query.isEmpty() &&
+        // Keyboard-first app: offer the Ctrl+Space setup until it is enabled or dismissed, keyboard attached or not.
+        val showShortcut = query.isEmpty() &&
             !prefs.getBoolean(PREF_SHORTCUT_HINT_TAPPED, false) &&
-            KeyboardUtil.hasHardwareKeyboard(res.configuration) &&
             !com.ahmedgeek.quicklaunch.shortcut.KeyboardShortcutService.isEnabled(app)
         val shortcutVisibility = if (showShortcut) View.VISIBLE else View.GONE
         if (usageHint.visibility != visibility || shortcutHint.visibility != shortcutVisibility) {
@@ -208,7 +211,8 @@ class LauncherPanel(
                 card.layoutParams = lp
             }
 
-            val hintRow = if (usageHint.visibility == View.VISIBLE || shortcutHint.visibility == View.VISIBLE) rowHeight else 0
+            val hintRows = (if (usageHint.visibility == View.VISIBLE) 1 else 0) + (if (shortcutHint.visibility == View.VISIBLE) 1 else 0)
+            val hintRow = hintRows * rowHeight
             val available = screenHeight - topMargin - bottom - fixedChrome - hintRow
             val maxRows = (available / rowHeight).coerceIn(3, Ranker.MAX_RESULTS)
             if (resultsView.maxVisible != maxRows) {

@@ -59,6 +59,7 @@ class AppIndex(context: Context) {
         try {
             frecency.load()
             val cached = IndexStore.read(indexFile)
+            if (Log.isLoggable(TAG, Log.DEBUG)) Log.d(TAG, "loadCache: ${cached?.size ?: "none"}")
             if (cached != null) {
                 frecency.attach(cached)
                 snapshot = cached
@@ -100,7 +101,9 @@ class AppIndex(context: Context) {
             val fresh = enumerate()
             applyUsage(fresh)
             lastRevalidateMs = SystemClock.elapsedRealtime()
-            if (!sameAs(snapshot, fresh) || !sameUsage(snapshot, fresh)) {
+            val changed = !sameAs(snapshot, fresh) || !sameUsage(snapshot, fresh)
+            if (Log.isLoggable(TAG, Log.DEBUG)) Log.d(TAG, "revalidate: ${fresh.size} entries, changed=$changed, listener=${listener != null}")
+            if (changed) {
                 frecency.attach(fresh)
                 frecency.prune(fresh)
                 snapshot = fresh

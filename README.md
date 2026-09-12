@@ -49,8 +49,14 @@ it steps aside and the activity host opens instead.
 ## Ctrl+Space from any app (physical keyboards)
 
 Enable **Quick Launch keyboard shortcut** under Settings → Accessibility → Installed apps (the card
-offers a one-tap row when a keyboard is attached). Ctrl+Space then opens Quick Launch from anywhere,
-and a second Ctrl+Space closes it. Two things to know:
+offers a ⌨ row that takes you there). Ctrl+Space then opens Quick Launch from anywhere, and a second
+Ctrl+Space closes it.
+
+**If the switch is greyed out with "Restricted setting":** Android 13+ blocks accessibility services
+for apps installed outside an app store until you allow it once. Open Settings → Apps → Quick Launch →
+⋮ (top right) → *Allow restricted settings*, then go back to Accessibility and enable it.
+
+Two more things to know:
 
 - Android normally uses Ctrl+Space to switch keyboard language. While the shortcut is on, Quick Launch
   takes it instead.

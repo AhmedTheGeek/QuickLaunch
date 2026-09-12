@@ -12,5 +12,6 @@
     <string name="a11y_label">Quick Launch keyboard shortcut</string>
     <string name="a11y_summary">Ctrl+Space opens Quick Launch from anywhere</string>
     <string name="a11y_description">Lets Quick Launch open when you press Ctrl+Space on a physical keyboard, from any app. Quick Launch only listens for that key combination. It does not read screen content, observe your activity, or receive any other accessibility events.</string>
-    <string name="shortcut_hint">⌨  Enable Ctrl+Space shortcut · tap to set up</string>
+    <string name="shortcut_restricted_tip">Find “Quick Launch keyboard shortcut” under Installed apps. If the switch says “Restricted setting”: open Quick Launch’s App info › ⋮ › Allow restricted settings, then try again.</string>
+    <string name="shortcut_hint">⌨  Enable Ctrl+Space shortcut · tap</string>
 </resources>
