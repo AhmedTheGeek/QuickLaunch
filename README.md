@@ -64,6 +64,8 @@ Android 8.0 or newer. The blur behind the card needs Android 12 or newer.
   any launcher-style app does. The Ctrl+Space shortcut avoids it.
 - Over Settings and some secure screens Android hides overlays, so the card appears with the normal
   app animation there instead of instantly.
+- No internet permission, no analytics, nothing leaves the device.
+  [Privacy policy](https://ahmedthegeek.github.io/QuickLaunch/privacy-policy.html).
 
 ## For the curious
 

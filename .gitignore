@@ -20,3 +20,6 @@
 
 # Local release staging (APK copies, tweet drafts)
 /release/
+
+# Kotlin daemon session files
+.kotlin/

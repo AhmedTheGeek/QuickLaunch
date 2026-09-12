@@ -9,6 +9,7 @@ Quick Launch is an app launcher for Android developed by Ahmed Hussein ("we"). T
 - **List of installed apps.** Needed to search and launch apps. Read from Android each time the app opens; a copy is cached on the device so results appear instantly.
 - **Your launch history inside Quick Launch.** Which apps you open through Quick Launch and when, stored locally to rank frequently used apps higher.
 - **App usage statistics (optional).** If you grant *Usage access*, the app reads Android's usage statistics for the last 14 days to order your most used apps. This data is read on the device and stored only as a per-app ranking score in the local cache.
+- **Keyboard shortcut (optional).** If you enable the *Quick Launch keyboard shortcut* accessibility service, the app is notified when Ctrl+Space is pressed on a physical keyboard so it can open. The service only filters that key combination. It does not read screen content, observe your activity in other apps, or receive any other accessibility events, and nothing is stored.
 - **App icons.** Cached on the device for fast display.
 
 ## What the app does not do
@@ -21,6 +22,7 @@ Quick Launch is an app launcher for Android developed by Ahmed Hussein ("we"). T
 
 - **Display over other apps** (optional): shows the search card as an overlay so it appears instantly.
 - **Usage access** (optional): enables the "most used apps" ordering described above.
+- **Accessibility service** (optional): enables the global Ctrl+Space shortcut described above.
 - **Query installed apps**: required for any app launcher to list what is installed.
 
 ## Data deletion
