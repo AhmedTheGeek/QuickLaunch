@@ -8,7 +8,7 @@ A Spotlight-style app launcher for Android. Keyboard-first, instant, and out of 
 
 [**Download the APK**](https://github.com/AhmedTheGeek/QuickLaunch/releases/latest) · [How it works](docs/TECHNICAL.md) · GPL-3.0
 
-<img src="docs/demo.gif" width="360" alt="Typing 'yt' shows YT Music, typing 'clo' shows Clock, Enter opens it">
+<img src="docs/demo.gif" width="420" alt="On a Galaxy Z Fold: typing x finds X, typing spo finds Spotify, Enter opens it">
 
 </div>
 
