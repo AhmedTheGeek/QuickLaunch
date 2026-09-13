@@ -21,12 +21,12 @@ repo can prepare is already done: signed AAB, listing text, graphics, privacy po
 | Release notes | `app/src/main/play/release-notes/en-US/default.txt` |
 | Icon 512×512 | `store/graphics/icon_512.png` |
 | Feature graphic 1024×500 | `store/graphics/feature_1024x500.png` |
-| Phone screenshots 1080×2400 | `store/screenshots/phone/` (4, captioned) |
+| Phone screenshots 1080×2400 | `store/screenshots/phone/` (5, rendered mockups) |
 | 7-inch tablet 1812×2176 | `store/screenshots/tablet7/` (1) |
 | 10-inch tablet 2560×1600 / 1600×2560 | `store/screenshots/tablet10/` (2) |
 
-Screenshots are captioned 24-bit PNG without an alpha channel, as the Console requires. Raw device captures
-are kept in `store/screenshots/raw/`; re-caption with the ImageMagick recipe in `store/README.md`.
+Screenshots are rendered mockups (24-bit PNG, no alpha) built by `store/screenshots/mockups/`; see
+`store/README.md`. They show real third-party app icons, as launcher listings on Play commonly do.
 
 ## App content declarations (Policy > App content)
 

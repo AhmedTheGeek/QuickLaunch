@@ -13,10 +13,12 @@ Gradle Play Publisher plugin expects, so `./gradlew publishListing publishImages
 
 ## Screenshots
 
-`screenshots/raw/` holds the untouched device captures. The store versions in `screenshots/phone`,
-`tablet7` and `tablet10` add a caption band (Helvetica Bold on #0E0E10) and rounded corners, and are
-flattened to 24-bit PNG. The recipe is a small ImageMagick script: canvas of the target size, caption
-annotated in the top band, screenshot resized and composited below with a rounded-corner mask,
-`-alpha off`. Phone 1080×2400: band 400, shot 860 wide, 66 pt. 7-inch 1812×2176: band 360, shot 1460,
-84 pt. 10-inch landscape 2560×1600: band 260, shot 2000, 80 pt. 10-inch portrait 1600×2560: band 400,
-shot 1300, 84 pt. Keep caption lines under about 27 characters on phone.
+The store screenshots are rendered mockups, not device captures: `screenshots/mockups/gen.py` rebuilds
+the Quick Launch card from the real layout values (`dimens.xml`, `colors.xml`) in HTML, places it over a
+Pixel-style home screen with real app icons, widgets and dock inside a device frame, adds the headline,
+and `render.sh` screenshots each scene with headless Chrome at the exact Play sizes. `fetch-icons.sh`
+downloads the third-party app icons from their Play listings into `mockups/icons/` (not committed).
+The frosted layer behind the card is lighter than the app's real 24 dp blur so the home screen stays
+legible in the store. Untouched device captures from v0.1.1 are kept in `screenshots/raw/`.
+
+To change a caption or scene, edit `SCENES` in `gen.py` and run `render.sh`.
