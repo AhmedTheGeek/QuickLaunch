@@ -1,4 +1,4 @@
-Quick Launch is a keyboard-first app launcher. Summon it, type two or three letters, press Enter. The app opens. Nothing to tap.
+Quick Launch is a keyboard-first launcher overlay. Summon it, type two or three letters, press Enter. The app opens. Nothing to tap.
 
 It is not a home screen replacement. It is a small search card that appears over whatever you are doing and disappears the moment you launch something.
 

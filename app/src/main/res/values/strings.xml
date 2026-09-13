@@ -7,9 +7,10 @@
     <string name="error_work_paused">Work profile is paused</string>
     <string name="error_no_browser">No app can open this link</string>
 
-    <!-- Pin toggle on each result row. -->
+    <!-- Pinned apps: toggle on the highlighted row, section header on the empty-query list. -->
     <string name="pin">Pin</string>
     <string name="unpin">Unpin</string>
+    <string name="pinned_header">Pinned</string>
 
     <!-- Clipboard link row: shown first when the clipboard holds a URL. -->
     <string name="link_open">Open link</string>

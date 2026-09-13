@@ -12,6 +12,8 @@
     <dimen name="input_height">64dp</dimen>
     <dimen name="row_height">56dp</dimen>
     <dimen name="section_header_height">30dp</dimen>
+    <!-- section_separator.xml: 1dp line plus 6dp margins above and below. -->
+    <dimen name="section_separator_height">13dp</dimen>
     <dimen name="row_radius">10dp</dimen>
     <dimen name="icon_size">40dp</dimen>
     <dimen name="blur_radius">24dp</dimen>

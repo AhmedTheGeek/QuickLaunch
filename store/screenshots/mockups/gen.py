@@ -213,7 +213,7 @@ SCENES["tablet10/02_portrait.png"] = (1600, 2560, [(-300, 300, 1200, 1200, "#FFB
 
 BOLT = '<svg viewBox="0 0 108 108"><path d="M59,26 L38,58 L52,58 L48,82 L70,48 L56,48 Z" fill="#F2F2F7"/></svg>'
 brand = (f'<div class="brand"><div class="mark"><span class="tile">{BOLT}</span><span class="name">Quick Launch</span></div>'
-         '<h1>Any app.<br>Two letters away.</h1><p>A keyboard-first launcher for Android. Type, press Enter, done.</p></div>')
+         '<h1>Any app.<br>Two letters away.</h1><p>A keyboard-first launcher overlay for Android. Type, press Enter, done.</p></div>')
 stage = f'<div class="stage" style="zoom:1.05"><div class="pad"></div>{card("ca", ["Calendar", "Camera", "Calculator"], footer=True)}</div>'
 SCENES["feature/feature_1024x500.png"] = (1024, 500, [(-150, -150, 700, 700, "#FFB020", 0.22), (600, 150, 700, 700, "#4C7DFF", 0.22)], brand, stage)
 

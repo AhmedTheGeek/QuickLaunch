@@ -90,6 +90,7 @@ class LauncherPanel(
     private var launched = false
     private var active = false
     private var dragging = false
+    private var pinnedSectionShown = false
 
     private val iconCallback: (String, Bitmap) -> Unit = { key, bitmap -> resultsView.onIconLoaded(key, bitmap) }
 
@@ -261,11 +262,24 @@ class LauncherPanel(
         link = found
         if (Log.isLoggable(QuickLaunchApp.TAG, Log.DEBUG)) Log.d(QuickLaunchApp.TAG, "clipboard link=${found != null}")
         selected = 0
-        resultsView.bind(visibleLink(), results, selected, iconCallback)
+        bindResults()
     }
 
     /** The link row only competes with the empty-query list; typing means the user wants an app. */
     private fun visibleLink(): String? = if (query.isEmpty()) link else null
+
+    /**
+     * Pinned apps lead the empty-query list (the ranker puts them first), shown as their own section.
+     * Typed results are one ranked list, so the section is hidden there.
+     */
+    private fun pinnedCount(): Int {
+        if (query.isNotEmpty()) return 0
+        var n = 0
+        while (n < results.size && results[n].pinOrder >= 0) n++
+        return n
+    }
+
+    private fun bindResults() = resultsView.bind(visibleLink(), results, pinnedCount(), selected, iconCallback)
 
     /** Rows the user can select: the link row plus app results. */
     private fun rowCount(): Int = (if (visibleLink() != null) 1 else 0) + results.size
@@ -297,6 +311,7 @@ class LauncherPanel(
         val maxWidth = res.getDimensionPixelSize(R.dimen.card_max_width)
         val rowHeight = res.getDimensionPixelSize(R.dimen.row_height)
         val headerHeight = res.getDimensionPixelSize(R.dimen.section_header_height)
+        val separatorHeight = res.getDimensionPixelSize(R.dimen.section_separator_height)
         val fixedChrome = res.getDimensionPixelSize(R.dimen.input_height) +
             (rowHeight * 0.85f).toInt() + res.getDimensionPixelSize(R.dimen.card_padding) * 2
 
@@ -332,11 +347,12 @@ class LauncherPanel(
 
             val hintRows = (if (usageHint.view.visibility == View.VISIBLE) 1 else 0) + (if (shortcutHint.view.visibility == View.VISIBLE) 1 else 0)
             val hintRow = hintRows * rowHeight + (if (hintRows > 0) headerHeight else 0)
-            val available = screenHeight - topMargin - bottom - fixedChrome - hintRow
+            val pinnedSection = if (pinnedCount() > 0) headerHeight + separatorHeight else 0
+            val available = screenHeight - topMargin - bottom - fixedChrome - hintRow - pinnedSection
             val maxRows = (available / rowHeight).coerceIn(3, Ranker.MAX_RESULTS)
             if (resultsView.maxVisible != maxRows) {
                 resultsView.maxVisible = maxRows
-                resultsView.bind(visibleLink(), results, selected, iconCallback)
+                bindResults()
             }
             insets
         }
@@ -378,9 +394,15 @@ class LauncherPanel(
         }
 
         Trace.beginSection("ql.bind")
-        resultsView.bind(visibleLink(), results, selected, iconCallback)
+        bindResults()
         emptyView.visibility = if (results.isEmpty() && query.isNotEmpty()) View.VISIBLE else View.GONE
         updateUsageHint()
+        // The pinned section takes header space away from rows; recompute the row budget when it toggles.
+        val sectioned = pinnedCount() > 0
+        if (sectioned != pinnedSectionShown) {
+            pinnedSectionShown = sectioned
+            ViewCompat.requestApplyInsets(windowRoot)
+        }
         Trace.endSection()
     }
 

@@ -4,7 +4,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.ahmedgeek.quicklaunch.R
 import com.ahmedgeek.quicklaunch.index.AppEntry
@@ -16,6 +18,10 @@ import com.ahmedgeek.quicklaunch.search.Ranker
  *
  * Row 0 can hold a clipboard link instead of an app; app results then start at row 1. Selection
  * indices are over the combined list, so the host never has to know which rows are which.
+ *
+ * On the empty query, pinned apps form their own section: a "Pinned" header above them and a
+ * hairline below, both plain child views that are re-inserted at the right child index only when
+ * the boundary moves (pins change rarely; typing hides the section entirely).
  */
 class ResultsView @JvmOverloads constructor(
     context: Context,
@@ -23,6 +29,8 @@ class ResultsView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs) {
 
     private val rows: Array<ResultRow>
+    private val pinnedHeader: TextView
+    private val separator: View
     private var selectedIndex = -1
     /** Rows currently visible: the link row (if any) plus bound app results. */
     private var boundCount = 0
@@ -59,13 +67,21 @@ class ResultsView @JvmOverloads constructor(
             row.hide()
             row
         }
+        pinnedHeader = inflater.inflate(R.layout.section_header, this, false) as TextView
+        pinnedHeader.setText(R.string.pinned_header)
+        pinnedHeader.visibility = GONE
+        addView(pinnedHeader, 0)
+        separator = inflater.inflate(R.layout.section_separator, this, false)
+        separator.visibility = GONE
+        addView(separator, 1)
     }
 
     /**
      * @param link clipboard URL shown as the first row, or null
+     * @param pinned how many leading [results] form the pinned section; 0 hides the section
      * @param selected index over the combined list (link row first when present)
      */
-    fun bind(link: String?, results: List<AppEntry>, selected: Int, onIcon: (String, Bitmap) -> Unit) {
+    fun bind(link: String?, results: List<AppEntry>, pinned: Int, selected: Int, onIcon: (String, Bitmap) -> Unit) {
         val loader = iconLoader
         val offset = if (link != null) 1 else 0
         if (link != null) {
@@ -88,8 +104,34 @@ class ResultsView @JvmOverloads constructor(
         }
         if (link == null) rows[Ranker.MAX_RESULTS].hide()
         boundCount = offset + count
+        placeSection(offset, minOf(pinned, count), count)
         selectedIndex = -1
         setSelected(selected)
+    }
+
+    /** Header before the first pinned row, hairline before the first suggestion after them. */
+    private fun placeSection(offset: Int, pinned: Int, count: Int) {
+        if (pinned == 0) {
+            pinnedHeader.visibility = GONE
+            separator.visibility = GONE
+            return
+        }
+        placeBefore(pinnedHeader, rows[offset].view)
+        pinnedHeader.visibility = VISIBLE
+        if (pinned < count) {
+            placeBefore(separator, rows[offset + pinned].view)
+            separator.visibility = VISIBLE
+        } else {
+            separator.visibility = GONE
+        }
+    }
+
+    /** Move [view] directly before [anchor] in the child order, only when it is not already there. */
+    private fun placeBefore(view: View, anchor: View) {
+        val anchorIndex = indexOfChild(anchor)
+        if (indexOfChild(view) == anchorIndex - 1) return
+        removeView(view)
+        addView(view, indexOfChild(anchor))
     }
 
     fun setSelected(index: Int) {

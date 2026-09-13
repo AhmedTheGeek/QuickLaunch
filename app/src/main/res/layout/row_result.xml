@@ -54,9 +54,9 @@
         android:visibility="invisible" />
 
     <!--
-      Pin toggle. Always laid out at 48dp so the touch target never moves or resizes; only its alpha
-      and glyph change (faint outline on idle rows, full outline on the selected row, filled when
-      pinned). Its own click target, so a tap here toggles instead of launching the row.
+      Pin toggle, shown on the selected row only. Always laid out at 48dp so the target never moves or
+      resizes; idle rows just set alpha 0 and non-clickable so taps there launch the row as usual.
+      Outline when the app can be pinned, filled when it is pinned.
     -->
     <ImageView
         android:id="@+id/pin"

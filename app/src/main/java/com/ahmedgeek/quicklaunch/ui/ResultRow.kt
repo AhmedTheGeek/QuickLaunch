@@ -51,20 +51,17 @@ class ResultRow(val view: View, private val placeholder: Drawable) {
     }
 
     /**
-     * The pin button is never hidden while an app is bound, so the touch target is stable; its look
-     * tells the state. Alpha and drawable swaps are draw-only changes, no layout.
+     * The pin button lives on the selected app row only. It is never hidden via visibility, so the
+     * layout is stable; alpha and clickability flip together, and the drawable swap is draw-only.
      */
     private fun applyPin() {
         val e = entry
-        if (e == null) {
-            pin.alpha = 0f
-            pin.isClickable = false // taps fall through to the row (or nothing, for the link row)
-            return
-        }
-        pin.isClickable = true
+        val show = e != null && selected
+        pin.alpha = if (show) 1f else 0f
+        pin.isClickable = show // idle rows: taps fall through to the row and launch it
+        if (e == null) return
         val pinned = e.pinOrder >= 0
         pin.setImageDrawable(if (pinned) pinFilled else pinOutline)
-        pin.alpha = if (pinned || selected) 1f else PIN_IDLE_ALPHA
         pin.contentDescription = view.resources.getText(if (pinned) R.string.unpin else R.string.pin)
     }
 
@@ -132,9 +129,6 @@ class ResultRow(val view: View, private val placeholder: Drawable) {
     }
 
     companion object {
-        /** Idle rows keep a faint pin so touch users can see the target exists without it shouting. */
-        private const val PIN_IDLE_ALPHA = 0.35f
-
         /** Row tag and icon-cache key for a link. App keys start with a user serial, so no collision. */
         fun linkKey(url: String): String = "link|$url"
     }

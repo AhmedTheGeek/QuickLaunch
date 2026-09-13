@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Section label inside the results list ("Pinned"); same style as the "Set up" header. -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/section_header_height"
+    android:gravity="bottom"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:paddingBottom="6dp"
+    android:textColor="@color/text_secondary"
+    android:textSize="12sp"
+    android:textStyle="bold"
+    android:letterSpacing="0.02" />
