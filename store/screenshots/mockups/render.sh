@@ -18,3 +18,4 @@ rm -f $P/phone-screenshots/*.png $P/seven-inch-screenshots/*.png $P/ten-inch-scr
 i=1; for f in ../phone/*.png; do cp "$f" $P/phone-screenshots/$i.png; i=$((i+1)); done
 cp ../tablet7/01_fold.png $P/seven-inch-screenshots/1.png
 cp ../tablet10/01_landscape.png $P/ten-inch-screenshots/1.png; cp ../tablet10/02_portrait.png $P/ten-inch-screenshots/2.png
+cp ../feature/feature_1024x500.png ../../graphics/feature_1024x500.png; cp ../feature/feature_1024x500.png $P/feature-graphic/1.png

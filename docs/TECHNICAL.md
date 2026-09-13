@@ -21,7 +21,16 @@ How it works, why it is built the way it is, and how to build it. For the short 
   clipboard" toast to one per copy. Sensitive clips and clips the system has classified as URL-free
   are skipped from the description alone, without reading the content.
 - Enter launches the top or arrow-selected result. Up/Down (also Tab, Ctrl+N/P, Ctrl+J/K) move
-  the selection. Esc, Back, tapping outside, Home or Recents close it.
+  the selection. Ctrl+1..9 launch that row directly. Esc, Back, tapping outside, Home or Recents close it.
+- **Pins.** Every row carries a 48dp pin button at its trailing edge (faint on idle rows, full on
+  the selected row, filled when pinned); Ctrl+D toggles the selected row. Pinned apps lead the
+  empty-query list in the order they were pinned, above any frecency or usage score, so the first
+  rows stay put and Ctrl+N or a fixed number of Down presses always reaches the same app. While
+  typing, a pin is only a within-tier nudge (`Ranker.PIN_BOOST`), smaller than a heavily used app's
+  frecency boost, so match quality still decides. The order is a list of entry keys in `pins.bin`;
+  `PinStore.attach` writes each entry's position onto `AppEntry.pinOrder` after every load or
+  revalidation so ranking reads a field, never a map. The button is never hidden while a row shows
+  an app, only its alpha and glyph change, so the touch target never moves under a finger.
 - **Long-press a result and drag it** to open it in split screen next to the app you came from.
   This uses the same system drag protocol a launcher uses, so Android shows its own drop zones.
   Personal profile apps only, Android 12+, and it needs instant mode: in the fallback activity the
@@ -112,7 +121,7 @@ ui/LauncherPanel      the search UI shared by both hosts: input, ranking, keys, 
 ui/ResultsView        8 pre-inflated rows plus one link slot, no adapter, no animations
 ui/IconLoader         icons rasterized off-main, memory + disk cache
 index/                AppIndex (enumerate, revalidate, snapshot), IndexStore (binary cache)
-search/               TextNormalizer, Ranker (tiered scorer), FrecencyStore
+search/               TextNormalizer, Ranker (tiered scorer), FrecencyStore, PinStore
 clipboard/            LinkDetector (pure URL check), ClipboardLinkSource (focus-gated read, per-clip cache)
 launch/AppLauncher    LauncherApps.startMainActivity, handles work profiles
 ```

@@ -21,4 +21,5 @@ downloads the third-party app icons from their Play listings into `mockups/icons
 The frosted layer behind the card is lighter than the app's real 24 dp blur so the home screen stays
 legible in the store. Untouched device captures from v0.1.1 are kept in `screenshots/raw/`.
 
-To change a caption or scene, edit `SCENES` in `gen.py` and run `render.sh`.
+The 1024×500 feature graphic is a scene in the same generator and lands in `graphics/feature_1024x500.png`.
+To change a caption, scene or the feature graphic, edit `SCENES` in `gen.py` and run `render.sh`.

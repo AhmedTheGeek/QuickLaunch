@@ -6,6 +6,7 @@ HOW IT WORKS
 • Results update on every keystroke, ranked so exact and prefix matches come first, then word starts, then initials (type "mbs" for Meta Business Suite, "yt" for YouTube).
 • Enter launches the top result. Up and Down (or Tab, Ctrl+N, Ctrl+P) move the selection. Esc, Back, Home or a tap outside closes it.
 • Your own launches are remembered, so the apps you open most rise to the top. With Usage access granted, your most used apps are listed before you even type.
+• Pin the apps you always want at hand. Tap the pin on a row (or press Ctrl+D) and it leads the list in a fixed order, so the same key presses always reach it. Ctrl+1 to Ctrl+9 launch a row directly.
 • Long-press a result and drag it to open it in split screen next to the current app.
 • Copied a link? It appears as the first row with your browser's icon. Press Enter to open it.
 • Work profile apps are included and badged.

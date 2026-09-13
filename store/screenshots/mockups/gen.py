@@ -81,6 +81,17 @@ body{font-family:Manrope,system-ui,sans-serif;color:#F5F5F7;position:relative}
 .kbd .k.f{background:#2A2A30;color:#D0D0D6;font-size:14px}.kbd .k.w{width:48px}.kbd .k.sp{width:170px}.kbd .k.ret{width:48px;background:#3B82F6;color:#fff}
 .kbd .k .ms{font-size:20px}
 .kbd .nav{position:static;height:24px}
+/* ---- feature graphic ---- */
+.brand{position:absolute;left:60px;top:104px;width:440px;display:grid;gap:20px;z-index:3}
+.brand .mark{display:flex;align-items:center;gap:20px}
+.brand .tile{width:72px;height:72px;border-radius:20px;background:linear-gradient(#2A2A2F,#1A1A1E);box-shadow:0 12px 30px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08);display:grid;place-items:center}
+.brand .tile svg{width:52px;height:52px}
+.brand .name{font:800 44px/1 Manrope;letter-spacing:-0.02em}
+.brand h1{font:800 42px/1.05 Manrope;letter-spacing:-0.025em}
+.brand p{font:500 20px/1.3 Manrope;color:#9A9AA3;max-width:400px}
+.stage{position:absolute;right:48px;top:98px;width:400px;z-index:3}
+.stage .card{position:relative;left:0;right:0;top:0}
+.stage .pad{position:absolute;inset:-60px -40px;border-radius:40px;background:radial-gradient(60% 60% at 50% 45%,rgba(90,110,170,.35),transparent 70%);filter:blur(20px)}
 /* ---- underlying app for the overlay scene ---- */
 .notes{position:absolute;inset:0;background:#131317;padding:56px 24px 0;font-family:Roboto;color:#E8E8ED}
 .notes h2{font-size:24px;font-weight:500;margin-bottom:6px}.notes .meta{font-size:13px;color:#7A7A82;margin-bottom:22px}
@@ -199,6 +210,12 @@ T10P = dict(left=140, top=700, width=1320, height=2100, radius=72, dp_width=500,
 SCENES["tablet10/02_portrait.png"] = (1600, 2560, [(-300, 300, 1200, 1200, "#FFB020", 0.16), (800, 1500, 1200, 1200, "#4C7DFF", 0.16)],
     headline(140, 170, 1320, "Fast enough<br>to feel instant.", "Results land as you type. No loading, no spinner, ever.", 104, 42),
     device(**T10P, screen_html=home(500, 800, 6, TAB_APPS[:6], TAB_DOCK, tablet=True, grid_top=card_bottom(2, True)+30, widget_top=card_bottom(2, True)+150) + card("ph", ["Phone", "Photos"], footer=True)))
+
+BOLT = '<svg viewBox="0 0 108 108"><path d="M59,26 L38,58 L52,58 L48,82 L70,48 L56,48 Z" fill="#F2F2F7"/></svg>'
+brand = (f'<div class="brand"><div class="mark"><span class="tile">{BOLT}</span><span class="name">Quick Launch</span></div>'
+         '<h1>Any app.<br>Two letters away.</h1><p>A keyboard-first launcher for Android. Type, press Enter, done.</p></div>')
+stage = f'<div class="stage" style="zoom:1.05"><div class="pad"></div>{card("ca", ["Calendar", "Camera", "Calculator"], footer=True)}</div>'
+SCENES["feature/feature_1024x500.png"] = (1024, 500, [(-150, -150, 700, 700, "#FFB020", 0.22), (600, 150, 700, 700, "#4C7DFF", 0.22)], brand, stage)
 
 for rel, (W, H, glows, head, dev) in SCENES.items():
     fn = os.path.join(OUT, rel.replace("/", "__").replace(".png", ".html"))
