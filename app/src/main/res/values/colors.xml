@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Light palette. Dark lives in values-night/colors.xml; both follow the system setting. -->
 <resources>
-    <color name="card">#F21C1C1E</color>
-    <color name="card_border">#1AFFFFFF</color>
-    <color name="divider">#14FFFFFF</color>
-    <color name="text_primary">#F2F2F7</color>
-    <color name="text_secondary">#8E8E93</color>
-    <color name="text_hint">#636366</color>
-    <color name="row_selected">#14FFFFFF</color>
-    <color name="row_pressed">#1FFFFFFF</color>
-    <color name="icon_placeholder">#2C2C2E</color>
-    <color name="cursor">#F2F2F7</color>
+    <color name="card">#F7F6F6F8</color>
+    <color name="card_border">#1F000000</color>
+    <color name="card_highlight">#B3FFFFFF</color>
+    <color name="divider">#12000000</color>
+    <color name="footer">#07000000</color>
+    <color name="text_primary">#1C1C1E</color>
+    <color name="text_secondary">#6E6E73</color>
+    <color name="text_hint">#8E8E93</color>
+    <color name="text_highlight">#2E000000</color>
+    <color name="row_selected">#0D000000</color>
+    <color name="row_pressed">#17000000</color>
+    <color name="keycap">#0A000000</color>
+    <color name="keycap_border">#1A000000</color>
+    <color name="icon_placeholder">#E5E5EA</color>
+    <color name="cursor">#1C1C1E</color>
     <color name="transparent">#00000000</color>
 </resources>

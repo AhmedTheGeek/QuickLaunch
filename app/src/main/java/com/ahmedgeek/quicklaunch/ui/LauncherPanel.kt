@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.graphics.Insets
@@ -57,9 +58,20 @@ class LauncherPanel(
     val input: EditText = windowRoot.findViewById(R.id.input)
     private val resultsView: ResultsView = windowRoot.findViewById(R.id.results)
     private val emptyView: TextView = windowRoot.findViewById(R.id.empty)
-    val hintBar: TextView = windowRoot.findViewById(R.id.hint_bar)
-    private val usageHint: TextView = windowRoot.findViewById(R.id.usage_hint)
-    private val shortcutHint: TextView = windowRoot.findViewById(R.id.shortcut_hint)
+    private val footer: View = windowRoot.findViewById(R.id.footer)
+    private val footerMessage: TextView = windowRoot.findViewById(R.id.hint_bar)
+    private val footerAction: TextView = windowRoot.findViewById(R.id.footer_action)
+    private val footerKeys: View = windowRoot.findViewById(R.id.footer_keys)
+    private var footerMessageSet = false
+    private val setupHeader: View = windowRoot.findViewById(R.id.setup_header)
+    private val usageHint = SetupRow(
+        windowRoot.findViewById(R.id.usage_hint),
+        R.drawable.ic_star, R.string.setup_usage_title, R.string.setup_usage_subtitle,
+    )
+    private val shortcutHint = SetupRow(
+        windowRoot.findViewById(R.id.shortcut_hint),
+        R.drawable.ic_keyboard, R.string.setup_shortcut_title, R.string.setup_shortcut_subtitle,
+    )
     private val prefs = app.getSharedPreferences("ql", android.content.Context.MODE_PRIVATE)
 
     private val results = ArrayList<AppEntry>(Ranker.MAX_RESULTS)
@@ -103,8 +115,12 @@ class LauncherPanel(
             }
             true
         }
-        usageHint.setOnClickListener {
-            prefs.edit().putBoolean(PREF_USAGE_HINT_TAPPED, true).apply()
+        // Tapping a setup row opens the setting; the row stays until the feature is on or the user dismisses it.
+        usageHint.onDismiss = {
+            prefs.edit().putBoolean(PREF_USAGE_HINT_DISMISSED, true).apply()
+            updateUsageHint()
+        }
+        usageHint.onClick = {
             try {
                 app.startActivity(
                     android.content.Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)
@@ -115,8 +131,11 @@ class LauncherPanel(
             }
             host.dismiss()
         }
-        shortcutHint.setOnClickListener {
-            prefs.edit().putBoolean(PREF_SHORTCUT_HINT_TAPPED, true).apply()
+        shortcutHint.onDismiss = {
+            prefs.edit().putBoolean(PREF_SHORTCUT_HINT_DISMISSED, true).apply()
+            updateUsageHint()
+        }
+        shortcutHint.onClick = {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
                 // Sideloaded apps hit Android's "Restricted setting" block on the accessibility toggle.
                 Toast.makeText(app, R.string.shortcut_restricted_tip, Toast.LENGTH_LONG).show()
@@ -132,17 +151,54 @@ class LauncherPanel(
     }
 
     private fun updateUsageHint() {
-        val show = query.isEmpty() && !prefs.getBoolean(PREF_USAGE_HINT_TAPPED, false) && !index.usagePermitted()
+        val show = query.isEmpty() && !prefs.getBoolean(PREF_USAGE_HINT_DISMISSED, false) && !index.usagePermitted()
         val visibility = if (show) View.VISIBLE else View.GONE
         // Keyboard-first app: offer the Ctrl+Space setup until it is enabled or dismissed, keyboard attached or not.
         val showShortcut = query.isEmpty() &&
-            !prefs.getBoolean(PREF_SHORTCUT_HINT_TAPPED, false) &&
+            !prefs.getBoolean(PREF_SHORTCUT_HINT_DISMISSED, false) &&
             !com.ahmedgeek.quicklaunch.shortcut.KeyboardShortcutService.isEnabled(app)
         val shortcutVisibility = if (showShortcut) View.VISIBLE else View.GONE
-        if (usageHint.visibility != visibility || shortcutHint.visibility != shortcutVisibility) {
-            usageHint.visibility = visibility
-            shortcutHint.visibility = shortcutVisibility
+        val headerVisibility = if (show || showShortcut) View.VISIBLE else View.GONE
+        if (usageHint.view.visibility != visibility || shortcutHint.view.visibility != shortcutVisibility) {
+            usageHint.view.visibility = visibility
+            shortcutHint.view.visibility = shortcutVisibility
+            setupHeader.visibility = headerVisibility
             ViewCompat.requestApplyInsets(windowRoot)
+        }
+    }
+
+    /** Footer keycap hints are only useful with a physical keyboard; the footer hides when it has nothing to say. */
+    private fun updateFooter() {
+        val keys = !footerMessageSet && KeyboardUtil.hasHardwareKeyboard(res.configuration)
+        footerKeys.visibility = if (keys) View.VISIBLE else View.GONE
+        footer.visibility = if (keys || footerMessageSet) View.VISIBLE else View.GONE
+    }
+
+    /** Replace the key hints with a message and an action chip (the fallback activity offers instant mode here). */
+    fun showFooterAction(message: CharSequence, action: CharSequence, iconRes: Int, onClick: () -> Unit) {
+        footerMessageSet = true
+        footerMessage.text = message
+        footerMessage.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0)
+        footerMessage.compoundDrawableTintList = footerMessage.textColors
+        footerMessage.visibility = View.VISIBLE
+        footerAction.text = action
+        footerAction.visibility = View.VISIBLE
+        footer.setOnClickListener { onClick() }
+        footerAction.setOnClickListener { onClick() }
+        updateFooter()
+    }
+
+    /** View holder over row_setup.xml. */
+    private class SetupRow(val view: View, iconRes: Int, titleRes: Int, subtitleRes: Int) {
+        var onClick: (() -> Unit)? = null
+        var onDismiss: (() -> Unit)? = null
+
+        init {
+            view.findViewById<ImageView>(R.id.setup_icon).setImageResource(iconRes)
+            view.findViewById<TextView>(R.id.setup_title).setText(titleRes)
+            view.findViewById<TextView>(R.id.setup_subtitle).setText(subtitleRes)
+            view.setOnClickListener { onClick?.invoke() }
+            view.findViewById<View>(R.id.setup_dismiss).setOnClickListener { onDismiss?.invoke() }
         }
     }
 
@@ -154,6 +210,7 @@ class LauncherPanel(
         launched = false
         imeWasVisible = false
         index.listener = { onIndexChanged() }
+        updateFooter()
         if (input.text.isNotEmpty()) input.setText("") else rerank()
         input.requestFocus()
         // After the first frame is committed: revalidate the index and warm the icon cache.
@@ -178,6 +235,7 @@ class LauncherPanel(
         val sideMargin = res.getDimensionPixelSize(R.dimen.card_margin_h)
         val maxWidth = res.getDimensionPixelSize(R.dimen.card_max_width)
         val rowHeight = res.getDimensionPixelSize(R.dimen.row_height)
+        val headerHeight = res.getDimensionPixelSize(R.dimen.section_header_height)
         val fixedChrome = res.getDimensionPixelSize(R.dimen.input_height) +
             (rowHeight * 0.85f).toInt() + res.getDimensionPixelSize(R.dimen.card_padding) * 2
 
@@ -211,8 +269,8 @@ class LauncherPanel(
                 card.layoutParams = lp
             }
 
-            val hintRows = (if (usageHint.visibility == View.VISIBLE) 1 else 0) + (if (shortcutHint.visibility == View.VISIBLE) 1 else 0)
-            val hintRow = hintRows * rowHeight
+            val hintRows = (if (usageHint.view.visibility == View.VISIBLE) 1 else 0) + (if (shortcutHint.view.visibility == View.VISIBLE) 1 else 0)
+            val hintRow = hintRows * rowHeight + (if (hintRows > 0) headerHeight else 0)
             val available = screenHeight - topMargin - bottom - fixedChrome - hintRow
             val maxRows = (available / rowHeight).coerceIn(3, Ranker.MAX_RESULTS)
             if (resultsView.maxVisible != maxRows) {
@@ -303,8 +361,9 @@ class LauncherPanel(
     // ---- Drag to split screen ------------------------------------------------------------------
 
     private companion object {
-        const val PREF_USAGE_HINT_TAPPED = "usage_hint_tapped"
-        const val PREF_SHORTCUT_HINT_TAPPED = "shortcut_hint_tapped"
+        // Stored under the old "tapped" names so users who acted on the previous hints are not asked again.
+        const val PREF_USAGE_HINT_DISMISSED = "usage_hint_tapped"
+        const val PREF_SHORTCUT_HINT_DISMISSED = "shortcut_hint_tapped"
     }
 
     private val dragWatchdog = Runnable { endDrag(dropped = false) }

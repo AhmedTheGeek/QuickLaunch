@@ -11,10 +11,13 @@
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
         <item name="android:statusBarColor">@color/transparent</item>
         <item name="android:navigationBarColor">@color/transparent</item>
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowLightStatusBar">@bool/light_system_bars</item>
+        <item name="android:windowLightNavigationBar">@bool/light_system_bars</item>
         <item name="android:colorControlActivated">@color/cursor</item>
-        <item name="android:textColorHighlight">#33FFFFFF</item>
+        <item name="android:textColorHighlight">@color/text_highlight</item>
+        <!-- Elevation shadows are faint by default; deepen them so the card visibly floats over the dimmed app. -->
+        <item name="android:ambientShadowAlpha">0.12</item>
+        <item name="android:spotShadowAlpha">0.45</item>
         <item name="android:windowActivityTransitions">false</item>
         <item name="android:windowContentTransitions">false</item>
         <item name="android:windowBlurBehindEnabled">true</item>

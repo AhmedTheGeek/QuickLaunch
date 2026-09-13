@@ -6,6 +6,7 @@
     android:clipChildren="false"
     android:clipToPadding="false">
 
+    <!-- Header (search) / body (rows) / footer (hints), separated by full-bleed hairlines. -->
     <LinearLayout
         android:id="@+id/card"
         android:layout_width="match_parent"
@@ -15,9 +16,8 @@
         android:layout_marginEnd="@dimen/card_margin_h"
         android:background="@drawable/bg_card"
         android:clipToOutline="true"
-        android:elevation="12dp"
-        android:orientation="vertical"
-        android:padding="@dimen/card_padding">
+        android:elevation="@dimen/card_elevation"
+        android:orientation="vertical">
 
         <EditText
             android:id="@+id/input"
@@ -26,8 +26,8 @@
             android:background="@null"
             android:drawableStart="@drawable/ic_search"
             android:drawablePadding="14dp"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:gravity="center_vertical"
             android:hint="@string/search_hint"
             android:textColorHint="@color/text_hint"
@@ -44,76 +44,192 @@
             android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:background="@color/divider" />
 
-        <com.ahmedgeek.quicklaunch.ui.ResultsView
-            android:id="@+id/results"
+        <LinearLayout
+            android:id="@+id/body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:paddingStart="@dimen/card_padding"
+            android:paddingEnd="@dimen/card_padding"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp">
 
-        <TextView
-            android:id="@+id/empty"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height"
-            android:gravity="center"
-            android:text="@string/no_results"
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp"
-            android:visibility="gone" />
+            <com.ahmedgeek.quicklaunch.ui.ResultsView
+                android:id="@+id/results"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
 
-        <TextView
-            android:id="@+id/shortcut_hint"
+            <TextView
+                android:id="@+id/empty"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/row_height"
+                android:gravity="center"
+                android:text="@string/no_results"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/setup_header"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/section_header_height"
+                android:gravity="bottom"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="6dp"
+                android:text="@string/setup_header"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.02"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/shortcut_hint"
+                layout="@layout/row_setup"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/usage_hint"
+                layout="@layout/row_setup"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!--
+          Footer. Keycap hints only make sense with a physical keyboard, so the key row is shown
+          only then. The fallback activity uses the message + action slot to offer instant mode.
+        -->
+        <LinearLayout
+            android:id="@+id/footer"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/bg_row"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_footer"
             android:clickable="true"
             android:focusable="false"
             android:gravity="center_vertical"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:text="@string/shortcut_hint"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/usage_hint"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/row_height"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/bg_row"
-            android:clickable="true"
-            android:focusable="false"
-            android:gravity="center_vertical"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:text="@string/usage_hint"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/hint_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
+            android:orientation="horizontal"
+            android:paddingStart="20dp"
+            android:paddingEnd="12dp"
             android:paddingTop="10dp"
-            android:paddingBottom="6dp"
-            android:text="@string/hint_bar"
-            android:textColor="@color/text_hint"
-            android:textSize="12sp"
-            android:letterSpacing="0.02" />
+            android:paddingBottom="10dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/hint_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawablePadding="8dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/footer_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_keycap"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/footer_keys"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                android:orientation="horizontal"
+                android:paddingEnd="8dp">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:minWidth="24dp"
+                android:background="@drawable/bg_keycap"
+                android:contentDescription="@null"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_return"
+                android:tint="@color/text_secondary" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="@string/key_open"
+                android:textColor="@color/text_hint"
+                android:textSize="12sp" />
+            <Space
+                android:layout_width="14dp"
+                android:layout_height="1dp" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:minWidth="24dp"
+                android:background="@drawable/bg_keycap"
+                android:contentDescription="@null"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_arrow_up"
+                android:tint="@color/text_secondary" />
+            <Space
+                android:layout_width="3dp"
+                android:layout_height="1dp" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:minWidth="24dp"
+                android:background="@drawable/bg_keycap"
+                android:contentDescription="@null"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:src="@drawable/ic_arrow_down"
+                android:tint="@color/text_secondary" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="@string/key_navigate"
+                android:textColor="@color/text_hint"
+                android:textSize="12sp" />
+            <Space
+                android:layout_width="14dp"
+                android:layout_height="1dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:background="@drawable/bg_keycap"
+                android:gravity="center"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:text="@string/key_esc"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="@string/key_close"
+                android:textColor="@color/text_hint"
+                android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

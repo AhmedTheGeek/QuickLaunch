@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark palette. Light lives in values/colors.xml; both follow the system setting. -->
+<resources>
+    <color name="card">#F51E1E20</color>
+    <color name="card_border">#24FFFFFF</color>
+    <color name="card_highlight">#14FFFFFF</color>
+    <color name="divider">#14FFFFFF</color>
+    <color name="footer">#0AFFFFFF</color>
+    <color name="text_primary">#F2F2F7</color>
+    <color name="text_secondary">#9A9AA0</color>
+    <color name="text_hint">#6E6E73</color>
+    <color name="text_highlight">#33FFFFFF</color>
+    <color name="row_selected">#14FFFFFF</color>
+    <color name="row_pressed">#1FFFFFFF</color>
+    <color name="keycap">#14FFFFFF</color>
+    <color name="keycap_border">#1FFFFFFF</color>
+    <color name="icon_placeholder">#2C2C2E</color>
+    <color name="cursor">#F2F2F7</color>
+</resources>

@@ -59,10 +59,11 @@ class LaunchActivity : Activity(), LauncherPanel.Host {
         window.attributes = lp
     }
 
-    /** Running as an activity means the permission is missing: make the hint bar the way to grant it. */
+    /** Running as an activity means the permission is missing: make the footer the way to grant it. */
     private fun offerInstantMode() {
-        panel.hintBar.text = getString(R.string.hint_enable_instant)
-        panel.hintBar.setOnClickListener {
+        panel.showFooterAction(
+            getString(R.string.instant_mode_message), getString(R.string.instant_mode_action), R.drawable.ic_bolt,
+        ) {
             startActivity(
                 Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

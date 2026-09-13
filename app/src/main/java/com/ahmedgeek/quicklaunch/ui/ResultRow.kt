@@ -13,7 +13,7 @@ class ResultRow(val view: View, private val placeholder: Drawable) {
     private val icon: ImageView = view.findViewById(R.id.icon)
     private val label: TextView = view.findViewById(R.id.label)
     private val badge: TextView = view.findViewById(R.id.badge)
-    private val enter: TextView = view.findViewById(R.id.enter)
+    private val enter: View = view.findViewById(R.id.enter)
 
     var entry: AppEntry? = null
         private set

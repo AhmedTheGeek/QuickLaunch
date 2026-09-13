@@ -18,7 +18,7 @@ How it works, why it is built the way it is, and how to build it. For the short 
   This uses the same system drag protocol a launcher uses, so Android shows its own drop zones.
   Personal profile apps only, Android 12+, and it needs instant mode: in the fallback activity the
   system pairs the drop with our own window, so the app simply opens full screen.
-- Dark translucent card with blur behind (Android 12+). Full width on phones; on tablets, foldables
+- Translucent floating card that follows the system light/dark setting, with blur behind (Android 12+). Full width on phones; on tablets, foldables
   and landscape it is a centered 560dp palette.
 - No settings, no network, no analytics.
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Footer strip: a faint tint with a hairline along its top edge. The card clips its corners. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/footer" />
+        </shape>
+    </item>
+    <item android:gravity="top" android:height="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/divider" />
+        </shape>
+    </item>
+</layer-list>

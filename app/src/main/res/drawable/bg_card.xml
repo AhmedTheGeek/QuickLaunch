@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <solid android:color="@color/card" />
-    <stroke android:width="1dp" android:color="@color/card_border" />
-    <corners android:radius="@dimen/card_radius" />
-</shape>
+<!--
+  Floating panel: translucent fill, a 1dp hairline border, and a 1dp inner highlight just inside
+  the top edge, the way a lit surface catches a rim of light. The rounded outline drives the
+  elevation shadow and clipToOutline.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/card" />
+            <corners android:radius="@dimen/card_radius" />
+        </shape>
+    </item>
+    <!-- Inner highlight: a slightly lighter rim drawn 1dp inside the border, mostly visible at the top. -->
+    <item android:top="1dp" android:left="1dp" android:right="1dp" android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <stroke android:width="1dp" android:color="@color/card_highlight" />
+            <corners android:radius="@dimen/card_radius_inner" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <stroke android:width="1dp" android:color="@color/card_border" />
+            <corners android:radius="@dimen/card_radius" />
+        </shape>
+    </item>
+</layer-list>

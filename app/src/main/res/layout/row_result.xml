@@ -8,7 +8,7 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingStart="12dp"
-    android:paddingEnd="14dp">
+    android:paddingEnd="12dp">
 
     <ImageView
         android:id="@+id/icon"
@@ -37,12 +37,19 @@
         android:textSize="12sp"
         android:visibility="gone" />
 
-    <TextView
+    <!-- Keycap chip, shown on the selected row only. -->
+    <ImageView
         android:id="@+id/enter"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/enter_glyph"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp"
+        android:layout_height="22dp"
+        android:minWidth="26dp"
+        android:background="@drawable/bg_keycap"
+        android:contentDescription="@null"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:src="@drawable/ic_return"
+        android:tint="@color/text_secondary"
         android:visibility="invisible" />
 </LinearLayout>

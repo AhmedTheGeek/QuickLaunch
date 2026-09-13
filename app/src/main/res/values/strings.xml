@@ -2,16 +2,29 @@
 <resources>
     <string name="app_name">Quick Launch</string>
     <string name="search_hint">Search apps</string>
-    <string name="hint_bar">↵ open   ·   ↑↓ navigate   ·   esc close</string>
     <string name="no_results">No matching apps</string>
     <string name="error_not_available">App not available</string>
     <string name="error_work_paused">Work profile is paused</string>
-    <string name="enter_glyph">↵</string>
-    <string name="usage_hint">★  Show most used apps · tap to allow</string>
-    <string name="hint_enable_instant">⚡ Tap to enable instant mode</string>
     <string name="a11y_label">Quick Launch keyboard shortcut</string>
     <string name="a11y_summary">Ctrl+Space opens Quick Launch from anywhere</string>
     <string name="a11y_description">Lets Quick Launch open when you press Ctrl+Space on a physical keyboard, from any app. Quick Launch only listens for that key combination. It does not read screen content, observe your activity, or receive any other accessibility events.</string>
     <string name="shortcut_restricted_tip">Find “Quick Launch keyboard shortcut” under Installed apps. If the switch says “Restricted setting”: open Quick Launch’s App info › ⋮ › Allow restricted settings, then try again.</string>
-    <string name="shortcut_hint">⌨  Enable Ctrl+Space shortcut · tap</string>
+
+    <!-- Footer keycap hints (physical keyboard only). -->
+    <string name="key_open">Open</string>
+    <string name="key_navigate">Navigate</string>
+    <string name="key_close">Close</string>
+    <string name="key_esc">Esc</string>
+
+    <!-- Fallback activity: offer the overlay permission. -->
+    <string name="instant_mode_message">Opens faster in instant mode</string>
+    <string name="instant_mode_action">Turn on</string>
+
+    <!-- One-time setup section. -->
+    <string name="setup_header">Set up</string>
+    <string name="setup_dismiss">Dismiss</string>
+    <string name="setup_shortcut_title">Open with Ctrl+Space</string>
+    <string name="setup_shortcut_subtitle">Tap to enable the keyboard shortcut</string>
+    <string name="setup_usage_title">Rank by most used</string>
+    <string name="setup_usage_subtitle">Tap to allow usage access</string>
 </resources>

@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="card_radius">20dp</dimen>
+    <!-- card_radius minus the 1dp border inset; keeps the inner highlight concentric. -->
+    <dimen name="card_radius_inner">19dp</dimen>
     <dimen name="card_margin_h">16dp</dimen>
     <dimen name="card_max_width">560dp</dimen>
     <dimen name="card_top_offset">48dp</dimen>
+    <dimen name="card_elevation">20dp</dimen>
+    <!-- Inset of the results body from the card edge; rows are highlighted inside it. -->
     <dimen name="card_padding">8dp</dimen>
     <dimen name="input_height">64dp</dimen>
     <dimen name="row_height">56dp</dimen>
-    <dimen name="row_radius">12dp</dimen>
+    <dimen name="section_header_height">30dp</dimen>
+    <dimen name="row_radius">10dp</dimen>
     <dimen name="icon_size">40dp</dimen>
     <dimen name="blur_radius">24dp</dimen>
 </resources>
