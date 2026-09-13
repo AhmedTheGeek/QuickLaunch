@@ -30,8 +30,8 @@ disappears the moment you launch something.
   `mbs` finds Meta Business Suite, `yt` finds YouTube.
 - **Learns from you.** Apps you launch often rise to the top. Grant *Usage access* and your most used
   apps are already listed before you type.
-- **Pin your essentials.** Tap the pin on a row (or press Ctrl+D) and that app leads the list in a
-  fixed order every time. Ctrl+1 to Ctrl+9 launch a row directly.
+- **Pin your essentials.** Tap the pin on the highlighted row (or press Ctrl+D) and that app sits in
+  a Pinned section at the top, in a fixed order, every time. Ctrl+1 to Ctrl+9 launch a row directly.
 - **Keyboard first.** Ctrl+Space opens it from any app. ↑ ↓ to move, Enter to launch, Esc to close.
   Tab, Ctrl+N and Ctrl+P work too.
 - **Split screen by drag.** Long-press a result and drag it to open it next to the current app.

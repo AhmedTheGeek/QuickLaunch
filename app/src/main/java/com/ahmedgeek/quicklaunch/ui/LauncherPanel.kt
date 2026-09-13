@@ -67,7 +67,12 @@ class LauncherPanel(
     private val footer: View = windowRoot.findViewById(R.id.footer)
     private val footerMessage: TextView = windowRoot.findViewById(R.id.hint_bar)
     private val footerAction: TextView = windowRoot.findViewById(R.id.footer_action)
-    private val footerKeys: View = windowRoot.findViewById(R.id.footer_keys)
+    private val footerKeys: ViewGroup = windowRoot.findViewById(R.id.footer_keys)
+    private val footerPin: View = windowRoot.findViewById(R.id.footer_pin)
+    /** Natural width of the pin hint, measured once while it is still GONE. */
+    private var footerPinWidth = 0
+    /** Width the other hints occupy when the pin hint is hidden; they always fit by design. */
+    private var footerOthersWidth = 0
     private var footerMessageSet = false
     private val setupHeader: View = windowRoot.findViewById(R.id.setup_header)
     private val usageHint = SetupRow(
@@ -161,6 +166,35 @@ class LauncherPanel(
             host.dismiss()
         }
         installInsetsHandling()
+        footerKeys.addOnLayoutChangeListener { _, l, _, r, _, ol, _, or_, _ -> if (r - l != or_ - ol) fitFooterKeys() }
+    }
+
+    /**
+     * The Ctrl+D hint is optional: on phone-width cards the mandatory hints already fill the footer,
+     * so it appears only where the whole row fits (tablets, landscape, DeX, unfolded foldables).
+     * Widths are taken from real layouts, never from re-measuring laid-out children.
+     */
+    private fun fitFooterKeys() {
+        val available = footerKeys.width - footerKeys.paddingLeft - footerKeys.paddingRight
+        if (available <= 0) return
+        if (footerPinWidth == 0) {
+            val spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+            footerPin.measure(spec, spec)
+            footerPinWidth = footerPin.measuredWidth
+        }
+        if (footerPin.visibility == View.GONE) {
+            var used = 0
+            for (i in 0 until footerKeys.childCount) {
+                val c = footerKeys.getChildAt(i)
+                if (c.visibility == View.GONE) continue
+                val lp = c.layoutParams as ViewGroup.MarginLayoutParams
+                used += c.width + lp.leftMargin + lp.rightMargin
+            }
+            footerOthersWidth = used
+        }
+        val fits = footerOthersWidth + footerPinWidth <= available
+        val visibility = if (fits) View.VISIBLE else View.GONE
+        if (footerPin.visibility != visibility) footerPin.visibility = visibility
     }
 
     private fun updateUsageHint() {

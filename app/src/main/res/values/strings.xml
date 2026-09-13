@@ -21,9 +21,10 @@
 
     <!-- Footer keycap hints (physical keyboard only). -->
     <string name="key_open">Open</string>
-    <string name="key_navigate">Navigate</string>
     <string name="key_close">Close</string>
     <string name="key_esc">Esc</string>
+    <string name="key_ctrl_d">Ctrl+D</string>
+    <string name="key_pin">Pin</string>
 
     <!-- Fallback activity: offer the overlay permission. -->
     <string name="instant_mode_message">Opens faster in instant mode</string>

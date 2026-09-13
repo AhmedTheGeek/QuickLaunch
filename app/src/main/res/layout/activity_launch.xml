@@ -172,43 +172,35 @@
                 android:text="@string/key_open"
                 android:textColor="@color/text_hint"
                 android:textSize="12sp" />
-            <Space
-                android:layout_width="14dp"
-                android:layout_height="1dp" />
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:minWidth="24dp"
-                android:background="@drawable/bg_keycap"
-                android:contentDescription="@null"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:src="@drawable/ic_arrow_up"
-                android:tint="@color/text_secondary" />
-            <Space
-                android:layout_width="3dp"
-                android:layout_height="1dp" />
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:minWidth="24dp"
-                android:background="@drawable/bg_keycap"
-                android:contentDescription="@null"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:src="@drawable/ic_arrow_down"
-                android:tint="@color/text_secondary" />
-            <TextView
+            <!-- Pin hint: shown only when the whole row fits (LauncherPanel.fitFooterKeys). -->
+            <LinearLayout
+                android:id="@+id/footer_pin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:text="@string/key_navigate"
-                android:textColor="@color/text_hint"
-                android:textSize="12sp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+                <Space
+                    android:layout_width="14dp"
+                    android:layout_height="1dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="22dp"
+                    android:background="@drawable/bg_keycap"
+                    android:gravity="center"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+                    android:text="@string/key_ctrl_d"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/key_pin"
+                    android:textColor="@color/text_hint"
+                    android:textSize="12sp" />
+            </LinearLayout>
             <Space
                 android:layout_width="14dp"
                 android:layout_height="1dp" />

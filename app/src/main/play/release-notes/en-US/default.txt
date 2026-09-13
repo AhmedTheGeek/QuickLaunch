@@ -1,3 +1,4 @@
-Open links from the clipboard.
-• Copied a URL? It shows up as the first row with the icon of the app that will open it. Press Enter or tap to open.
-• Clipboard is read only while the card is open and focused, once per copied item; sensitive clips are skipped.
+Pin your essentials.
+• Tap the pin on the highlighted row, or press Ctrl+D, and that app sits in a Pinned section at the top in a fixed order, every time.
+• Ctrl+1 to Ctrl+9 launch a row directly.
+• Footer hints now show Enter, Ctrl+D and Esc.

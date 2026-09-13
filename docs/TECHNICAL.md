@@ -22,15 +22,20 @@ How it works, why it is built the way it is, and how to build it. For the short 
   are skipped from the description alone, without reading the content.
 - Enter launches the top or arrow-selected result. Up/Down (also Tab, Ctrl+N/P, Ctrl+J/K) move
   the selection. Ctrl+1..9 launch that row directly. Esc, Back, tapping outside, Home or Recents close it.
-- **Pins.** Every row carries a 48dp pin button at its trailing edge (faint on idle rows, full on
-  the selected row, filled when pinned); Ctrl+D toggles the selected row. Pinned apps lead the
-  empty-query list in the order they were pinned, above any frecency or usage score, so the first
-  rows stay put and Ctrl+N or a fixed number of Down presses always reaches the same app. While
-  typing, a pin is only a within-tier nudge (`Ranker.PIN_BOOST`), smaller than a heavily used app's
-  frecency boost, so match quality still decides. The order is a list of entry keys in `pins.bin`;
+- **Pins.** The highlighted row carries a 48dp pin button at its trailing edge (outline when the
+  app can be pinned, filled when it is pinned); Ctrl+D toggles the same row. On touch, type until
+  the app is the top row, then tap the pin. Pinned apps form their own "Pinned" section at the top
+  of the empty-query list, in the order they were pinned, with a hairline before the suggestions;
+  the section exists only while something is pinned. While typing there is one ranked list and a
+  pin is only a within-tier nudge (`Ranker.PIN_BOOST`), smaller than a heavily used app's frecency
+  boost, so match quality still decides. The order is a list of entry keys in `pins.bin`;
   `PinStore.attach` writes each entry's position onto `AppEntry.pinOrder` after every load or
-  revalidation so ranking reads a field, never a map. The button is never hidden while a row shows
-  an app, only its alpha and glyph change, so the touch target never moves under a finger.
+  revalidation so ranking reads a field, never a map. The button is laid out on every row and only
+  its alpha and clickability change, so rows never relayout and taps on idle rows launch as usual.
+  The header and hairline are plain children of the results view, re-inserted at a new child index
+  only when the pinned boundary moves. The footer (physical keyboards only) shows Enter, Ctrl+D and
+  Esc keycaps; the Ctrl+D hint hides itself when the row would not fit, using the widths of the laid
+  out hints rather than re-measuring them.
 - **Long-press a result and drag it** to open it in split screen next to the app you came from.
   This uses the same system drag protocol a launcher uses, so Android shows its own drop zones.
   Personal profile apps only, Android 12+, and it needs instant mode: in the fallback activity the
