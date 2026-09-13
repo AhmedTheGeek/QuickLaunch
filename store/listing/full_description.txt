@@ -23,3 +23,5 @@ PERMISSIONS
 • Usage access (optional): lets the empty list show your most used apps. Usage data never leaves the device.
 
 Quick Launch stores everything locally and sends nothing anywhere.
+
+Free and open source (GPL-3.0): github.com/AhmedTheGeek/QuickLaunch

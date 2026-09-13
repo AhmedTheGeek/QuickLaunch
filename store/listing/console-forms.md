@@ -11,21 +11,22 @@ repo can prepare is already done: signed AAB, listing text, graphics, privacy po
 | Default language | English (United States) |
 | App or game | App |
 | Free or paid | Free (cannot be changed to paid later) |
-| Category | Tools |
+| Category | Productivity (recommended; Tools is the fallback). No ads, no in-app purchases. |
 | Contact email | me@ahmedgeek.com |
 | Privacy policy URL | https://ahmedthegeek.github.io/QuickLaunch/privacy-policy.html |
 | Package name | com.ahmedgeek.quicklaunch |
 | Upload artifact | `release/QuickLaunch-v0.1.1.aab` (versionCode 2, versionName 0.1.1), signed with `keystore/upload-keystore.jks` |
 | Upload key SHA-256 | 64:06:EA:2A:DC:0B:B3:F4:46:E4:56:24:58:A7:F1:0E:E1:03:CB:0C:38:88:34:FB:92:3B:5A:A2:EA:19:48:C6 |
-| Store listing text | `store/listing/title.txt`, `short_description.txt`, `full_description.txt` (29 / 79 / 1718 chars, limits 30 / 80 / 4000) |
+| Store listing text | `store/listing/title.txt`, `short_description.txt`, `full_description.txt` (29 / 78 / 1763 chars, limits 30 / 80 / 4000) |
 | Release notes | `app/src/main/play/release-notes/en-US/default.txt` |
 | Icon 512×512 | `store/graphics/icon_512.png` |
 | Feature graphic 1024×500 | `store/graphics/feature_1024x500.png` |
-| Phone screenshots 1080×2400 | `store/screenshots/phone/` (5) |
+| Phone screenshots 1080×2400 | `store/screenshots/phone/` (4, captioned) |
 | 7-inch tablet 1812×2176 | `store/screenshots/tablet7/` (1) |
 | 10-inch tablet 2560×1600 / 1600×2560 | `store/screenshots/tablet10/` (2) |
 
-Screenshots are 24-bit PNG without an alpha channel, as the Console requires.
+Screenshots are captioned 24-bit PNG without an alpha channel, as the Console requires. Raw device captures
+are kept in `store/screenshots/raw/`; re-caption with the ImageMagick recipe in `store/README.md`.
 
 ## App content declarations (Policy > App content)
 
@@ -80,7 +81,7 @@ Screenshots are 24-bit PNG without an alpha channel, as the Console requires.
    needs a D-U-N-S number.
 2. **Create app**: name Quick Launch, English (US), App, Free. Accept the declarations.
 3. **Set up your app** (dashboard tasks): fill the App content section using the answers above,
-   then Store settings (Tools, contact email), then Main store listing (text and graphics from the
+   then Store settings (category, contact email), then Main store listing (text and graphics from the
    table).
 4. **Play App Signing**: on the first upload choose "Let Google manage and protect your app signing
    key" (Google-generated key). The key in `keystore/` then acts as the upload key; every future AAB
