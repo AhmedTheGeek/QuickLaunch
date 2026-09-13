@@ -52,7 +52,7 @@ Screenshots are rendered mockups (24-bit PNG, no alpha) built by `store/screensh
   - Is the app an accessibility tool (helps users with disabilities)? **No.** The manifest sets
     `isAccessibilityTool="false"`.
   - Purpose / core functionality (paste this):
-    > Quick Launch is a keyboard-first app launcher. The optional accessibility service exists only
+    > Quick Launch is a keyboard-first launcher overlay, not a home screen replacement. The optional accessibility service exists only
     > to detect the Ctrl+Space key combination on a physical keyboard so the launcher can be opened
     > from any app, the same way desktop launchers work. It requests only
     > flagRequestFilterKeyEvents, subscribes to no accessibility event types, cannot retrieve window
