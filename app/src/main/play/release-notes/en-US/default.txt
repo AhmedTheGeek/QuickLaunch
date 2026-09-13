@@ -1,4 +1,6 @@
-Pin your essentials.
-• Tap the pin on the highlighted row, or press Ctrl+D, and that app sits in a Pinned section at the top in a fixed order, every time.
-• Ctrl+1 to Ctrl+9 launch a row directly.
-• Footer hints now show Enter, Ctrl+D and Esc.
+First release on Google Play.
+• Type a few letters, press Enter, the app opens. Prefixes, word starts and initials all match.
+• Instant overlay mode, full keyboard navigation, most-used apps listed before you type.
+• Pin your essentials with Ctrl+D or the pin button. Ctrl+1 to Ctrl+9 launch a row directly.
+• Drag a result to open it in split screen. Work profile apps included and badged.
+• No ads, no analytics, no network access. Everything stays on your device.

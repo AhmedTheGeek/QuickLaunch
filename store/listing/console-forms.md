@@ -15,7 +15,7 @@ repo can prepare is already done: signed AAB, listing text, graphics, privacy po
 | Contact email | me@ahmedgeek.com |
 | Privacy policy URL | https://ahmedthegeek.github.io/QuickLaunch/privacy-policy.html |
 | Package name | com.ahmedgeek.quicklaunch |
-| Upload artifact | `release/QuickLaunch-v0.1.1.aab` (versionCode 2, versionName 0.1.1), signed with `keystore/upload-keystore.jks` |
+| Upload artifact | `release/QuickLaunch-v1.0.0.aab` (versionCode 6, versionName 1.0.0), signed with `keystore/upload-keystore.jks` |
 | Upload key SHA-256 | 64:06:EA:2A:DC:0B:B3:F4:46:E4:56:24:58:A7:F1:0E:E1:03:CB:0C:38:88:34:FB:92:3B:5A:A2:EA:19:48:C6 |
 | Store listing text | `store/listing/title.txt`, `short_description.txt`, `full_description.txt` (26 / 77 / 1920 chars, limits 30 / 80 / 4000) |
 | Release notes | `app/src/main/play/release-notes/en-US/default.txt` |
