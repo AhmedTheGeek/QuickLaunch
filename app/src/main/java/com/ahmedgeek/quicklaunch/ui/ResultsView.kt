@@ -32,6 +32,8 @@ class ResultsView @JvmOverloads constructor(
     var onLinkClick: ((String) -> Unit)? = null
     /** Long-press: return true if a drag was started for this entry. */
     var onRowLongPress: ((AppEntry, android.view.View) -> Boolean)? = null
+    /** Tap on a row's pin button; the view is passed for haptic feedback. */
+    var onPinClick: ((AppEntry, android.view.View) -> Unit)? = null
 
     /** Rows that fit on screen; recomputed from window insets. */
     var maxVisible: Int = Ranker.MAX_RESULTS
@@ -50,6 +52,10 @@ class ResultsView @JvmOverloads constructor(
                 row.link?.let { url -> onLinkClick?.invoke(url) }
             }
             v.setOnLongClickListener { row.entry?.let { e -> onRowLongPress?.invoke(e, v) } ?: false }
+            // A long press that starts on the pin must not turn into a drag; the button swallows it.
+            row.pin.isLongClickable = true
+            row.pin.setOnLongClickListener { true }
+            row.pin.setOnClickListener { row.entry?.let { e -> onPinClick?.invoke(e, row.pin) } }
             row.hide()
             row
         }

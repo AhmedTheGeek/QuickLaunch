@@ -8,7 +8,7 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingStart="12dp"
-    android:paddingEnd="12dp">
+    android:paddingEnd="4dp">
 
     <ImageView
         android:id="@+id/icon"
@@ -52,4 +52,22 @@
         android:src="@drawable/ic_return"
         android:tint="@color/text_secondary"
         android:visibility="invisible" />
+
+    <!--
+      Pin toggle. Always laid out at 48dp so the touch target never moves or resizes; only its alpha
+      and glyph change (faint outline on idle rows, full outline on the selected row, filled when
+      pinned). Its own click target, so a tap here toggles instead of launching the row.
+    -->
+    <ImageView
+        android:id="@+id/pin"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="2dp"
+        android:background="@drawable/bg_dismiss"
+        android:clickable="true"
+        android:focusable="false"
+        android:contentDescription="@string/pin"
+        android:padding="12dp"
+        android:src="@drawable/ic_pin_outline"
+        android:tint="@color/text_secondary" />
 </LinearLayout>

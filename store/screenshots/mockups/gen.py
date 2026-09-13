@@ -168,22 +168,22 @@ def ph_home(rows, footer=False):
     top = card_bottom(rows, footer) + 26
     return home(360, 760, 5, PHONE_APPS[:5], PHONE_DOCK, grid_top=top, widget_top=top + 112)
 
-SCENES["phone/01_type.png"] = (1080, 2400, GP, headline(90, 170, 900, "Type two letters.<br>Press Enter.", "The app opens. Nothing to tap.", 96, 40),
+SCENES["phone/01_type.png"] = (1080, 2400, GP, headline(90, 170, 900, "Any app.<br>Two letters away.", "Stop digging through folders and pages.", 96, 40),
     device(**PH, screen_html=ph_home(3) + card("ca", ["Calendar", "Camera", "Calculator"]) + keyboard("ca", "calendar", "can")))
-SCENES["phone/02_keys.png"] = (1080, 2400, GP, headline(90, 170, 900, "Hands stay<br>on the keys.", "Arrows move. Enter opens. Esc closes.", 96, 40),
+SCENES["phone/02_keys.png"] = (1080, 2400, GP, headline(90, 170, 900, "Never leave<br>the keyboard.", "For people who type faster than they tap.", 96, 40),
     device(**PH, screen_html=ph_home(3, True) + card("te", ["Telegram", "Teams", "Termux"], footer=True, selected=1)))
-SCENES["phone/03_most_used.png"] = (1080, 2400, GP, headline(90, 170, 900, "Your most used,<br>before you type.", "Learns what you open. Works offline.", 96, 40),
+SCENES["phone/03_most_used.png"] = (1080, 2400, GP, headline(90, 170, 900, "Knows what<br>you'll open next.", "Your favourites, ready before you type.", 96, 40),
     device(**PH, screen_html=ph_home(6) + card("", ["WhatsApp", "Chrome", "Spotify", "Gmail", "Maps", "YouTube"]) + keyboard()))
 notes = ('<div class="notes"><h2>Standup notes</h2><div class="meta">Edited 9:52 · 3 people</div>' + "".join(f'<div class="ln {c}"></div>' for c in ["", "m", "s", "", "xs", "m", "", "s", "m", "xs", "", "m", "s"]) + '</div>'
          '<div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>')
-SCENES["phone/04_overlay.png"] = (1080, 2400, GP, headline(90, 170, 900, "Over whatever<br>you're doing.", "A small card. Gone the moment you launch.", 96, 40),
+SCENES["phone/04_overlay.png"] = (1080, 2400, GP, headline(90, 170, 900, "Summon it<br>anywhere.", "Mid-email, mid-game, mid-anything. Launch, then get right back.", 96, 40),
     device(**PH, screen_html=notes + STATUS + card("sp", ["Spotify"]) + keyboard("sp", "spotify", "speak")))
-SCENES["phone/05_initials.png"] = (1080, 2400, GP, headline(90, 170, 900, "Initials work too.", "Type “yt” for YouTube, “gm” for Gmail. Work apps are badged.", 96, 40),
+SCENES["phone/05_initials.png"] = (1080, 2400, GP, headline(90, 170, 900, "Speaks your<br>shorthand.", "yt, gm, wa. If you'd abbreviate it, it will find it.", 96, 40),
     device(**PH, screen_html=ph_home(2) + card("yt", ["YouTube", "YouTube Music"], badges={"YouTube Music": "Work"}) + keyboard("yt", "youtube", "ytm")))
 
 T7 = dict(left=156, top=560, width=1500, height=1900, radius=72, dp_width=560, dp_height=740)
 SCENES["tablet7/01_fold.png"] = (1812, 2176, [(-300, 200, 1200, 1200, "#FFB020", 0.16), (1000, 1300, 1200, 1200, "#4C7DFF", 0.16)],
-    headline(156, 150, 1500, "Made for foldables<br>and tablets.", "The card stays centred and readable on any screen. Physical keyboards get key hints.", 110, 44),
+    headline(156, 150, 1500, "At home on<br>the big screen.", "Foldables, tablets, DeX. Same speed, more room.", 110, 44),
     device(**T7, screen_html=home(560, 740, 6, TAB_APPS[:6], TAB_DOCK, tablet=True, grid_top=card_bottom(3, True)+30, widget_top=card_bottom(3, True)+150) + card("ma", ["Maps", "Messages", "Meet"], footer=True)))
 
 T10L = dict(left=1040, top=190, width=1700, height=1200, radius=64, dp_width=720, dp_height=540)
@@ -192,12 +192,12 @@ keycaps = ('<div style="position:absolute;left:150px;top:720px;display:flex;alig
            '<span style="font-size:56px;color:#9A9AA3;font-weight:500">+</span>'
            '<span style="padding:26px 120px;border-radius:26px;background:linear-gradient(#3A3A42,#232328);box-shadow:0 10px 0 #15151A,0 22px 40px rgba(0,0,0,.6);font-weight:800;font-size:56px">Space</span></div>')
 SCENES["tablet10/01_landscape.png"] = (2560, 1600, [(-300, -200, 1300, 1300, "#FFB020", 0.16), (1700, 800, 1300, 1300, "#4C7DFF", 0.16)],
-    headline(150, 260, 820, "From any app.<br>One shortcut.", "Ctrl+Space opens Quick Launch anywhere a keyboard is attached.", 104, 42) + keycaps,
+    headline(150, 260, 820, "One shortcut.<br>Every app.", "Ctrl+Space from anywhere, the way it works on your laptop.", 104, 42) + keycaps,
     device(**T10L, screen_html=home(720, 540, 8, [], TAB_DOCK, tablet=True, grid_top=0, widget_top=card_bottom(1, True)+26) + card("sl", ["Slack"], footer=True)))
 
 T10P = dict(left=140, top=700, width=1320, height=2100, radius=72, dp_width=500, dp_height=800)
 SCENES["tablet10/02_portrait.png"] = (1600, 2560, [(-300, 300, 1200, 1200, "#FFB020", 0.16), (800, 1500, 1200, 1200, "#4C7DFF", 0.16)],
-    headline(140, 170, 1320, "Nothing to scroll.<br>Nothing to tap.", "Results update on every keystroke, ranked by how you actually use your apps.", 104, 42),
+    headline(140, 170, 1320, "Fast enough<br>to feel instant.", "Results land as you type. No loading, no spinner, ever.", 104, 42),
     device(**T10P, screen_html=home(500, 800, 6, TAB_APPS[:6], TAB_DOCK, tablet=True, grid_top=card_bottom(2, True)+30, widget_top=card_bottom(2, True)+150) + card("ph", ["Phone", "Photos"], footer=True)))
 
 for rel, (W, H, glows, head, dev) in SCENES.items():

@@ -9,9 +9,10 @@ import org.junit.Test
 class RankerTest {
     private val now = 1_700_000_000_000L
 
-    private fun app(label: String, work: Boolean = false, launches: Int = 0): AppEntry {
+    private fun app(label: String, work: Boolean = false, launches: Int = 0, pin: Int = -1): AppEntry {
         val e = AppEntry(if (work) 10 else 0, ComponentName("pkg.${label.lowercase().replace(' ', '.')}", "Main"), label, work, false)
         if (launches > 0) e.frecency = FrecencyEntry(launches.toFloat(), now)
+        e.pinOrder = pin
         return e
     }
 
@@ -113,5 +114,32 @@ class RankerTest {
     @Test fun personalBeforeWorkOnTie() {
         val r = rank("slack", app("Slack", work = true), app("Slack"))
         assertEquals(false, r.size != 2)
+    }
+
+    @Test fun pinnedLeadEmptyQueryInPinOrder() {
+        val r = rank("", app("Zed", pin = 1), app("Camera", launches = 50), app("Authenticator", pin = 0), app("Slack"))
+        assertEquals(listOf("Authenticator", "Zed", "Camera", "Slack"), r)
+    }
+
+    @Test fun pinBeatsHeavyUsageOnEmptyQuery() {
+        val heavy = app("Camera", launches = 5000).also { it.usage = 1f }
+        val r = rank("", heavy, app("Authenticator", pin = 0))
+        assertEquals("Authenticator", r.first())
+    }
+
+    @Test fun pinReordersWithinTierWhenTyping() {
+        val r = rank("mes", app("Messenger", pin = 0), app("Messages"))
+        assertEquals("Messenger", r.first())
+    }
+
+    @Test fun pinLosesToStrongFrecencyWithinTier() {
+        // A pin is a nudge, not a lock: an app you launch constantly still wins the tie.
+        val r = rank("mes", app("Messenger", pin = 0), app("Messages", launches = 30))
+        assertEquals("Messages", r.first())
+    }
+
+    @Test fun pinNeverCrossesTiers() {
+        val r = rank("mes", app("Messages"), app("Some Messy App", pin = 0, launches = 500))
+        assertEquals("Messages", r.first())
     }
 }

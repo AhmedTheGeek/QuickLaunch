@@ -23,6 +23,9 @@ class AppEntry(
     /** Device-wide usage score 0..1 from [UsageSource], 0 when unknown or not permitted. */
     @Volatile @JvmField var usage: Float = 0f
 
+    /** Position in the user's pinned order, or -1 when not pinned. Written only by PinStore.attach. */
+    @Volatile @JvmField var pinOrder: Int = -1
+
     /** Identity used to detect index changes: same component, same label, same paused state. */
     fun signature(): String = "$key|$label|$paused"
 

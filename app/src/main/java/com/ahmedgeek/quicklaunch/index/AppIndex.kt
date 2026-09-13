@@ -11,6 +11,7 @@ import android.util.AtomicFile
 import android.util.Log
 import com.ahmedgeek.quicklaunch.Bg
 import com.ahmedgeek.quicklaunch.search.FrecencyStore
+import com.ahmedgeek.quicklaunch.search.PinStore
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -30,6 +31,7 @@ class AppIndex(context: Context) {
 
     private val indexFile = AtomicFile(File(appContext.filesDir, "index.bin"))
     val frecency = FrecencyStore(File(appContext.filesDir, "frecency.bin"))
+    val pins = PinStore(File(appContext.filesDir, "pins.bin"))
 
     @Volatile
     var snapshot: List<AppEntry> = emptyList()
@@ -58,10 +60,12 @@ class AppIndex(context: Context) {
         Trace.beginSection("ql.loadCache")
         try {
             frecency.load()
+            pins.load()
             val cached = IndexStore.read(indexFile)
             if (Log.isLoggable(TAG, Log.DEBUG)) Log.d(TAG, "loadCache: ${cached?.size ?: "none"}")
             if (cached != null) {
                 frecency.attach(cached)
+                pins.attach(cached)
                 snapshot = cached
             }
         } finally {
@@ -106,6 +110,8 @@ class AppIndex(context: Context) {
             if (changed) {
                 frecency.attach(fresh)
                 frecency.prune(fresh)
+                pins.attach(fresh)
+                pins.prune(fresh)
                 snapshot = fresh
                 IndexStore.write(indexFile, fresh)
                 notifyChanged()
@@ -171,7 +177,11 @@ class AppIndex(context: Context) {
     }
 
     private fun notifyChanged() {
-        Bg.main.post { listener?.invoke() }
+        Bg.main.post {
+            // A pin toggled on main while the fresh list was being built is re-applied before it renders.
+            pins.attach(snapshot)
+            listener?.invoke()
+        }
     }
 
     // ---- Mutations from the UI ---------------------------------------------------------------
@@ -191,6 +201,9 @@ class AppIndex(context: Context) {
     }
 
     fun recordLaunch(entry: AppEntry) = frecency.recordLaunch(entry, System.currentTimeMillis())
+
+    /** Main: pin or unpin; the snapshot's pin positions are updated in place. Returns true when now pinned. */
+    fun togglePin(entry: AppEntry): Boolean = pins.toggle(entry, snapshot)
 
     // ---- Users -------------------------------------------------------------------------------
 

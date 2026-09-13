@@ -9,6 +9,7 @@ import android.os.Trace
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
@@ -97,6 +98,7 @@ class LauncherPanel(
         resultsView.onRowClick = { entry -> launch(entry) }
         resultsView.onLinkClick = { url -> openLink(url) }
         resultsView.onRowLongPress = { entry, row -> startDrag(entry, row) }
+        resultsView.onPinClick = { entry, button -> togglePin(entry, button) }
         windowRoot.setOnDragListener { _, event ->
             if (Log.isLoggable(QuickLaunchApp.TAG, Log.DEBUG)) {
                 Log.d(QuickLaunchApp.TAG, "drag event action=${event.action} result=${event.result} dragging=$dragging")
@@ -356,14 +358,24 @@ class LauncherPanel(
         rerank(keepSelection = true)
     }
 
-    private fun rerank(keepSelection: Boolean = false) {
+    /**
+     * @param keepSelection keep the selected index where it is (clamped)
+     * @param follow keep the selection on this entry wherever it lands, or row 0 if it fell off the list
+     */
+    private fun rerank(keepSelection: Boolean = false, follow: AppEntry? = null) {
         Trace.beginSection("ql.rank")
         val entries = index.awaitSnapshot()
         Ranker.rank(entries, query, System.currentTimeMillis(), results)
         Trace.endSection()
 
         val rows = rowCount()
-        selected = if (!keepSelection || rows == 0) 0 else selected.coerceIn(0, rows - 1)
+        val followed = if (follow != null) results.indexOf(follow) else -1
+        selected = when {
+            rows == 0 -> 0
+            followed >= 0 -> (followed + (if (visibleLink() != null) 1 else 0)).coerceAtMost(resultsView.maxVisible - 1)
+            keepSelection -> selected.coerceIn(0, rows - 1)
+            else -> 0
+        }
 
         Trace.beginSection("ql.bind")
         resultsView.bind(visibleLink(), results, selected, iconCallback)
@@ -379,6 +391,28 @@ class LauncherPanel(
         if (next == selected) return
         selected = next
         resultsView.setSelected(selected)
+    }
+
+    // ---- Pins ----------------------------------------------------------------------------------
+
+    /** The app entry at a combined-list row index, or null for the link row / out of range. */
+    private fun entryAt(row: Int): AppEntry? {
+        val offset = if (visibleLink() != null) 1 else 0
+        return results.getOrNull(row - offset)
+    }
+
+    /**
+     * Pin or unpin and re-rank so the row moves where it now belongs, keeping the selection on it.
+     * [feedback] is the tapped button for touch; null from the keyboard.
+     */
+    private fun togglePin(entry: AppEntry, feedback: View?) {
+        if (launched) return
+        val pinned = index.togglePin(entry)
+        feedback?.performHapticFeedback(
+            if (pinned) HapticFeedbackConstants.CONTEXT_CLICK else HapticFeedbackConstants.CLOCK_TICK,
+        )
+        if (Log.isLoggable(QuickLaunchApp.TAG, Log.DEBUG)) Log.d(QuickLaunchApp.TAG, "pin ${entry.key} -> $pinned")
+        rerank(follow = entry)
     }
 
     // ---- Keys ----------------------------------------------------------------------------------
@@ -413,6 +447,15 @@ class LauncherPanel(
             }
             KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_K -> if (event.isCtrlPressed) {
                 if (down) moveSelection(-1)
+                return true
+            }
+            KeyEvent.KEYCODE_D -> if (event.isCtrlPressed) {
+                if (down && event.repeatCount == 0) entryAt(selected)?.let { togglePin(it, null) }
+                return true
+            }
+            in KeyEvent.KEYCODE_1..KeyEvent.KEYCODE_9 -> if (event.isCtrlPressed) {
+                // Direct launch of row N. Pins keep the top rows stable, so this is a one-chord launch.
+                if (down && event.repeatCount == 0) launchRow(event.keyCode - KeyEvent.KEYCODE_1)
                 return true
             }
         }
@@ -455,14 +498,17 @@ class LauncherPanel(
 
     // ---- Launch --------------------------------------------------------------------------------
 
-    private fun launchSelected() {
+    private fun launchSelected() = launchRow(selected)
+
+    /** Launch whatever sits at a combined-list row index: the link row or an app. Ignores rows not on screen. */
+    private fun launchRow(row: Int) {
+        if (row < 0 || row >= minOf(rowCount(), resultsView.maxVisible)) return
         val url = visibleLink()
-        if (url != null && selected == 0) {
+        if (url != null && row == 0) {
             openLink(url)
             return
         }
-        val entry = results.getOrNull(if (url != null) selected - 1 else selected) ?: return
-        launch(entry)
+        launch(entryAt(row) ?: return)
     }
 
     private fun launch(entry: AppEntry) {

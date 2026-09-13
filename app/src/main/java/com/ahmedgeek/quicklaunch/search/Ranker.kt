@@ -17,6 +17,14 @@ object Ranker {
     private const val TIER_FUZZY = 1000
 
     /**
+     * Empty query: pinned apps lead in their pinned order, far above any popularity score.
+     * Typed query: a pin is worth this much within a tier, less than a well-used app's frecency boost
+     * ([Frecency.MAX_BOOST]) and never enough to cross into the next tier.
+     */
+    private const val PINNED_EMPTY_BASE = 1 shl 30
+    const val PIN_BOOST = 120
+
+    /**
      * @param query already normalized via [TextNormalizer.normalize]
      * @param out cleared and filled with at most [MAX_RESULTS] entries, best first
      */
@@ -68,14 +76,18 @@ object Ranker {
     }
 
     private fun emptyScore(e: AppEntry, now: Long): Int {
+        if (e.pinOrder >= 0) return PINNED_EMPTY_BASE - e.pinOrder
         // Scale so used apps sort first; alphabetical among the never-used.
         return (popularity(e, now) * 1000f).toInt()
     }
 
-    /** Returns [NO_MATCH] or a score where the tier dominates and within-tier terms never exceed 999. */
+    /**
+     * Returns [NO_MATCH] or a score where the tier dominates and within-tier terms never exceed 999
+     * ([Frecency.MAX_BOOST] + [PIN_BOOST] at most, before penalties).
+     */
     private fun score(e: AppEntry, q: String, now: Long): Int {
         val label = e.normLabel
-        val boost = Frecency.boost(popularity(e, now))
+        val boost = Frecency.boost(popularity(e, now)) + (if (e.pinOrder >= 0) PIN_BOOST else 0)
         val lengthPenalty = label.length.coerceAtMost(200)
 
         if (label == q) return TIER_EXACT + boost - lengthPenalty
