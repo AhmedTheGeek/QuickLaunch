@@ -35,7 +35,7 @@ body{font-family:Manrope,system-ui,sans-serif;color:#F5F5F7;position:relative}
   linear-gradient(#1C1D25,#0F0F14)}
 .home.blur{filter:blur(2.5px) brightness(.86) saturate(1)}
 .hs{position:absolute;inset:40px}
-.status{position:absolute;top:0;left:0;right:0;height:28px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font:500 14px/1 Roboto;color:#F2F2F7;z-index:2}
+.status{position:absolute;top:0;left:0;right:0;height:40px;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0;font:500 14px/1 Roboto;color:#F2F2F7;z-index:2}
 .status .ic{display:flex;gap:4px;align-items:center}
 .glance{position:absolute;left:24px;top:44px}
 .glance .d{font:500 22px/1.15 Roboto;letter-spacing:-.01em}
