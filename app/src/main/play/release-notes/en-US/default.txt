@@ -1,3 +1,3 @@
-First release.
-• Type a few letters, press Enter, the app opens.
-• Instant overlay mode (Display over other apps), keyboard navigation, most-used apps, drag to split screen.
+Open links from the clipboard.
+• Copied a URL? It shows up as the first row with the icon of the app that will open it. Press Enter or tap to open.
+• Clipboard is read only while the card is open and focused, once per copied item; sensitive clips are skipped.

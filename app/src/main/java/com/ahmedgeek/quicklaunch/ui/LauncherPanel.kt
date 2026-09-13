@@ -1,6 +1,9 @@
 package com.ahmedgeek.quicklaunch.ui
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.SystemClock
 import android.os.Trace
 import android.text.Editable
@@ -19,6 +22,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ahmedgeek.quicklaunch.QuickLaunchApp
 import com.ahmedgeek.quicklaunch.R
+import com.ahmedgeek.quicklaunch.clipboard.ClipboardLinkSource
 import com.ahmedgeek.quicklaunch.index.AppEntry
 import com.ahmedgeek.quicklaunch.launch.LaunchResult
 import com.ahmedgeek.quicklaunch.search.Ranker
@@ -51,6 +55,7 @@ class LauncherPanel(
     private val index = app.index
     private val icons = app.icons
     private val launcher = app.launcher
+    private val clipboard = app.clipboardLinks
     private val res = windowRoot.resources
 
     private val scrim: View = windowRoot.findViewById(R.id.root)
@@ -75,7 +80,11 @@ class LauncherPanel(
     private val prefs = app.getSharedPreferences("ql", android.content.Context.MODE_PRIVATE)
 
     private val results = ArrayList<AppEntry>(Ranker.MAX_RESULTS)
+    /** URL on the clipboard when the panel opened, offered as the first row while the query is empty. */
+    private var link: String? = null
+    private var linkChecked = false
     private var query = ""
+    /** Index over the combined list: the link row (when shown) is 0, app results follow. */
     private var selected = 0
     private var launched = false
     private var active = false
@@ -86,6 +95,7 @@ class LauncherPanel(
     init {
         resultsView.iconLoader = icons
         resultsView.onRowClick = { entry -> launch(entry) }
+        resultsView.onLinkClick = { url -> openLink(url) }
         resultsView.onRowLongPress = { entry, row -> startDrag(entry, row) }
         windowRoot.setOnDragListener { _, event ->
             if (Log.isLoggable(QuickLaunchApp.TAG, Log.DEBUG)) {
@@ -209,9 +219,13 @@ class LauncherPanel(
         active = true
         launched = false
         imeWasVisible = false
+        link = null
+        linkChecked = false
         index.listener = { onIndexChanged() }
         updateFooter()
         if (input.text.isNotEmpty()) input.setText("") else rerank()
+        // Succeeds only if the window already has focus (a re-show); otherwise onWindowFocusGained retries.
+        refreshLink()
         input.requestFocus()
         // After the first frame is committed: revalidate the index and warm the icon cache.
         windowRoot.post {
@@ -226,6 +240,51 @@ class LauncherPanel(
         dragging = false
         windowRoot.removeCallbacks(dragWatchdog)
         index.listener = null
+    }
+
+    /** Android 10+ releases the clipboard only to the focused window; hosts call this when focus arrives. */
+    fun onWindowFocusGained() {
+        if (!active || linkChecked) return
+        refreshLink()
+    }
+
+    // ---- Clipboard link -----------------------------------------------------------------------
+
+    /** Reads the clipboard once per show. A dropped drag or a refocus never re-reads. */
+    private fun refreshLink() {
+        val found = clipboard.currentLink()
+        if (found == null && !windowRoot.hasWindowFocus()) return // not yet allowed to read; try again on focus
+        linkChecked = true
+        if (found == link) return
+        link = found
+        if (Log.isLoggable(QuickLaunchApp.TAG, Log.DEBUG)) Log.d(QuickLaunchApp.TAG, "clipboard link=${found != null}")
+        selected = 0
+        resultsView.bind(visibleLink(), results, selected, iconCallback)
+    }
+
+    /** The link row only competes with the empty-query list; typing means the user wants an app. */
+    private fun visibleLink(): String? = if (query.isEmpty()) link else null
+
+    /** Rows the user can select: the link row plus app results. */
+    private fun rowCount(): Int = (if (visibleLink() != null) 1 else 0) + results.size
+
+    private fun openLink(url: String) {
+        if (launched) return
+        launched = true
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            .addCategory(Intent.CATEGORY_BROWSABLE)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        try {
+            app.startActivity(intent)
+            host.dismiss()
+        } catch (e: ActivityNotFoundException) {
+            launched = false
+            Toast.makeText(app, R.string.error_no_browser, Toast.LENGTH_SHORT).show()
+        } catch (e: RuntimeException) {
+            launched = false
+            Log.w(QuickLaunchApp.TAG, "open link failed", e)
+            Toast.makeText(app, R.string.error_no_browser, Toast.LENGTH_SHORT).show()
+        }
     }
 
     // ---- Insets --------------------------------------------------------------------------------
@@ -275,7 +334,7 @@ class LauncherPanel(
             val maxRows = (available / rowHeight).coerceIn(3, Ranker.MAX_RESULTS)
             if (resultsView.maxVisible != maxRows) {
                 resultsView.maxVisible = maxRows
-                resultsView.bind(results, selected, iconCallback)
+                resultsView.bind(visibleLink(), results, selected, iconCallback)
             }
             insets
         }
@@ -303,18 +362,20 @@ class LauncherPanel(
         Ranker.rank(entries, query, System.currentTimeMillis(), results)
         Trace.endSection()
 
-        selected = if (!keepSelection || results.isEmpty()) 0 else selected.coerceIn(0, results.size - 1)
+        val rows = rowCount()
+        selected = if (!keepSelection || rows == 0) 0 else selected.coerceIn(0, rows - 1)
 
         Trace.beginSection("ql.bind")
-        resultsView.bind(results, selected, iconCallback)
+        resultsView.bind(visibleLink(), results, selected, iconCallback)
         emptyView.visibility = if (results.isEmpty() && query.isNotEmpty()) View.VISIBLE else View.GONE
         updateUsageHint()
         Trace.endSection()
     }
 
     private fun moveSelection(delta: Int) {
-        if (results.isEmpty()) return
-        val next = (selected + delta).coerceIn(0, minOf(results.size, resultsView.maxVisible) - 1)
+        val rows = rowCount()
+        if (rows == 0) return
+        val next = (selected + delta).coerceIn(0, minOf(rows, resultsView.maxVisible) - 1)
         if (next == selected) return
         selected = next
         resultsView.setSelected(selected)
@@ -395,7 +456,12 @@ class LauncherPanel(
     // ---- Launch --------------------------------------------------------------------------------
 
     private fun launchSelected() {
-        val entry = results.getOrNull(selected) ?: return
+        val url = visibleLink()
+        if (url != null && selected == 0) {
+            openLink(url)
+            return
+        }
+        val entry = results.getOrNull(if (url != null) selected - 1 else selected) ?: return
         launch(entry)
     }
 

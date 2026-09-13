@@ -12,6 +12,14 @@ How it works, why it is built the way it is, and how to build it. For the short 
   Settings → Apps → Special access → Usage access), the empty list is ordered by device-wide usage
   over the last 14 days, blended with your Quick Launch history. Your own launches win after a few
   uses; without the permission the list falls back to Quick Launch history, then alphabetical.
+- **Clipboard link.** If the clipboard holds a URL when the card opens, an "Open link" row sits
+  above the app results while the query is empty; Enter opens it with `ACTION_VIEW`. The row
+  carries the icon of the app that will handle the link (resolved off-main via the `<queries>`
+  entry for BROWSABLE http/https), or a link glyph when no default handler is set. Android 10+
+  releases the clipboard only to the focused window, so the read happens on window focus, and it is
+  done at most once per clip (keyed by the clip timestamp) to keep the Android 12+ "pasted from your
+  clipboard" toast to one per copy. Sensitive clips and clips the system has classified as URL-free
+  are skipped from the description alone, without reading the content.
 - Enter launches the top or arrow-selected result. Up/Down (also Tab, Ctrl+N/P, Ctrl+J/K) move
   the selection. Esc, Back, tapping outside, Home or Recents close it.
 - **Long-press a result and drag it** to open it in split screen next to the app you came from.
@@ -101,10 +109,11 @@ EntryActivity         launcher entry, never draws: shows the overlay or the fall
 LaunchActivity        fallback host for the panel (activity window)
 overlay/              OverlayController (TYPE_APPLICATION_OVERLAY window), OverlayRootView
 ui/LauncherPanel      the search UI shared by both hosts: input, ranking, keys, launch
-ui/ResultsView        8 pre-inflated rows, no adapter, no animations
+ui/ResultsView        8 pre-inflated rows plus one link slot, no adapter, no animations
 ui/IconLoader         icons rasterized off-main, memory + disk cache
 index/                AppIndex (enumerate, revalidate, snapshot), IndexStore (binary cache)
 search/               TextNormalizer, Ranker (tiered scorer), FrecencyStore
+clipboard/            LinkDetector (pure URL check), ClipboardLinkSource (focus-gated read, per-clip cache)
 launch/AppLauncher    LauncherApps.startMainActivity, handles work profiles
 ```
 

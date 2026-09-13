@@ -80,6 +80,7 @@ class LaunchActivity : Activity(), LauncherPanel.Host {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) panel.onWindowFocusGained()
         if (hasFocus && !imeShownOnce) {
             imeShownOnce = true
             if (!KeyboardUtil.hasHardwareKeyboard(resources.configuration)) {

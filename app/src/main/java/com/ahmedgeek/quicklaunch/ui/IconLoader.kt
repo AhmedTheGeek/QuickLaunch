@@ -1,11 +1,13 @@
 package com.ahmedgeek.quicklaunch.ui
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.Log
 import android.util.LruCache
 import com.ahmedgeek.quicklaunch.Bg
@@ -41,6 +43,25 @@ class IconLoader(context: Context, private val index: AppIndex) {
         if (memory.get(key) != null || !inFlight.add(key)) return
         Bg.icons.execute {
             val bitmap = loadFromDisk(entry) ?: render(entry)
+            Bg.main.post {
+                inFlight.remove(key)
+                if (bitmap != null) {
+                    memory.put(key, bitmap)
+                    callback(key, bitmap)
+                }
+            }
+        }
+    }
+
+    /**
+     * Icon of the app that will open [url] (the default browser for most links), under [key], which
+     * is also the link row's tag. Resolution is a binder call, so it runs off the main thread too.
+     * No callback when there is no single default handler; the row keeps its link glyph then.
+     */
+    fun requestLinkIcon(url: String, key: String, callback: (String, Bitmap) -> Unit) {
+        if (memory.get(key) != null || !inFlight.add(key)) return
+        Bg.icons.execute {
+            val bitmap = renderLinkHandler(url)
             Bg.main.post {
                 inFlight.remove(key)
                 if (bitmap != null) {
@@ -98,11 +119,30 @@ class IconLoader(context: Context, private val index: AppIndex) {
             Log.w(TAG, "icon load failed for ${entry.key}", e)
             return null
         }
+        val bitmap = rasterize(drawable)
+        writeToDisk(entry, bitmap)
+        return bitmap
+    }
+
+    private fun renderLinkHandler(url: String): Bitmap? {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).addCategory(Intent.CATEGORY_BROWSABLE)
+        return try {
+            val resolved = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) ?: return null
+            val pkg = resolved.activityInfo?.packageName ?: return null
+            // "android" is the system chooser: several browsers, none chosen as default.
+            if (pkg == "android") return null
+            rasterize(pm.getApplicationIcon(pkg))
+        } catch (e: RuntimeException) {
+            Log.w(TAG, "link handler icon failed", e)
+            null
+        }
+    }
+
+    private fun rasterize(drawable: Drawable): Bitmap {
         val bitmap = Bitmap.createBitmap(iconPx, iconPx, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         drawable.setBounds(0, 0, iconPx, iconPx)
         drawable.draw(canvas)
-        writeToDisk(entry, bitmap)
         return bitmap
     }
 

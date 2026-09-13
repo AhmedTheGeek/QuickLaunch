@@ -98,6 +98,7 @@ class OverlayController(private val app: QuickLaunchApp) {
         // pending transition ends, so the timeout has to be generous and counted from our first frame.
         var decided = false
         newRoot.onFocusGained = {
+            newPanel.onWindowFocusGained() // clipboard becomes readable only now
             if (!decided) {
                 decided = true
                 onOutcome(true)

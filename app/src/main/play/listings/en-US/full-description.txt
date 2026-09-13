@@ -7,6 +7,7 @@ HOW IT WORKS
 • Enter launches the top result. Up and Down (or Tab, Ctrl+N, Ctrl+P) move the selection. Esc, Back, Home or a tap outside closes it.
 • Your own launches are remembered, so the apps you open most rise to the top. With Usage access granted, your most used apps are listed before you even type.
 • Long-press a result and drag it to open it in split screen next to the current app.
+• Copied a link? It appears as the first row with your browser's icon. Press Enter to open it.
 • Work profile apps are included and badged.
 
 BUILT FOR SPEED
