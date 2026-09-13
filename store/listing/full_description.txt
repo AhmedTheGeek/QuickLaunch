@@ -1,29 +1,29 @@
-Quick Launch is a keyboard-first launcher overlay. Summon it, type two or three letters, press Enter. The app opens. Nothing to tap.
+Quick Launch is the fastest way to open an app on Android. Type two or three letters, press Enter, and you're there. No home screen pages, no folders, no scrolling through the app drawer.
 
-It is not a home screen replacement. It is a small search card that appears over whatever you are doing and disappears the moment you launch something.
+It's a launcher overlay, not a home screen replacement. Keep the launcher you have. Quick Launch is a small search card that appears over whatever you're doing and disappears the moment you launch something.
 
-HOW IT WORKS
-• Results update on every keystroke, ranked so exact and prefix matches come first, then word starts, then initials (type "mbs" for Meta Business Suite, "yt" for YouTube).
-• Enter launches the top result. Up and Down (or Tab, Ctrl+N, Ctrl+P) move the selection. Esc, Back, Home or a tap outside closes it.
-• Your own launches are remembered, so the apps you open most rise to the top. With Usage access granted, your most used apps are listed before you even type.
-• Pin the apps you always want at hand. Tap the pin on a row (or press Ctrl+D) and it leads the list in a fixed order, so the same key presses always reach it. Ctrl+1 to Ctrl+9 launch a row directly.
-• Long-press a result and drag it to open it in split screen next to the current app.
-• Copied a link? It appears as the first row with your browser's icon. Press Enter to open it.
+WHY PEOPLE SWITCH
+• Any app is two letters away. Results update on every keystroke, ranked so the app you mean comes first.
+• It speaks your shorthand. Prefixes, word starts and initials all match: "yt" opens YouTube, "gm" opens Gmail.
+• It knows what you'll open next. The apps you use most rise to the top, and with Usage access they're listed before you type at all.
+• Never leave the keyboard. Enter opens, Up and Down move, Esc closes. Tab, Ctrl+N and Ctrl+P work too.
+• Summon it anywhere. Instant mode draws the card within a frame of the trigger, over any app.
+• Drag to split screen. Long-press a result and drop it beside the app you're in.
 • Work profile apps are included and badged.
 
-BUILT FOR SPEED
-• Appears within a frame of the trigger when Display over other apps is granted (instant mode).
-• Search runs in under a millisecond per keystroke. No lists to scroll, no spinners.
-• Tiny app, no background service, no network access, no analytics, no ads.
+FAST IS THE FEATURE
+• Search runs in under a millisecond per keystroke. No spinners, ever.
+• Tiny download, no background service, no network access.
+• No ads, no analytics, no accounts.
 
-WORKS GREAT WITH
-• Physical keyboards, DeX, foldables and tablets: the card is centered and sized for large screens.
-• Samsung Good Lock One Hand Operation+, the side key, or any keyboard shortcut that can open an app.
+MADE FOR PEOPLE WHO TYPE
+• Physical keyboards, Samsung DeX, foldables and tablets: the card is centred and sized for large screens.
+• Ctrl+Space opens Quick Launch from any app when a keyboard is attached.
+• Or bind it to the side key, a gesture, or Good Lock One Hand Operation+.
 
-PERMISSIONS
-• Display over other apps (optional): lets the card appear instantly instead of with the standard app-open animation.
-• Usage access (optional): lets the empty list show your most used apps. Usage data never leaves the device.
+PERMISSIONS, PLAINLY
+• Display over other apps (optional): instant mode.
+• Usage access (optional): "most used" ordering. Read on your device, never sent anywhere.
+• Accessibility service (optional): only to hear Ctrl+Space. It reads no screen content.
 
-Quick Launch stores everything locally and sends nothing anywhere.
-
-Free and open source (GPL-3.0): github.com/AhmedTheGeek/QuickLaunch
+Everything stays on your device. Free and open source (GPL-3.0): github.com/AhmedTheGeek/QuickLaunch

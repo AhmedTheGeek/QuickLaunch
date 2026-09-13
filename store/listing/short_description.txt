@@ -1,1 +1,1 @@
-Type a few letters, press Enter, the app opens. Keyboard-first launcher overlay.
+Search and open any app in two keystrokes. A keyboard-first launcher overlay.

@@ -60,9 +60,8 @@ class ResultsView @JvmOverloads constructor(
                 row.link?.let { url -> onLinkClick?.invoke(url) }
             }
             v.setOnLongClickListener { row.entry?.let { e -> onRowLongPress?.invoke(e, v) } ?: false }
-            // A long press that starts on the pin must not turn into a drag; the button swallows it.
-            row.pin.isLongClickable = true
-            row.pin.setOnLongClickListener { true }
+            // While clickable, the pin owns its touches, so a long press on it never starts a drag.
+            // It must not be long-clickable on its own: that would make the hidden pin eat taps too.
             row.pin.setOnClickListener { row.entry?.let { e -> onPinClick?.invoke(e, row.pin) } }
             row.hide()
             row
@@ -84,6 +83,8 @@ class ResultsView @JvmOverloads constructor(
     fun bind(link: String?, results: List<AppEntry>, pinned: Int, selected: Int, onIcon: (String, Bitmap) -> Unit) {
         val loader = iconLoader
         val offset = if (link != null) 1 else 0
+        // Rows are reused by position: clear the old highlight before it lands on a different app.
+        if (selectedIndex in rows.indices) rows[selectedIndex].setSelected(false)
         if (link != null) {
             val key = ResultRow.linkKey(link)
             val cached = loader?.peek(key)
