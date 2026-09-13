@@ -28,12 +28,13 @@ body{font-family:Manrope,system-ui,sans-serif;color:#F5F5F7;position:relative}
 .screen{position:absolute;inset:0;overflow:hidden;background:#101014}
 .ms{font-family:'Material Symbols Rounded';font-weight:400;line-height:1;display:inline-block;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
 /* ---- home screen (Pixel-style launcher) ---- */
-.home{position:absolute;inset:-40px;padding:40px;font-family:Roboto,sans-serif;color:#F2F2F7;background:
+.home{position:absolute;inset:-40px;font-family:Roboto,sans-serif;color:#F2F2F7;background:
   radial-gradient(55% 45% at 18% 12%,#4A5F92 0,transparent 62%),
   radial-gradient(50% 45% at 88% 72%,#5B4586 0,transparent 62%),
   radial-gradient(45% 40% at 60% 35%,#2C5068 0,transparent 60%),
   linear-gradient(#1C1D25,#0F0F14)}
-.home.blur{filter:blur(3px) brightness(.9) saturate(1)}
+.home.blur{filter:blur(2.5px) brightness(.86) saturate(1)}
+.hs{position:absolute;inset:40px}
 .status{position:absolute;top:0;left:0;right:0;height:28px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font:500 14px/1 Roboto;color:#F2F2F7;z-index:2}
 .status .ic{display:flex;gap:4px;align-items:center}
 .glance{position:absolute;left:24px;top:44px}
@@ -59,7 +60,7 @@ body{font-family:Manrope,system-ui,sans-serif;color:#F5F5F7;position:relative}
 .card{position:absolute;left:16px;right:16px;top:48px;margin:0 auto;max-width:560px;background:rgba(28,28,30,.95);border:1px solid rgba(255,255,255,.10);border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.35);overflow:hidden;font-family:Roboto,sans-serif;z-index:5}
 .input{height:64px;display:flex;align-items:center;padding:0 20px;gap:14px;font-size:20px;color:#F2F2F7}
 .input .ms{font-size:22px;color:#8E8E93}.input .hint{color:#636366}
-.caret{display:inline-block;width:2px;height:24px;background:#F2F2F7;margin-left:1px;vertical-align:-4px}
+.caret{display:inline-block;width:2px;height:24px;background:#F2F2F7;margin-left:2px;vertical-align:-4px}
 .divider{height:1px;background:rgba(255,255,255,.08)}
 .body{padding:6px 8px}
 .row{height:56px;display:flex;align-items:center;padding:0 12px;gap:16px;border-radius:10px;color:#F2F2F7;font-size:16px}
@@ -113,7 +114,7 @@ def home(w, h, cols, apps, dock, blur=True, tablet=False, grid_top=100, widget_t
     pill = (f'<div class="pill" style="top:{h-84}px;{"left:"+str(int(w*0.2))+"px;right:"+str(int(w*0.2))+"px" if tablet else ""}"><span class="g">G</span><span class="sp"></span>'
             '<span class="ms">mic</span><span class="ms">photo_camera</span></div>')
     nav = f'<div class="nav" style="top:{h-26}px"><i></i></div>'
-    return f'<div class="home{" blur" if blur else ""}">{glance}{wid}{grid}{dk}{pill}{nav}</div>' + STATUS
+    return f'<div class="home{" blur" if blur else ""}"><div class="hs">{glance}{wid}{grid}{dk}{pill}{nav}</div></div>' + STATUS
 
 def row(name, sel=False, badge=None):
     b = f'<span class="badge">{badge}</span>' if badge else ""
@@ -122,7 +123,7 @@ def row(name, sel=False, badge=None):
 
 def card(query, rows, footer=False, selected=0, badges=None):
     badges = badges or {}
-    q = f'<span>{query}</span><span class="caret"></span>' if query else '<span class="hint">Search apps</span>'
+    q = f'<span>{query}<span class="caret"></span></span>' if query else '<span class="hint">Search apps</span>'
     body = "".join(row(n, i == selected, badges.get(n)) for i, n in enumerate(rows))
     foot = ""
     if footer:
@@ -151,6 +152,9 @@ def page(W, H, glows, head, dev):
     g = "".join(f'<div class="glow" style="left:{x}px;top:{y}px;width:{w}px;height:{h}px;background:{c};opacity:{o}"></div>' for x, y, w, h, c, o in glows)
     return HEAD % CSS + f'<div style="position:absolute;inset:0;width:{W}px;height:{H}px">{g}{head}{dev}</div></body></html>'
 
+def card_bottom(rows, footer=False):
+    return 48 + 64 + 1 + 12 + 56*rows + (43 if footer else 0)
+
 PHONE_APPS = ["Gmail","Maps","YouTube","Photos","Drive","WhatsApp","Instagram","Spotify","Netflix","Slack","Calendar","Keep","Clock","Files","Translate","Telegram","Reddit","X","Uber","Amazon"]
 PHONE_DOCK = ["Phone","Messages","Chrome","Camera","Gmail"]
 TAB_APPS = ["Gmail","Maps","YouTube","Photos","Drive","Calendar","Keep","Files","WhatsApp","Instagram","Spotify","Netflix","Slack","Teams","Meet","Translate","Telegram","Reddit","X","Uber","Amazon","Clock","Weather","Termux"]
@@ -159,39 +163,42 @@ TAB_DOCK = ["Phone","Messages","Chrome","Camera","Gmail","Calendar"]
 SCENES = {}
 PH = dict(left=90, top=640, width=900, height=2000, radius=96, dp_width=360, dp_height=760)
 GP = [(-200, 300, 900, 900, "#FFB020", 0.2), (500, 1500, 900, 900, "#4C7DFF", 0.2)]
-ph_home = home(360, 760, 5, PHONE_APPS[:15], PHONE_DOCK, grid_top=100, widget_top=470)
+
+def ph_home(rows, footer=False):
+    top = card_bottom(rows, footer) + 26
+    return home(360, 760, 5, PHONE_APPS[:5], PHONE_DOCK, grid_top=top, widget_top=top + 112)
 
 SCENES["phone/01_type.png"] = (1080, 2400, GP, headline(90, 170, 900, "Type two letters.<br>Press Enter.", "The app opens. Nothing to tap.", 96, 40),
-    device(**PH, screen_html=ph_home + card("ca", ["Calendar", "Camera", "Calculator"]) + keyboard("ca", "calendar", "can")))
+    device(**PH, screen_html=ph_home(3) + card("ca", ["Calendar", "Camera", "Calculator"]) + keyboard("ca", "calendar", "can")))
 SCENES["phone/02_keys.png"] = (1080, 2400, GP, headline(90, 170, 900, "Hands stay<br>on the keys.", "Arrows move. Enter opens. Esc closes.", 96, 40),
-    device(**PH, screen_html=ph_home + card("te", ["Telegram", "Teams", "Termux"], footer=True, selected=1)))
+    device(**PH, screen_html=ph_home(3, True) + card("te", ["Telegram", "Teams", "Termux"], footer=True, selected=1)))
 SCENES["phone/03_most_used.png"] = (1080, 2400, GP, headline(90, 170, 900, "Your most used,<br>before you type.", "Learns what you open. Works offline.", 96, 40),
-    device(**PH, screen_html=ph_home + card("", ["WhatsApp", "Chrome", "Spotify", "Gmail", "Maps", "YouTube"]) + keyboard()))
+    device(**PH, screen_html=ph_home(6) + card("", ["WhatsApp", "Chrome", "Spotify", "Gmail", "Maps", "YouTube"]) + keyboard()))
 notes = ('<div class="notes"><h2>Standup notes</h2><div class="meta">Edited 9:52 · 3 people</div>' + "".join(f'<div class="ln {c}"></div>' for c in ["", "m", "s", "", "xs", "m", "", "s", "m", "xs", "", "m", "s"]) + '</div>'
          '<div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>')
 SCENES["phone/04_overlay.png"] = (1080, 2400, GP, headline(90, 170, 900, "Over whatever<br>you're doing.", "A small card. Gone the moment you launch.", 96, 40),
     device(**PH, screen_html=notes + STATUS + card("sp", ["Spotify"]) + keyboard("sp", "spotify", "speak")))
 SCENES["phone/05_initials.png"] = (1080, 2400, GP, headline(90, 170, 900, "Initials work too.", "Type “yt” for YouTube, “gm” for Gmail. Work apps are badged.", 96, 40),
-    device(**PH, screen_html=ph_home + card("yt", ["YouTube", "YouTube Music"], badges={"YouTube Music": "Work"}) + keyboard("yt", "youtube", "ytm")))
+    device(**PH, screen_html=ph_home(2) + card("yt", ["YouTube", "YouTube Music"], badges={"YouTube Music": "Work"}) + keyboard("yt", "youtube", "ytm")))
 
 T7 = dict(left=156, top=560, width=1500, height=1900, radius=72, dp_width=560, dp_height=740)
 SCENES["tablet7/01_fold.png"] = (1812, 2176, [(-300, 200, 1200, 1200, "#FFB020", 0.16), (1000, 1300, 1200, 1200, "#4C7DFF", 0.16)],
     headline(156, 150, 1500, "Made for foldables<br>and tablets.", "The card stays centred and readable on any screen. Physical keyboards get key hints.", 110, 44),
-    device(**T7, screen_html=home(560, 740, 6, TAB_APPS[:18], TAB_DOCK, tablet=True, grid_top=100, widget_top=400) + card("ma", ["Maps", "Messages", "Meet"], footer=True)))
+    device(**T7, screen_html=home(560, 740, 6, TAB_APPS[:6], TAB_DOCK, tablet=True, grid_top=card_bottom(3, True)+30, widget_top=card_bottom(3, True)+150) + card("ma", ["Maps", "Messages", "Meet"], footer=True)))
 
-T10L = dict(left=1040, top=190, width=1700, height=1200, radius=64, dp_width=720, dp_height=500)
+T10L = dict(left=1040, top=190, width=1700, height=1200, radius=64, dp_width=720, dp_height=540)
 keycaps = ('<div style="position:absolute;left:150px;top:720px;display:flex;align-items:center;gap:26px;font-family:Manrope">'
            '<span style="padding:26px 44px;border-radius:26px;background:linear-gradient(#3A3A42,#232328);box-shadow:0 10px 0 #15151A,0 22px 40px rgba(0,0,0,.6);font-weight:800;font-size:56px">Ctrl</span>'
            '<span style="font-size:56px;color:#9A9AA3;font-weight:500">+</span>'
            '<span style="padding:26px 120px;border-radius:26px;background:linear-gradient(#3A3A42,#232328);box-shadow:0 10px 0 #15151A,0 22px 40px rgba(0,0,0,.6);font-weight:800;font-size:56px">Space</span></div>')
 SCENES["tablet10/01_landscape.png"] = (2560, 1600, [(-300, -200, 1300, 1300, "#FFB020", 0.16), (1700, 800, 1300, 1300, "#4C7DFF", 0.16)],
     headline(150, 260, 820, "From any app.<br>One shortcut.", "Ctrl+Space opens Quick Launch anywhere a keyboard is attached.", 104, 42) + keycaps,
-    device(**T10L, screen_html=home(720, 500, 8, TAB_APPS[:8], TAB_DOCK, tablet=True, grid_top=96, widget_top=205) + card("sl", ["Slack"], footer=True)))
+    device(**T10L, screen_html=home(720, 540, 8, [], TAB_DOCK, tablet=True, grid_top=0, widget_top=card_bottom(1, True)+26) + card("sl", ["Slack"], footer=True)))
 
 T10P = dict(left=140, top=700, width=1320, height=2100, radius=72, dp_width=500, dp_height=800)
 SCENES["tablet10/02_portrait.png"] = (1600, 2560, [(-300, 300, 1200, 1200, "#FFB020", 0.16), (800, 1500, 1200, 1200, "#4C7DFF", 0.16)],
     headline(140, 170, 1320, "Nothing to scroll.<br>Nothing to tap.", "Results update on every keystroke, ranked by how you actually use your apps.", 104, 42),
-    device(**T10P, screen_html=home(500, 800, 6, TAB_APPS[:18], TAB_DOCK, tablet=True, grid_top=100, widget_top=400) + card("ph", ["Phone", "Photos"], footer=True)))
+    device(**T10P, screen_html=home(500, 800, 6, TAB_APPS[:6], TAB_DOCK, tablet=True, grid_top=card_bottom(2, True)+30, widget_top=card_bottom(2, True)+150) + card("ph", ["Phone", "Photos"], footer=True)))
 
 for rel, (W, H, glows, head, dev) in SCENES.items():
     fn = os.path.join(OUT, rel.replace("/", "__").replace(".png", ".html"))
