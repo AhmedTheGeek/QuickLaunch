@@ -57,9 +57,10 @@ it steps aside and the activity host opens instead.
 
 ## Ctrl+Space from any app (physical keyboards)
 
-Enable **Quick Launch keyboard shortcut** under Settings → Accessibility → Installed apps (the card
-offers a ⌨ row that takes you there). Ctrl+Space then opens Quick Launch from anywhere, and a second
-Ctrl+Space closes it.
+Enable **Quick Launch keyboard shortcut** under Settings → Accessibility → Installed apps. The card
+offers a ⌨ row that first shows a disclosure of what the service does and does not see (Play's
+prominent-disclosure rule for the AccessibilityService API); *Continue* takes you to Settings.
+Ctrl+Space then opens Quick Launch from anywhere, and a second Ctrl+Space closes it.
 
 **If the switch is greyed out with "Restricted setting":** Android 13+ blocks accessibility services
 for apps installed outside an app store until you allow it once. Open Settings → Apps → Quick Launch →

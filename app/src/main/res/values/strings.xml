@@ -37,4 +37,12 @@
     <string name="setup_shortcut_subtitle">Tap to enable the keyboard shortcut</string>
     <string name="setup_usage_title">Rank by most used</string>
     <string name="setup_usage_subtitle">Tap to allow usage access</string>
+
+    <!-- Prominent disclosure for the AccessibilityService API, shown before the Settings hand-off. -->
+    <string name="disclosure_title">Open with Ctrl+Space from any app</string>
+    <string name="disclosure_why">Quick Launch uses Android’s Accessibility Service API for one purpose: to notice when you press Ctrl+Space on a physical keyboard while you are in another app, so it can open the search card. Android offers no other way for an app to see a keyboard shortcut before the system handles it.</string>
+    <string name="disclosure_data">The service receives only that key combination. It does not read screen content, see what you type, observe your activity in other apps, or receive any other accessibility events. No personal or sensitive data is collected, stored, or shared. This feature is optional and can be turned off at any time in Settings › Accessibility.</string>
+    <string name="disclosure_next">Continue to enable “Quick Launch keyboard shortcut” under Settings › Accessibility › Installed apps.</string>
+    <string name="disclosure_decline">Not now</string>
+    <string name="disclosure_accept">Continue</string>
 </resources>

@@ -153,15 +153,15 @@ class LauncherPanel(
             prefs.edit().putBoolean(PREF_SHORTCUT_HINT_DISMISSED, true).apply()
             updateUsageHint()
         }
+        // Play policy: the accessibility disclosure is shown in-app and consented to before the Settings hand-off.
         shortcutHint.onClick = {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                // Sideloaded apps hit Android's "Restricted setting" block on the accessibility toggle.
-                Toast.makeText(app, R.string.shortcut_restricted_tip, Toast.LENGTH_LONG).show()
-            }
             try {
-                app.startActivity(com.ahmedgeek.quicklaunch.shortcut.KeyboardShortcutService.settingsIntent())
+                app.startActivity(
+                    android.content.Intent(app, com.ahmedgeek.quicklaunch.shortcut.ShortcutDisclosureActivity::class.java)
+                        .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+                )
             } catch (e: RuntimeException) {
-                Log.w(QuickLaunchApp.TAG, "accessibility settings unavailable", e)
+                Log.w(QuickLaunchApp.TAG, "disclosure activity start failed", e)
             }
             host.dismiss()
         }

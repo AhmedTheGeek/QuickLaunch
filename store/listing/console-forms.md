@@ -15,7 +15,7 @@ repo can prepare is already done: signed AAB, listing text, graphics, privacy po
 | Contact email | me@ahmedgeek.com |
 | Privacy policy URL | https://ahmedthegeek.github.io/QuickLaunch/privacy-policy.html |
 | Package name | com.ahmedgeek.quicklaunch |
-| Upload artifact | `release/QuickLaunch-v1.0.0.aab` (versionCode 6, versionName 1.0.0), signed with `keystore/upload-keystore.jks` |
+| Upload artifact | `release/QuickLaunch-v1.0.0-vc7.aab` (versionCode 7, versionName 1.0.0), signed with `keystore/upload-keystore.jks` |
 | Upload key SHA-256 | 64:06:EA:2A:DC:0B:B3:F4:46:E4:56:24:58:A7:F1:0E:E1:03:CB:0C:38:88:34:FB:92:3B:5A:A2:EA:19:48:C6 |
 | Store listing text | `store/listing/title.txt`, `short_description.txt`, `full_description.txt` (26 / 77 / 1920 chars, limits 30 / 80 / 4000) |
 | Release notes | `app/src/main/play/release-notes/en-US/default.txt` |
@@ -57,10 +57,21 @@ Screenshots are rendered mockups (24-bit PNG, no alpha) built by `store/screensh
     > from any app, the same way desktop launchers work. It requests only
     > flagRequestFilterKeyEvents, subscribes to no accessibility event types, cannot retrieve window
     > content (canRetrieveWindowContent=false), and stores nothing. The user enables it explicitly in
-    > Settings; the app's own row explains what it does before sending them there, and the service
-    > description shown by Android repeats it.
-  - Prominent disclosure and consent: shown in-app (the "Enable Ctrl+Space shortcut" row) and in the
-    system service description (`a11y_description` string). The privacy policy also covers it.
+    > Settings; before that, the app shows an in-app disclosure that explains the purpose and states
+    > that no screen content or personal data is read, stored or shared, and the user must tap
+    > Continue. The service description shown by Android repeats it.
+  - Prominent disclosure and consent: tapping the "Open with Ctrl+Space" setup row opens
+    `ShortcutDisclosureActivity` (strings `disclosure_*`), which explains why the AccessibilityService
+    API is used, what it receives (only the Ctrl+Space key event) and that nothing is collected or
+    shared; "Continue" is the affirmative consent, "Not now" declines. The system service description
+    (`a11y_description`) and the privacy policy repeat it.
+  - **Video** (the Console requires a link because `isAccessibilityTool="false"`): see
+    `store/review/README.md`. `record-disclosure.sh` records the app opening, the setup row, the
+    disclosure, the decline path, the disclosure again, Continue, Settings and the switch being turned
+    on; part 2 (Ctrl+Space opening the launcher from another app) is recorded by hand; `assemble.py`
+    trims, captions and joins them into `store/review/accessibility-disclosure.mp4` (gitignored).
+    Upload it unlisted to YouTube or to Google Drive with "anyone with the link" and paste the link
+    in the declaration.
   - If reviewers push back, the fallback is to remove the service and rely on the launcher-icon
     trigger only; the feature is optional and the rest of the app does not depend on it.
 

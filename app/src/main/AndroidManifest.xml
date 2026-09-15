@@ -66,6 +66,16 @@
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|smallestScreenSize|screenLayout|density|locale|layoutDirection"
             android:theme="@style/Theme.QuickLaunch" />
 
+        <!-- Prominent disclosure shown before the user is sent to enable the accessibility service. -->
+        <activity
+            android:name=".shortcut.ShortcutDisclosureActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.QuickLaunch" />
+
         <!-- Global Ctrl+Space. Key filtering only; subscribes to no accessibility events. -->
         <service
             android:name=".shortcut.KeyboardShortcutService"
