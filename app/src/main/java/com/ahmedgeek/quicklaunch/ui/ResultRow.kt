@@ -8,8 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.ahmedgeek.quicklaunch.R
-import com.ahmedgeek.quicklaunch.clipboard.LinkDetector
 import com.ahmedgeek.quicklaunch.index.AppEntry
+import com.ahmedgeek.quicklaunch.suggest.Suggestion
 
 /** View holder over row_result.xml. Binding does only setText/setImageBitmap; never decodes or draws. */
 class ResultRow(val view: View, private val placeholder: Drawable) {
@@ -24,17 +24,19 @@ class ResultRow(val view: View, private val placeholder: Drawable) {
 
     private val glyphPadding = (view.resources.displayMetrics.density * 9f + 0.5f).toInt()
     private val glyphTint = ColorStateList.valueOf(ContextCompat.getColor(view.context, R.color.text_secondary))
+    /** This row's own copy of the placeholder, as the glyph's tile; the shared one must never be tinted. */
+    private val tile: Drawable = placeholder.constantState?.newDrawable(view.resources)?.mutate() ?: placeholder
 
     var entry: AppEntry? = null
         private set
 
-    /** The clipboard URL this row opens, when it is the link row rather than an app. */
-    var link: String? = null
+    /** Set when this row shows a suggestion rather than an app. */
+    var suggestion: Suggestion? = null
         private set
 
     fun bind(e: AppEntry, bitmap: Bitmap?) {
         entry = e
-        link = null
+        suggestion = null
         view.tag = e.key
         setGlyphMode(false)
         label.text = e.label
@@ -66,33 +68,42 @@ class ResultRow(val view: View, private val placeholder: Drawable) {
     }
 
     fun setIcon(bitmap: Bitmap?) {
+        val s = suggestion
         when {
             bitmap != null -> {
                 setGlyphMode(false)
                 icon.setImageBitmap(bitmap)
             }
-            link != null -> {
+            s != null -> {
+                // Image first: the tint lands on whatever drawable is showing, never on the shared placeholder.
+                icon.setImageResource(s.glyph)
                 setGlyphMode(true)
-                icon.setImageResource(R.drawable.ic_link)
             }
-            else -> icon.setImageDrawable(placeholder)
+            else -> {
+                setGlyphMode(false)
+                icon.setImageDrawable(placeholder)
+            }
         }
         icon.alpha = if (entry?.paused == true) 0.45f else 1f
     }
 
     /**
-     * Clipboard link row: the handler app's icon when known (the default browser, usually), otherwise
-     * a tinted link glyph in a placeholder tile; the URL as label, "Open link" as badge.
+     * Suggestion row: the handler app's icon when known (the default browser for a link, usually),
+     * otherwise its tinted glyph in a placeholder tile.
      */
-    fun bindLink(url: String, bitmap: Bitmap?) {
+    fun bindSuggestion(s: Suggestion, bitmap: Bitmap?) {
         entry = null
-        link = url
-        view.tag = linkKey(url)
+        suggestion = s
+        view.tag = s.key
         setIcon(bitmap)
-        label.text = LinkDetector.display(url)
+        label.text = s.title
         label.alpha = 1f
-        badge.setText(R.string.link_open)
-        badge.visibility = View.VISIBLE
+        if (s.badge != null) {
+            badge.text = s.badge
+            badge.visibility = View.VISIBLE
+        } else {
+            badge.visibility = View.GONE
+        }
         applyPin()
         view.visibility = View.VISIBLE
     }
@@ -100,7 +111,7 @@ class ResultRow(val view: View, private val placeholder: Drawable) {
     /** App icons are full-bleed bitmaps; glyphs sit tinted inside the placeholder tile like the setup rows. */
     private fun setGlyphMode(glyph: Boolean) {
         if (glyph) {
-            icon.background = placeholder
+            icon.background = tile
             icon.imageTintList = glyphTint
             icon.setPadding(glyphPadding, glyphPadding, glyphPadding, glyphPadding)
         } else if (icon.background != null) {
@@ -112,7 +123,7 @@ class ResultRow(val view: View, private val placeholder: Drawable) {
 
     fun hide() {
         entry = null
-        link = null
+        suggestion = null
         view.tag = null
         view.visibility = View.GONE
         view.isSelected = false
@@ -126,10 +137,5 @@ class ResultRow(val view: View, private val placeholder: Drawable) {
         view.isSelected = selected
         enter.visibility = if (selected) View.VISIBLE else View.INVISIBLE
         applyPin()
-    }
-
-    companion object {
-        /** Row tag and icon-cache key for a link. App keys start with a user serial, so no collision. */
-        fun linkKey(url: String): String = "link|$url"
     }
 }
