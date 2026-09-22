@@ -8,6 +8,8 @@ How it works, why it is built the way it is, and how to build it. For the short 
 - Searches installed apps (personal and work profile) as you type. Ranking: exact > prefix >
   word prefix > initials (`mbs` → Meta Business Suite, `yt` → YouTube) > substring > fuzzy,
   with a boost for apps you launch often (7-day half-life).
+  A trailing space marks a complete word (`my ` finds My Tello, not MyDyson), and a query with a
+  space never matches fuzzily.
 - **Most used apps before you type.** With *Usage access* granted (tap the ★ row once, or
   Settings → Apps → Special access → Usage access), the empty list is ordered by device-wide usage
   over the last 14 days, blended with your Quick Launch history. Your own launches win after a few

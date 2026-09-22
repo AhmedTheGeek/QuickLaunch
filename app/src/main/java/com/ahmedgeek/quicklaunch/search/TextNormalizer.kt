@@ -27,6 +27,15 @@ object TextNormalizer {
         return sb.toString()
     }
 
+    /**
+     * [normalize] for what the user typed, keeping one trailing space: "My " means the word is
+     * complete, which [Ranker] treats differently from "My".
+     */
+    fun normalizeQuery(raw: String): String {
+        val q = normalize(raw)
+        return if (q.isNotEmpty() && raw.last().isWhitespace()) "$q " else q
+    }
+
     private fun needsDecomposition(s: String): Boolean {
         for (ch in s) if (ch.code > 0x7F) return true
         return false

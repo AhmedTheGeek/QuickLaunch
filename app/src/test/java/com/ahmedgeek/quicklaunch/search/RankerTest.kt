@@ -18,7 +18,7 @@ class RankerTest {
 
     private fun rank(q: String, vararg apps: AppEntry): List<String> {
         val out = ArrayList<AppEntry>()
-        Ranker.rank(apps.toList(), TextNormalizer.normalize(q), now, out)
+        Ranker.rank(apps.toList(), TextNormalizer.normalizeQuery(q), now, out)
         return out.map { it.label }
     }
 
@@ -141,5 +141,26 @@ class RankerTest {
     @Test fun pinNeverCrossesTiers() {
         val r = rank("mes", app("Messages"), app("Some Messy App", pin = 0, launches = 500))
         assertEquals("Messages", r.first())
+    }
+
+    // Issue #3: "My " should only find apps where "My" is its own word.
+    private val myApps = arrayOf(app("My Leviton"), app("My Tello"), app("MyDyson"), app("Messenger"))
+
+    @Test fun trailingSpaceMeansCompleteWord() {
+        assertEquals(listOf("My Leviton", "My Tello"), rank("My ", *myApps).sorted())
+        assertEquals(listOf("MyDyson", "My Tello", "My Leviton").sorted(), rank("My", *myApps).sorted())
+    }
+
+    @Test fun spaceNeverFuzzyMatches() {
+        assertTrue(rank("My o", *myApps).isEmpty())
+        assertEquals(listOf("My Tello"), rank("My t", *myApps))
+    }
+
+    @Test fun trailingSpaceAfterFullName() {
+        assertEquals(listOf("Slack"), rank("slack ", app("Slack"), app("Slacker Radio")))
+    }
+
+    @Test fun camelCaseWordsStillMatchMultiToken() {
+        assertEquals("WhatsApp", rank("whats app", app("WhatsApp"), app("Maps")).first())
     }
 }

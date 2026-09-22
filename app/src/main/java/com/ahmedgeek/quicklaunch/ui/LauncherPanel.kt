@@ -420,7 +420,7 @@ class LauncherPanel(
 
     private fun onQueryChanged(raw: String) {
         rowMenu.hide()
-        query = TextNormalizer.normalize(raw)
+        query = TextNormalizer.normalizeQuery(raw)
         selected = 0
         rerank()
     }
