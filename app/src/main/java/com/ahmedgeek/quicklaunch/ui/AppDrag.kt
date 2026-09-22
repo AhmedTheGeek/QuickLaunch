@@ -46,6 +46,16 @@ object AppDrag {
         return anchor.startDragAndDrop(clip, shadow, entry, View.DRAG_FLAG_GLOBAL or View.DRAG_FLAG_OPAQUE)
     }
 
+    /**
+     * Drags a file (a content URI) into whatever app is underneath, the same way a file manager does.
+     * DRAG_FLAG_GLOBAL_URI_READ hands the drop target read access to that one URI only.
+     */
+    fun startContent(anchor: View, uri: android.net.Uri, mime: String?, label: CharSequence, localState: Any): Boolean {
+        val clip = ClipData(ClipDescription(label, arrayOf(mime ?: "application/octet-stream")), ClipData.Item(uri))
+        val flags = View.DRAG_FLAG_GLOBAL or View.DRAG_FLAG_GLOBAL_URI_READ or View.DRAG_FLAG_OPAQUE
+        return anchor.startDragAndDrop(clip, IconShadow(anchor, anchor.context), localState, flags)
+    }
+
     /** Drag shadow: the row's icon at 1.5x, so it reads as "the app" rather than a list row. */
     private class IconShadow(row: View, context: Context) : View.DragShadowBuilder(row) {
         private val icon: Drawable? = row.findViewById<android.widget.ImageView>(R.id.icon)?.drawable

@@ -72,6 +72,39 @@ class IconLoader(context: Context, private val index: AppIndex) {
         }
     }
 
+    /** Thumbnail of an image or video on shared storage, center-cropped to the icon tile. */
+    fun requestThumbnail(uri: Uri, key: String, callback: (String, Bitmap) -> Unit) {
+        if (memory.get(key) != null || !inFlight.add(key)) return
+        Bg.icons.execute {
+            val bitmap = try {
+                square(appContext.contentResolver.loadThumbnail(uri, android.util.Size(iconPx, iconPx), null))
+            } catch (e: Exception) {
+                null // gone, unreadable or no thumbnail: the row keeps its file glyph
+            }
+            Bg.main.post {
+                inFlight.remove(key)
+                if (bitmap != null) {
+                    memory.put(key, bitmap)
+                    callback(key, bitmap)
+                }
+            }
+        }
+    }
+
+    private fun square(src: Bitmap): Bitmap {
+        val out = Bitmap.createBitmap(iconPx, iconPx, Bitmap.Config.ARGB_8888)
+        val side = minOf(src.width, src.height)
+        val from = android.graphics.Rect((src.width - side) / 2, (src.height - side) / 2, (src.width + side) / 2, (src.height + side) / 2)
+        val canvas = Canvas(out)
+        val radius = iconPx * 0.22f
+        val path = android.graphics.Path().apply {
+            addRoundRect(0f, 0f, iconPx.toFloat(), iconPx.toFloat(), radius, radius, android.graphics.Path.Direction.CW)
+        }
+        canvas.clipPath(path)
+        canvas.drawBitmap(src, from, android.graphics.Rect(0, 0, iconPx, iconPx), android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG))
+        return out
+    }
+
     /** Warm the memory cache for the apps a short query is most likely to surface. */
     fun prewarm(entries: List<AppEntry>, callback: (String, Bitmap) -> Unit) {
         val now = System.currentTimeMillis()

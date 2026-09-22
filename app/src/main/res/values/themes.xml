@@ -38,6 +38,13 @@
         <item name="android:textSize">15sp</item>
     </style>
 
+    <!-- A normal app screen that follows the system light/dark setting; values-night has the dark parent. -->
+    <style name="Theme.QuickLaunchSettings" parent="android:Theme.DeviceDefault.Light">
+        <!-- Title lives in the scrolling content; the NoActionBar variants style switches differently on One UI. -->
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
     <style name="NoWindowAnim">
         <item name="android:activityOpenEnterAnimation">@anim/ql_none</item>
         <item name="android:activityOpenExitAnimation">@anim/ql_none</item>
