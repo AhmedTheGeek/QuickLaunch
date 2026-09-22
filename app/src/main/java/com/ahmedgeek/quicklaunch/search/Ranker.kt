@@ -9,6 +9,8 @@ import com.ahmedgeek.quicklaunch.index.AppEntry
 object Ranker {
     const val MAX_RESULTS = 8
 
+    /** The query is the user's alias for this app. */
+    private const val TIER_ALIAS = 7000
     private const val TIER_EXACT = 6000
     private const val TIER_PREFIX = 5000
     private const val TIER_WORD_PREFIX = 4000
@@ -27,8 +29,9 @@ object Ranker {
     /**
      * @param query already normalized via [TextNormalizer.normalize]
      * @param out cleared and filled with at most [MAX_RESULTS] entries, best first
+     * @param aliasKey key of the entry the query is an alias for, ranked above everything else
      */
-    fun rank(entries: List<AppEntry>, query: String, now: Long, out: MutableList<AppEntry>) {
+    fun rank(entries: List<AppEntry>, query: String, now: Long, out: MutableList<AppEntry>, aliasKey: String? = null) {
         out.clear()
         val topScore = IntArray(MAX_RESULTS)
         val top = arrayOfNulls<AppEntry>(MAX_RESULTS)
@@ -37,7 +40,11 @@ object Ranker {
         val empty = query.isEmpty()
         for (i in entries.indices) {
             val e = entries[i]
-            val score = if (empty) emptyScore(e, now) else score(e, query, now)
+            val score = when {
+                empty -> emptyScore(e, now)
+                aliasKey != null && e.key == aliasKey -> TIER_ALIAS
+                else -> score(e, query, now)
+            }
             if (score == NO_MATCH) continue
 
             // Insert into the sorted top array (descending), breaking ties deterministically.

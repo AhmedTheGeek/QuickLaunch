@@ -19,6 +19,63 @@
 
     <!-- Clipboard link row: shown first when the clipboard holds a URL. -->
     <string name="link_open">Open link</string>
+
+    <!-- Calculator row: Enter copies the result. -->
+    <string name="copy">Copy</string>
+    <string name="copied">Copied</string>
+
+    <!-- Web search row, e.g. "Search YouTube". -->
+    <string name="web_search_badge">Search %1$s</string>
+
+    <!-- System settings rows and the flashlight. -->
+    <string name="system_setting">Setting</string>
+    <string name="torch_turn_on">Turn on</string>
+    <string name="torch_turn_off">Turn off</string>
+    <string name="error_setting_missing">Not available on this phone</string>
+
+    <!-- Settings screen. Also searchable from the card as "Quick Launch Settings". -->
+    <string name="settings_title">Quick Launch Settings</string>
+    <string name="settings_search">Search</string>
+    <string name="settings_calculator">Calculator</string>
+    <string name="settings_calculator_summary">3x3, (12+4)/2, sqrt(2). Enter copies the result</string>
+    <string name="settings_units">Unit conversion</string>
+    <string name="settings_units_summary">10cm in inch, 70f to c, 5 kg in lb</string>
+    <string name="settings_clipboard">Clipboard link</string>
+    <string name="settings_clipboard_summary">If you copied a link, it’s the first row until you start typing. When off, the clipboard is never read</string>
+    <string name="settings_web">Search keywords</string>
+    <string name="settings_web_summary">yt funny cat, g pizza near me</string>
+    <string name="settings_system">Phone settings</string>
+    <string name="settings_system_summary">wifi, bluetooth, battery, flashlight</string>
+    <string name="settings_engines">Search engines</string>
+    <string name="settings_engine_summary">%1$s …</string>
+    <string name="settings_engine_add">Add search engine</string>
+    <string name="settings_engine_reset">Restore default engines</string>
+    <string name="settings_engine_name">Name</string>
+    <string name="settings_engine_keyword">Keyword</string>
+    <string name="settings_engine_url" formatted="false">URL, %s for the search terms</string>
+    <string name="settings_engine_bad_keyword">One word, not used by another engine</string>
+    <string name="settings_engine_bad_url" formatted="false">Needs http(s):// and %s</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_delete">Delete</string>
+    <string name="settings_aliases">App aliases</string>
+    <string name="settings_alias_add">Add alias</string>
+    <string name="settings_alias_add_summary">A short word that always puts an app first, like sp for Spotify</string>
+    <string name="settings_alias_pick">Choose an app</string>
+    <string name="settings_alias_work">%1$s (work)</string>
+    <string name="settings_alias_system">%1$s (setting)</string>
+    <string name="settings_alias_hint">Alias, e.g. sp</string>
+    <string name="settings_alias_bad">Needs a letter or digit</string>
+    <string name="settings_permissions">Permissions</string>
+    <string name="settings_overlay">Instant mode</string>
+    <string name="settings_usage">Most used apps</string>
+    <string name="settings_shortcut">Ctrl+Space shortcut</string>
+    <string name="settings_on">On</string>
+    <string name="settings_off">Off, tap to turn on</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_author">Created by Ahmed Hussein</string>
+    <string name="settings_source">Source code on GitHub, GPL-3.0</string>
     <string name="a11y_label">Quick Launch keyboard shortcut</string>
     <string name="a11y_summary">Ctrl+Space opens Quick Launch from anywhere</string>
     <string name="a11y_description">Lets Quick Launch open when you press Ctrl+Space on a physical keyboard, from any app. Quick Launch only listens for that key combination. It does not read screen content, observe your activity, or receive any other accessibility events.</string>
