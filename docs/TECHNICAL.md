@@ -134,12 +134,13 @@ EntryActivity         launcher entry, never draws: shows the overlay or the fall
 LaunchActivity        fallback host for the panel (activity window)
 overlay/              OverlayController (TYPE_APPLICATION_OVERLAY window), OverlayRootView
 ui/LauncherPanel      the search UI shared by both hosts: input, ranking, keys, launch
-ui/ResultsView        8 pre-inflated rows plus one link slot, no adapter, no animations
+ui/ResultsView        8 pre-inflated rows shared by suggestions and apps, no adapter, no animations
 ui/IconLoader         icons rasterized off-main, memory + disk cache
 index/                AppIndex (enumerate, revalidate, snapshot), IndexStore (binary cache)
 search/               TextNormalizer, Ranker (tiered scorer), FrecencyStore, PinStore
 clipboard/            LinkDetector (pure URL check), ClipboardLinkSource (focus-gated read, per-clip cache)
 launch/AppLauncher    LauncherApps.startMainActivity, handles work profiles
+suggest/              Suggestion: non-app rows above the results (clipboard link)
 ```
 
 ## Known limits
