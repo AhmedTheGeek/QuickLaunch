@@ -10,6 +10,8 @@ import com.ahmedgeek.quicklaunch.clipboard.ClipboardLinkSource
 import com.ahmedgeek.quicklaunch.index.AppIndex
 import com.ahmedgeek.quicklaunch.launch.AppLauncher
 import com.ahmedgeek.quicklaunch.overlay.OverlayController
+import com.ahmedgeek.quicklaunch.search.AliasStore
+import com.ahmedgeek.quicklaunch.settings.Prefs
 import com.ahmedgeek.quicklaunch.suggest.Suggestions
 import com.ahmedgeek.quicklaunch.ui.IconLoader
 
@@ -29,6 +31,8 @@ class QuickLaunchApp : Application() {
         private set
     lateinit var suggestions: Suggestions
         private set
+    lateinit var aliases: AliasStore
+        private set
 
     override fun onCreate() {
         val t0 = SystemClock.elapsedRealtimeNanos()
@@ -40,6 +44,7 @@ class QuickLaunchApp : Application() {
         overlay = OverlayController(this)
         clipboardLinks = ClipboardLinkSource(this)
         suggestions = Suggestions(this)
+        aliases = AliasStore(Prefs.get(this))
 
         // Cache load runs concurrently with LaunchActivity.onCreate; the activity waits a few ms at most.
         Bg.bg.post { index.loadCache() }

@@ -435,7 +435,7 @@ class LauncherPanel(
     private fun rerank(keepSelection: Boolean = false, follow: AppEntry? = null) {
         Trace.beginSection("ql.rank")
         val entries = index.awaitSnapshot()
-        Ranker.rank(entries, query, System.currentTimeMillis(), results)
+        Ranker.rank(entries, query, System.currentTimeMillis(), results, app.aliases.target(query))
         collectSuggestions()
         Trace.endSection()
 

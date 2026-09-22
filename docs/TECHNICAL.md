@@ -68,6 +68,9 @@ How it works, why it is built the way it is, and how to build it. For the short 
   system App info gear opens it too (`APPLICATION_PREFERENCES`). Every feature defaults to on. Sources
   re-read preferences lazily after a change, never on the show path. With the clipboard link off, the
   clipboard is not read at all.
+- **App aliases.** Set in settings; `AliasStore` maps a normalized alias to an entry key. When the
+  whole query is an alias, that entry gets `TIER_ALIAS`, above an exact name match. Anything else
+  ranks as before. The map is parsed once and again only after it changes.
 - No network, no analytics.
 
 ## Two ways it can appear

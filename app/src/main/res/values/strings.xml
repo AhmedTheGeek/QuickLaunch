@@ -50,6 +50,13 @@
     <string name="settings_save">Save</string>
     <string name="settings_cancel">Cancel</string>
     <string name="settings_delete">Delete</string>
+    <string name="settings_aliases">App aliases</string>
+    <string name="settings_alias_add">Add alias</string>
+    <string name="settings_alias_add_summary">A short word that always puts an app first, like sp for Spotify</string>
+    <string name="settings_alias_pick">Choose an app</string>
+    <string name="settings_alias_work">%1$s (work)</string>
+    <string name="settings_alias_hint">Alias, e.g. sp</string>
+    <string name="settings_alias_bad">Needs a letter or digit</string>
     <string name="settings_permissions">Permissions</string>
     <string name="settings_overlay">Instant mode</string>
     <string name="settings_usage">Most used apps</string>

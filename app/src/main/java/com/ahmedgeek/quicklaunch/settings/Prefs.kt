@@ -11,6 +11,8 @@ object Prefs {
     const val CLIPBOARD_LINK = "clipboard_link"
     /** Serialized engine list, see [com.ahmedgeek.quicklaunch.suggest.WebSearch.serialize]. */
     const val WEB_ENGINES = "web_engines"
+    /** Serialized app aliases, see [com.ahmedgeek.quicklaunch.search.AliasStore]. */
+    const val ALIASES = "aliases"
 
     fun get(context: Context): SharedPreferences = context.getSharedPreferences("ql", Context.MODE_PRIVATE)
 }

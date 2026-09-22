@@ -19,6 +19,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ahmedgeek.quicklaunch.QuickLaunchApp
 import com.ahmedgeek.quicklaunch.R
+import com.ahmedgeek.quicklaunch.index.AppEntry
 import com.ahmedgeek.quicklaunch.index.UsageSource
 import com.ahmedgeek.quicklaunch.shortcut.KeyboardShortcutService
 import com.ahmedgeek.quicklaunch.shortcut.ShortcutDisclosureActivity
@@ -82,6 +83,14 @@ class SettingsActivity : Activity() {
                 render()
             }
         }
+
+        header(R.string.settings_aliases)
+        val labels = HashMap<String, String>()
+        for (e in QuickLaunchApp.get(this).index.awaitSnapshot()) labels[e.key] = e.label
+        for ((alias, key) in QuickLaunchApp.get(this).aliases.all()) {
+            row(alias, labels[key] ?: key.substringAfter('|')) { removeAlias(alias) }
+        }
+        row(getString(R.string.settings_alias_add), getString(R.string.settings_alias_add_summary)) { pickApp() }
 
         header(R.string.settings_permissions)
         status(R.string.settings_overlay, Settings.canDrawOverlays(this)) {
@@ -168,6 +177,62 @@ class SettingsActivity : Activity() {
         } catch (e: RuntimeException) {
             Log.w(QuickLaunchApp.TAG, "settings target unavailable", e)
         }
+    }
+
+    // ---- Aliases -------------------------------------------------------------------------------
+
+    private fun pickApp() {
+        val apps = QuickLaunchApp.get(this).index.awaitSnapshot()
+        val names = Array<CharSequence>(apps.size) { i ->
+            val e = apps[i]
+            if (e.isWork) getString(R.string.settings_alias_work, e.label) else e.label
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.settings_alias_pick)
+            .setItems(names) { _, i -> askAlias(apps[i]) }
+            .setNegativeButton(R.string.settings_cancel, null)
+            .show()
+    }
+
+    private fun askAlias(entry: AppEntry) {
+        val pad = (resources.displayMetrics.density * 20).toInt()
+        val input = EditText(this).apply {
+            setHint(R.string.settings_alias_hint)
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+            isSingleLine = true
+        }
+        val frame = LinearLayout(this).apply {
+            setPadding(pad, pad / 2, pad, 0)
+            addView(input, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+        }
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(entry.label)
+            .setView(frame)
+            .setPositiveButton(R.string.settings_save, null)
+            .setNegativeButton(R.string.settings_cancel, null)
+            .create()
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                if (QuickLaunchApp.get(this).aliases.set(input.text.toString(), entry.key)) {
+                    dialog.dismiss()
+                    render()
+                } else {
+                    input.error = getString(R.string.settings_alias_bad)
+                }
+            }
+        }
+        dialog.show()
+    }
+
+    private fun removeAlias(alias: String) {
+        AlertDialog.Builder(this)
+            .setTitle(alias)
+            .setPositiveButton(R.string.settings_delete) { _, _ ->
+                QuickLaunchApp.get(this).aliases.remove(alias)
+                render()
+            }
+            .setNegativeButton(R.string.settings_cancel, null)
+            .show()
     }
 
     // ---- Search engines ------------------------------------------------------------------------
