@@ -63,7 +63,12 @@ How it works, why it is built the way it is, and how to build it. For the short 
   fallback activity the system pairs the drop with our own window, so the app simply opens full screen.
 - Translucent floating card that follows the system light/dark setting, with blur behind (Android 12+). Full width on phones; on tablets, foldables
   and landscape it is a centered 560dp palette.
-- No settings, no network, no analytics.
+- **Settings.** `SettingsActivity` is a launcher activity, so the index lists it like any app
+  ("Quick Launch Settings": `settings`, `qls`) and it gets ranking, pins and icons for free; the
+  system App info gear opens it too (`APPLICATION_PREFERENCES`). Every feature defaults to on. Sources
+  re-read preferences lazily after a change, never on the show path. With the clipboard link off, the
+  clipboard is not read at all.
+- No network, no analytics.
 
 ## Two ways it can appear
 
@@ -151,6 +156,7 @@ index/                AppIndex (enumerate, revalidate, snapshot), IndexStore (bi
 search/               TextNormalizer, Ranker (tiered scorer), FrecencyStore, PinStore
 clipboard/            LinkDetector (pure URL check), ClipboardLinkSource (focus-gated read, per-clip cache)
 launch/AppLauncher    LauncherApps.startMainActivity, handles work profiles
+settings/             SettingsActivity (plain views), Prefs keys
 suggest/              Suggestion rows above the results; SuggestionSource per feature (Calculator, UnitConverter, WebSearch)
 ```
 

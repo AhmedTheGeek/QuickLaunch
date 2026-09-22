@@ -27,6 +27,7 @@ import com.ahmedgeek.quicklaunch.index.AppEntry
 import com.ahmedgeek.quicklaunch.launch.LaunchResult
 import com.ahmedgeek.quicklaunch.search.Ranker
 import com.ahmedgeek.quicklaunch.search.TextNormalizer
+import com.ahmedgeek.quicklaunch.settings.Prefs
 import com.ahmedgeek.quicklaunch.suggest.Suggestion
 
 /**
@@ -299,6 +300,10 @@ class LauncherPanel(
 
     /** Reads the clipboard once per show. A dropped drag or a refocus never re-reads. */
     private fun refreshLink() {
+        if (!prefs.getBoolean(Prefs.CLIPBOARD_LINK, true)) {
+            linkChecked = true
+            return
+        }
         val found = clipboard.currentLink()
         if (found == null && !windowRoot.hasWindowFocus()) return // not yet allowed to read; try again on focus
         linkChecked = true

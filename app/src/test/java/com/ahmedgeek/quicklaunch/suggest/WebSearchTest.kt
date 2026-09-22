@@ -27,4 +27,25 @@ class WebSearchTest {
         assertNull(url("google maps"))
         assertNull(url(" g x"))
     }
+
+    @Test fun disabledEngineIsIgnored() {
+        val off = listOf(WebSearch("g", "Google", "https://www.google.com/search?q=%s", enabled = false))
+        assertNull(WebSearch.match("g pizza", off))
+    }
+
+    @Test fun serializeRoundTrip() {
+        val list = listOf(
+            WebSearch("g", "Google", "https://www.google.com/search?q=%s"),
+            WebSearch("r", "Reddit", "https://www.reddit.com/search/?q=%s", enabled = false),
+        )
+        val back = WebSearch.parse(WebSearch.serialize(list))
+        assertEquals(list.map { "${it.keyword} ${it.name} ${it.url} ${it.enabled}" }, back.map { "${it.keyword} ${it.name} ${it.url} ${it.enabled}" })
+    }
+
+    @Test fun parseFallsBackAndDropsJunk() {
+        assertEquals(WebSearch.DEFAULTS, WebSearch.parse(null))
+        assertEquals(emptyList<WebSearch>(), WebSearch.parse(""))
+        val saved = "ok\tOk\thttps://x.com/?q=%s\t1\nbad\tNo terms\thttps://x.com\t1\njunk"
+        assertEquals(listOf("ok"), WebSearch.parse(saved).map { it.keyword })
+    }
 }
