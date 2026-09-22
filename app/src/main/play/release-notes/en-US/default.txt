@@ -1,6 +1,2 @@
-First release on Google Play.
-• Type a few letters, press Enter, the app opens. Prefixes, word starts and initials all match.
-• Instant overlay mode, full keyboard navigation, most-used apps listed before you type.
-• Pin your essentials with Ctrl+D or the pin button. Ctrl+1 to Ctrl+9 launch a row directly.
-• Drag a result to open it in split screen. Work profile apps included and badged.
-• No ads, no analytics, no network access. Everything stays on your device.
+• Long-press a result for a menu: App info, or Add to Home screen.
+• Slide after the long press to open the app in split screen, as before.
