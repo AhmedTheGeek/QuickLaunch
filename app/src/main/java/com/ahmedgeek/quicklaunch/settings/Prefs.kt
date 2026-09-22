@@ -9,6 +9,7 @@ object Prefs {
     const val UNITS = "units"
     const val WEB_SEARCH = "web_search"
     const val SYSTEM_SETTINGS = "system_settings"
+    const val TYPED_URL = "typed_url"
     const val CLIPBOARD_LINK = "clipboard_link"
     /** Serialized engine list, see [com.ahmedgeek.quicklaunch.suggest.WebSearch.serialize]. */
     const val WEB_ENGINES = "web_engines"

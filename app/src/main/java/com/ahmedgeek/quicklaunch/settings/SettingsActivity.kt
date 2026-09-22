@@ -63,6 +63,7 @@ class SettingsActivity : Activity() {
         toggle(R.string.settings_calculator, R.string.settings_calculator_summary, Prefs.CALCULATOR)
         toggle(R.string.settings_units, R.string.settings_units_summary, Prefs.UNITS)
         toggle(R.string.settings_clipboard, R.string.settings_clipboard_summary, Prefs.CLIPBOARD_LINK)
+        toggle(R.string.settings_typed_url, R.string.settings_typed_url_summary, Prefs.TYPED_URL)
         toggle(R.string.settings_web, R.string.settings_web_summary, Prefs.WEB_SEARCH)
         toggle(R.string.settings_system, R.string.settings_system_summary, Prefs.SYSTEM_SETTINGS)
 

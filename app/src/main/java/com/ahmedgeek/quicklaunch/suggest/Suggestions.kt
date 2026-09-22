@@ -15,6 +15,7 @@ class Suggestions(context: Context, aliases: AliasStore) : SharedPreferences.OnS
     private val units = UnitSource(context)
     private val web = WebSearchSource(context)
     private val system = SystemSettingsSource(context, aliases)
+    private val url = TypedUrlSource(context)
 
     private var sources: List<SuggestionSource> = emptyList()
     @Volatile private var stale = true
@@ -37,11 +38,12 @@ class Suggestions(context: Context, aliases: AliasStore) : SharedPreferences.OnS
     private fun reload() {
         stale = false
         web.engines = WebSearch.parse(prefs.getString(Prefs.WEB_ENGINES, null))
-        val list = ArrayList<SuggestionSource>(4)
+        val list = ArrayList<SuggestionSource>(5)
         if (prefs.getBoolean(Prefs.CALCULATOR, true)) list.add(calculator)
         if (prefs.getBoolean(Prefs.UNITS, true)) list.add(units)
         if (prefs.getBoolean(Prefs.WEB_SEARCH, true)) list.add(web)
         if (prefs.getBoolean(Prefs.SYSTEM_SETTINGS, true)) list.add(system)
+        if (prefs.getBoolean(Prefs.TYPED_URL, true)) list.add(url)
         sources = list
     }
 }

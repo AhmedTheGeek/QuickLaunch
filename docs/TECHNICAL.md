@@ -68,6 +68,9 @@ How it works, why it is built the way it is, and how to build it. For the short 
   system App info gear opens it too (`APPLICATION_PREFERENCES`). Every feature defaults to on. Sources
   re-read preferences lazily after a change, never on the show path. With the clipboard link off, the
   clipboard is not read at all.
+- **Typed links.** Input that passes `LinkDetector` (the clipboard row's strict check) gets an
+  "Open link" row. A bare domain goes below the apps, so an app named "Booking.com" stays first;
+  with a path, a scheme or `www.` it goes on top.
 - **Phone settings.** `SystemShortcuts` lists public `Settings.ACTION_*` pages with a few keywords
   each, plus the flashlight (`CameraManager.setTorchMode`, no permission). An exact name, keyword or
   alias puts the row above the apps; a partial name (3+ letters) puts it below them via

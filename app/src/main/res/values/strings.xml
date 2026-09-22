@@ -42,6 +42,8 @@
     <string name="settings_units_summary">10cm in inch, 70f to c, 5 kg in lb</string>
     <string name="settings_clipboard">Clipboard link</string>
     <string name="settings_clipboard_summary">If you copied a link, it’s the first row until you start typing. When off, the clipboard is never read</string>
+    <string name="settings_typed_url">Typed links</string>
+    <string name="settings_typed_url_summary">Type github.com/… or example.org and open it directly</string>
     <string name="settings_web">Search keywords</string>
     <string name="settings_web_summary">yt funny cat, g pizza near me</string>
     <string name="settings_system">Phone settings</string>

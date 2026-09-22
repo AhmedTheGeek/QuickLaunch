@@ -39,6 +39,7 @@ disappears the moment you launch something.
 - **Copied a link?** It shows up as the first row. Press Enter to open it.
 - **Quick math.** Type `3x3` or `(12+4)/2` and the answer is the first row. Enter copies it.
   Units too: `10cm in inch`, `70f to c`, `5 kg in lb`.
+- **Type a link, open it.** `github.com/AhmedTheGeek` or `example.org` opens in its app or the browser.
 - **Search keywords.** `g pizza near me` searches Google, `yt funny cat` YouTube. Also `ddg`,
   `wiki`, `maps`, `play` and `gh`. Opens in the matching app when you have it.
 - **Phone settings and the flashlight.** `wifi`, `bluetooth`, `battery` open that page; `torch`
