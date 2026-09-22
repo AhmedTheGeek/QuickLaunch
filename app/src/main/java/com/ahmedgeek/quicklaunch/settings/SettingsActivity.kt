@@ -22,6 +22,7 @@ import com.ahmedgeek.quicklaunch.R
 import com.ahmedgeek.quicklaunch.index.UsageSource
 import com.ahmedgeek.quicklaunch.shortcut.KeyboardShortcutService
 import com.ahmedgeek.quicklaunch.shortcut.ShortcutDisclosureActivity
+import com.ahmedgeek.quicklaunch.suggest.FileSearchSource
 import com.ahmedgeek.quicklaunch.suggest.SystemShortcuts
 import com.ahmedgeek.quicklaunch.suggest.WebSearch
 
@@ -66,6 +67,7 @@ class SettingsActivity : Activity() {
         toggle(R.string.settings_typed_url, R.string.settings_typed_url_summary, Prefs.TYPED_URL)
         toggle(R.string.settings_web, R.string.settings_web_summary, Prefs.WEB_SEARCH)
         toggle(R.string.settings_system, R.string.settings_system_summary, Prefs.SYSTEM_SETTINGS)
+        if (FileSearchSource.built(this)) fileSearchToggle()
 
         if (prefs.getBoolean(Prefs.WEB_SEARCH, true)) {
             header(R.string.settings_engines)
@@ -98,6 +100,9 @@ class SettingsActivity : Activity() {
         header(R.string.settings_permissions)
         status(R.string.settings_overlay, Settings.canDrawOverlays(this)) {
             open(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
+        }
+        if (FileSearchSource.built(this)) {
+            status(R.string.settings_files_access, FileSearchSource.granted()) { FileSearchSource.openGrantScreen(this) }
         }
         status(R.string.settings_usage, UsageSource.isGranted(this)) {
             open(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
@@ -166,6 +171,17 @@ class SettingsActivity : Activity() {
         val on = prefs.getBoolean(key, true)
         row(getText(title), getText(summary), checked = on) {
             prefs.edit().putBoolean(key, !on).apply()
+            render()
+        }
+    }
+
+    /** Off by default. Turning it on without All files access goes straight to that system screen. */
+    private fun fileSearchToggle() {
+        val on = prefs.getBoolean(Prefs.FILE_SEARCH, false)
+        val summary = if (on && !FileSearchSource.granted()) R.string.settings_files_needs_access else R.string.settings_files_summary
+        row(getText(R.string.settings_files), getText(summary), checked = on) {
+            prefs.edit().putBoolean(Prefs.FILE_SEARCH, !on).apply()
+            if (!on && !FileSearchSource.granted()) FileSearchSource.openGrantScreen(this)
             render()
         }
     }

@@ -76,6 +76,16 @@ How it works, why it is built the way it is, and how to build it. For the short 
   alias puts the row above the apps; a partial name (3+ letters) puts it below them via
   `Suggestion.belowApps`, so `dis` still opens Discord first. `ResultsView` gives trailing rows their
   place and trims the app rows instead.
+- **File search (optional build).** `f invoice` lists files whose name contains every word, newest
+  first, from `MediaStore.Files`; Enter opens the file with `ACTION_VIEW`. It needs All files access
+  (`MANAGE_EXTERNAL_STORAGE`), which Play only allows for some kinds of apps, so it is behind two
+  switches. At build time `-Pquicklaunch.fileSearch=true` (or `quicklaunch.fileSearch=true` in
+  `gradle.properties`) merges `src/fileSearch/AndroidManifest.xml` with the permission and sets
+  `R.bool.file_search_build`; without it the permission is not in the manifest and the feature and its
+  settings rows don't exist. In such a build it is still off until the user turns on *File search* in
+  settings, which opens the system All files access screen. The query only runs after the `f` keyword,
+  on its own thread, 150 ms after the last keystroke, and a newer query cancels the running one;
+  meanwhile the previous rows are narrowed locally so the list doesn't blink. Android 11+.
 - **`?` list.** Lists aliases, enabled search keywords and one example per enabled feature; `?y`
   filters. Rows carry `Suggestion.fill`, so choosing one types it into the box instead of running
   anything (like Flow Launcher's plugin indicator). App results are hidden while it is up.
@@ -146,6 +156,8 @@ adb shell cmd package compile -m speed-profile -f com.ahmedgeek.quicklaunch
 ```
 
 ## Build
+
+File search is left out by default; add `-Pquicklaunch.fileSearch=true` to include it (see above).
 
 ```
 JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:assembleRelease :app:testDebugUnitTest

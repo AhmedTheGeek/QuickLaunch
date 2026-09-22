@@ -33,6 +33,10 @@
     <string name="torch_turn_off">Turn off</string>
     <string name="error_setting_missing">Not available on this phone</string>
 
+    <!-- File search ("f invoice"), only in builds with quicklaunch.fileSearch. -->
+    <string name="files_grant">Allow All files access to search files</string>
+    <string name="files_no_app">No app can open this file</string>
+
     <!-- Settings screen. Also searchable from the card as "Quick Launch Settings". -->
     <string name="settings_title">Quick Launch Settings</string>
     <string name="settings_search">Search</string>
@@ -48,6 +52,10 @@
     <string name="settings_web_summary">yt funny cat, g pizza near me</string>
     <string name="settings_system">Phone settings</string>
     <string name="settings_system_summary">wifi, bluetooth, battery, flashlight</string>
+    <string name="settings_files">File search</string>
+    <string name="settings_files_summary">f invoice finds files by name</string>
+    <string name="settings_files_needs_access">Needs All files access, tap to allow</string>
+    <string name="settings_files_access">All files access</string>
     <string name="settings_engines">Search engines</string>
     <string name="settings_engine_summary">%1$s …</string>
     <string name="settings_engine_add">Add search engine</string>

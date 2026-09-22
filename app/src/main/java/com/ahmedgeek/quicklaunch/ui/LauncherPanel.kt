@@ -272,6 +272,7 @@ class LauncherPanel(
         link = null
         linkChecked = false
         index.listener = { onIndexChanged() }
+        app.suggestions.onUpdate = { onIndexChanged() }
         updateFooter()
         if (input.text.isNotEmpty()) input.setText("") else rerank()
         // Succeeds only if the window already has focus (a re-show); otherwise onWindowFocusGained retries.
@@ -291,6 +292,7 @@ class LauncherPanel(
         dragging = false
         windowRoot.removeCallbacks(dragWatchdog)
         index.listener = null
+        app.suggestions.onUpdate = null
     }
 
     /** Android 10+ releases the clipboard only to the focused window; hosts call this when focus arrives. */

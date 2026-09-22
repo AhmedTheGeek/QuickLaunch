@@ -19,6 +19,14 @@ class Suggestions(private val context: Context, private val aliases: AliasStore)
     private val web = WebSearchSource(context)
     private val system = SystemSettingsSource(context, aliases)
     private val url = TypedUrlSource(context)
+    private val files: FileSearchSource? = if (FileSearchSource.built(context)) FileSearchSource(context) else null
+
+    /** Main thread. Called when results that arrive late (file search) are ready; the panel re-reads. */
+    var onUpdate: (() -> Unit)?
+        get() = files?.onUpdate
+        set(value) {
+            files?.onUpdate = value
+        }
 
     private var sources: List<SuggestionSource> = emptyList()
     @Volatile private var stale = true
@@ -67,18 +75,20 @@ class Suggestions(private val context: Context, private val aliases: AliasStore)
         if (units in sources) add("10cm in inch", "10cm in inch", context.getText(R.string.settings_units), R.drawable.ic_convert)
         if (system in sources) add("wifi", "wifi, bluetooth, torch", context.getText(R.string.settings_system), R.drawable.ic_settings)
         if (url in sources) add("example.org", "example.org", context.getText(R.string.settings_typed_url), R.drawable.ic_link)
+        if (files != null && files in sources) add("f ", "f invoice", context.getText(R.string.settings_files), R.drawable.ic_file)
         add("settings", "settings", context.getText(R.string.settings_title), R.drawable.ic_settings)
     }
 
     private fun reload() {
         stale = false
         web.engines = WebSearch.parse(prefs.getString(Prefs.WEB_ENGINES, null))
-        val list = ArrayList<SuggestionSource>(5)
+        val list = ArrayList<SuggestionSource>(6)
         if (prefs.getBoolean(Prefs.CALCULATOR, true)) list.add(calculator)
         if (prefs.getBoolean(Prefs.UNITS, true)) list.add(units)
         if (prefs.getBoolean(Prefs.WEB_SEARCH, true)) list.add(web)
         if (prefs.getBoolean(Prefs.SYSTEM_SETTINGS, true)) list.add(system)
         if (prefs.getBoolean(Prefs.TYPED_URL, true)) list.add(url)
+        if (files != null && prefs.getBoolean(Prefs.FILE_SEARCH, false)) list.add(files)
         sources = list
     }
 
