@@ -36,6 +36,8 @@
     <!-- Settings screen. Also searchable from the card as "Quick Launch Settings". -->
     <string name="settings_title">Quick Launch Settings</string>
     <string name="settings_search">Search</string>
+    <string name="settings_compact_pins">Compact pinned apps</string>
+    <string name="settings_compact_pins_summary">All pins in one row of icons, so more room for results</string>
     <string name="settings_calculator">Calculator</string>
     <string name="settings_calculator_summary">3x3, (12+4)/2, sqrt(2). Enter copies the result</string>
     <string name="settings_units">Unit conversion</string>

@@ -66,6 +66,12 @@ class LauncherPanel(
     private val card: View = windowRoot.findViewById(R.id.card)
     val input: EditText = windowRoot.findViewById(R.id.input)
     private val resultsView: ResultsView = windowRoot.findViewById(R.id.results)
+    private val pinStrip: PinStrip = windowRoot.findViewById(R.id.pin_strip)
+    /** "Compact pinned apps": on the empty query, pins leave the list for [pinStrip]. Read on every show. */
+    private var compactPins = false
+    private val pins = ArrayList<AppEntry>()
+    /** Selected icon in the strip, or -1 while the selection is in the list. */
+    private var stripSelected = -1
     private val emptyView: TextView = windowRoot.findViewById(R.id.empty)
     private val footer: View = windowRoot.findViewById(R.id.footer)
     private val footerMessage: TextView = windowRoot.findViewById(R.id.hint_bar)
@@ -106,7 +112,10 @@ class LauncherPanel(
     private var dragging = false
     private var pinnedSectionShown = false
 
-    private val iconCallback: (String, Bitmap) -> Unit = { key, bitmap -> resultsView.onIconLoaded(key, bitmap) }
+    private val iconCallback: (String, Bitmap) -> Unit = { key, bitmap ->
+        resultsView.onIconLoaded(key, bitmap)
+        pinStrip.onIconLoaded(key, bitmap)
+    }
 
     init {
         resultsView.iconLoader = icons
@@ -114,9 +123,14 @@ class LauncherPanel(
         resultsView.onSuggestionClick = { s -> run(s) }
         resultsView.onRowLongPress = { entry, row -> if (!launched && !dragging) rowMenu.show(entry, row) }
         resultsView.onRowDrag = { entry, row -> startDrag(entry, row) }
+        pinStrip.iconLoader = icons
+        pinStrip.onClick = { entry -> launch(entry) }
+        pinStrip.onLongPress = { entry, cell -> if (!launched && !dragging) rowMenu.show(entry, cell) }
+        pinStrip.onDrag = { entry, cell -> startDrag(entry, cell) }
         rowMenu.canAddToHome = { entry -> app.homeShortcuts.canAdd(entry) }
         rowMenu.onAppInfo = { entry -> showAppInfo(entry) }
         rowMenu.onAddToHome = { entry -> addToHome(entry) }
+        rowMenu.onTogglePin = { entry -> togglePin(entry, null) }
         resultsView.onPinClick = { entry, button -> togglePin(entry, button) }
         windowRoot.setOnDragListener { _, event ->
             if (Log.isLoggable(QuickLaunchApp.TAG, Log.DEBUG)) {
@@ -271,6 +285,7 @@ class LauncherPanel(
         imeWasVisible = false
         link = null
         linkChecked = false
+        compactPins = prefs.getBoolean(Prefs.COMPACT_PINS, false)
         index.listener = { onIndexChanged() }
         updateFooter()
         if (input.text.isNotEmpty()) input.setText("") else rerank()
@@ -356,7 +371,17 @@ class LauncherPanel(
         return n
     }
 
-    private fun bindResults() = resultsView.bind(suggestions, results, trailing, pinnedCount(), selected, iconCallback)
+    private fun bindResults() {
+        resultsView.bind(suggestions, results, trailing, pinnedCount(), if (stripSelected >= 0) -1 else selected, iconCallback)
+        pinStrip.bind(pins, stripSelected, iconCallback)
+        updateHint()
+    }
+
+    /** The strip has no labels: while an icon is selected, its name stands in for the search hint. */
+    private fun updateHint() {
+        val name = pins.getOrNull(stripSelected)?.label
+        input.hint = name ?: res.getText(R.string.search_hint)
+    }
 
     /** App rows on screen once leading and trailing suggestions have taken theirs; mirrors [ResultsView.bind]. */
     private fun visibleApps(): Int {
@@ -435,7 +460,11 @@ class LauncherPanel(
 
             val hintRows = (if (usageHint.view.visibility == View.VISIBLE) 1 else 0) + (if (shortcutHint.view.visibility == View.VISIBLE) 1 else 0)
             val hintRow = hintRows * rowHeight + (if (hintRows > 0) headerHeight else 0)
-            val pinnedSection = if (pinnedCount() > 0) headerHeight + separatorHeight else 0
+            val pinnedSection = when {
+                pinnedCount() > 0 -> headerHeight + separatorHeight
+                pinStrip.visibility == View.VISIBLE -> rowHeight
+                else -> 0
+            }
             val available = screenHeight - topMargin - bottom - fixedChrome - hintRow - pinnedSection
             val maxRows = (available / rowHeight).coerceIn(3, Ranker.MAX_RESULTS)
             if (resultsView.maxVisible != maxRows) {
@@ -474,11 +503,19 @@ class LauncherPanel(
         Ranker.rank(entries, query, System.currentTimeMillis(), results, app.aliases.target(query))
         // The ? list stands alone; "?" normalizes to an empty query, which would list the usual apps under it.
         if (rawQuery.startsWith(Suggestions.HELP)) results.clear()
+        collectPins(entries)
         collectSuggestions()
         Trace.endSection()
 
         val rows = rowCount()
         val followed = if (follow != null) results.indexOf(follow) else -1
+        // Pins lead, as in list mode: the strip starts selected, so Enter still opens the first pin.
+        stripSelected = when {
+            pins.isEmpty() -> -1
+            follow != null -> pins.indexOf(follow)
+            keepSelection -> stripSelected.coerceAtMost(pins.size - 1)
+            else -> 0
+        }
         selected = when {
             rows == 0 -> 0
             followed >= 0 -> (followed + suggestions.size).coerceAtMost(resultsView.maxVisible - 1)
@@ -490,6 +527,11 @@ class LauncherPanel(
         bindResults()
         emptyView.visibility = if (rowCount() == 0 && rawQuery.isNotEmpty()) View.VISIBLE else View.GONE
         updateUsageHint()
+        val strip = if (pins.isEmpty()) View.GONE else View.VISIBLE
+        if (pinStrip.visibility != strip) {
+            pinStrip.visibility = strip
+            ViewCompat.requestApplyInsets(windowRoot)
+        }
         // The pinned section takes header space away from rows; recompute the row budget when it toggles.
         val sectioned = pinnedCount() > 0
         if (sectioned != pinnedSectionShown) {
@@ -497,6 +539,46 @@ class LauncherPanel(
             ViewCompat.requestApplyInsets(windowRoot)
         }
         Trace.endSection()
+    }
+
+    /** Compact pins, empty query only: every pin in order, and none of them left in the list. */
+    private fun collectPins(entries: List<AppEntry>) {
+        pins.clear()
+        if (!compactPins || rawQuery.isNotEmpty()) return
+        for (e in entries) if (e.pinOrder >= 0) pins.add(e)
+        pins.sortBy { it.pinOrder }
+        results.removeAll { it.pinOrder >= 0 }
+    }
+
+    /** Up and down through strip and list: the strip sits above row 0. */
+    private fun moveVertical(delta: Int) {
+        if (stripSelected >= 0) {
+            if (delta > 0 && rowCount() > 0) {
+                stripSelected = -1
+                selected = 0
+                syncSelection()
+            }
+            return
+        }
+        if (delta < 0 && selected == 0 && pins.isNotEmpty()) {
+            stripSelected = 0
+            syncSelection()
+            return
+        }
+        moveSelection(delta)
+    }
+
+    private fun moveInStrip(delta: Int) {
+        val next = (stripSelected + delta).coerceIn(0, pins.size - 1)
+        if (next == stripSelected) return
+        stripSelected = next
+        syncSelection()
+    }
+
+    private fun syncSelection() {
+        pinStrip.setSelected(stripSelected)
+        resultsView.setSelected(if (stripSelected >= 0) -1 else selected)
+        updateHint()
     }
 
     private fun moveSelection(delta: Int) {
@@ -541,15 +623,19 @@ class LauncherPanel(
                 return true
             }
             KeyEvent.KEYCODE_DPAD_DOWN -> {
-                if (down) moveSelection(+1)
+                if (down) moveVertical(+1)
                 return true
             }
             KeyEvent.KEYCODE_DPAD_UP -> {
-                if (down) moveSelection(-1)
+                if (down) moveVertical(-1)
+                return true
+            }
+            KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT -> if (stripSelected >= 0) {
+                if (down) moveInStrip(if (event.keyCode == KeyEvent.KEYCODE_DPAD_LEFT) -1 else +1)
                 return true
             }
             KeyEvent.KEYCODE_TAB -> {
-                if (down) moveSelection(if (event.isShiftPressed) -1 else +1)
+                if (down) moveVertical(if (event.isShiftPressed) -1 else +1)
                 return true
             }
             KeyEvent.KEYCODE_ESCAPE, KeyEvent.KEYCODE_BACK -> {
@@ -557,20 +643,26 @@ class LauncherPanel(
                 return true
             }
             KeyEvent.KEYCODE_N, KeyEvent.KEYCODE_J -> if (event.isCtrlPressed) {
-                if (down) moveSelection(+1)
+                if (down) moveVertical(+1)
                 return true
             }
             KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_K -> if (event.isCtrlPressed) {
-                if (down) moveSelection(-1)
+                if (down) moveVertical(-1)
                 return true
             }
             KeyEvent.KEYCODE_D -> if (event.isCtrlPressed) {
-                if (down && event.repeatCount == 0) entryAt(selected)?.let { togglePin(it, null) }
+                if (down && event.repeatCount == 0) {
+                    (pins.getOrNull(stripSelected) ?: entryAt(selected))?.let { togglePin(it, null) }
+                }
                 return true
             }
             in KeyEvent.KEYCODE_1..KeyEvent.KEYCODE_9 -> if (event.isCtrlPressed) {
-                // Direct launch of row N. Pins keep the top rows stable, so this is a one-chord launch.
-                if (down && event.repeatCount == 0) launchRow(event.keyCode - KeyEvent.KEYCODE_1)
+                // Direct launch of row N, or of pin N when the pins are a strip. Pins keep their place, so
+                // this is a one-chord launch.
+                if (down && event.repeatCount == 0) {
+                    val n = event.keyCode - KeyEvent.KEYCODE_1
+                    if (pins.isNotEmpty()) pins.getOrNull(n)?.let { launch(it) } else launchRow(n)
+                }
                 return true
             }
         }
@@ -638,7 +730,10 @@ class LauncherPanel(
 
     // ---- Launch --------------------------------------------------------------------------------
 
-    private fun launchSelected() = launchRow(selected)
+    private fun launchSelected() {
+        val pin = pins.getOrNull(stripSelected)
+        if (pin != null) launch(pin) else launchRow(selected)
+    }
 
     /** Launch whatever sits at a combined-list row index: a suggestion or an app. Ignores rows not on screen. */
     private fun launchRow(row: Int) {

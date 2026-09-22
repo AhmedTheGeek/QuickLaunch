@@ -56,6 +56,13 @@
             android:paddingTop="6dp"
             android:paddingBottom="6dp">
 
+            <!-- "Compact pinned apps": every pin in one row of icons, above the results. -->
+            <com.ahmedgeek.quicklaunch.ui.PinStrip
+                android:id="@+id/pin_strip"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/row_height"
+                android:visibility="gone" />
+
             <com.ahmedgeek.quicklaunch.ui.ResultsView
                 android:id="@+id/results"
                 android:layout_width="match_parent"

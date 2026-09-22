@@ -60,6 +60,7 @@ class SettingsActivity : Activity() {
         list.removeAllViews()
 
         header(R.string.settings_search)
+        toggle(R.string.settings_compact_pins, R.string.settings_compact_pins_summary, Prefs.COMPACT_PINS, default = false)
         toggle(R.string.settings_calculator, R.string.settings_calculator_summary, Prefs.CALCULATOR)
         toggle(R.string.settings_units, R.string.settings_units_summary, Prefs.UNITS)
         toggle(R.string.settings_clipboard, R.string.settings_clipboard_summary, Prefs.CLIPBOARD_LINK)
@@ -162,8 +163,8 @@ class SettingsActivity : Activity() {
         list.addView(v)
     }
 
-    private fun toggle(title: Int, summary: Int, key: String) {
-        val on = prefs.getBoolean(key, true)
+    private fun toggle(title: Int, summary: Int, key: String, default: Boolean = true) {
+        val on = prefs.getBoolean(key, default)
         row(getText(title), getText(summary), checked = on) {
             prefs.edit().putBoolean(key, !on).apply()
             render()

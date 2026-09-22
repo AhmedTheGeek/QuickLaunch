@@ -38,6 +38,13 @@
         android:drawableStart="@drawable/ic_info"
         android:text="@string/menu_app_info" />
 
+    <!-- Pin or Unpin, set per entry. The only touch way to unpin from the compact pin strip. -->
+    <TextView
+        android:id="@+id/menu_pin"
+        style="@style/MenuItem"
+        android:drawableStart="@drawable/ic_pin_outline"
+        android:text="@string/pin" />
+
     <TextView
         android:id="@+id/menu_add_home"
         style="@style/MenuItem"
