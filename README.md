@@ -35,6 +35,7 @@ disappears the moment you launch something.
 - **Keyboard first.** Ctrl+Space opens it from any app. ↑ ↓ to move, Enter to launch, Esc to close.
   Tab, Ctrl+N and Ctrl+P work too.
 - **Split screen by drag.** Long-press a result and drag it to open it next to the current app.
+- **Long-press for more.** Hold a result for App info or Add to Home screen.
 - **Copied a link?** It shows up as the first row. Press Enter to open it.
 - **Big screens welcome.** A centered palette on tablets, foldables and DeX. Full width on phones.
 - **Private by design.** No internet permission. No analytics. No ads. About 90 KB.

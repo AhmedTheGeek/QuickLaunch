@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Context menu for a result row, shown on long press. Lives inside the panel's own window (never a
+  PopupWindow: that would take window focus from the overlay, which reads focus loss as "dismiss").
+  Title, then one line per action; items reuse the row highlight so pressed state matches the list.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minWidth="@dimen/menu_min_width"
+    android:background="@drawable/bg_menu"
+    android:clipToOutline="true"
+    android:elevation="@dimen/menu_elevation"
+    android:orientation="vertical"
+    android:paddingStart="6dp"
+    android:paddingEnd="6dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
+
+    <TextView
+        android:id="@+id/menu_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="8dp"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.02" />
+
+    <TextView
+        android:id="@+id/menu_app_info"
+        style="@style/MenuItem"
+        android:drawableStart="@drawable/ic_info"
+        android:text="@string/menu_app_info" />
+
+    <TextView
+        android:id="@+id/menu_add_home"
+        style="@style/MenuItem"
+        android:drawableStart="@drawable/ic_add_home"
+        android:text="@string/menu_add_home" />
+</LinearLayout>

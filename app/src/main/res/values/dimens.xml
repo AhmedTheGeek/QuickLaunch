@@ -17,4 +17,12 @@
     <dimen name="row_radius">10dp</dimen>
     <dimen name="icon_size">40dp</dimen>
     <dimen name="blur_radius">24dp</dimen>
+    <!-- Row context menu (long press). -->
+    <dimen name="menu_radius">14dp</dimen>
+    <dimen name="menu_radius_inner">13dp</dimen>
+    <dimen name="menu_min_width">220dp</dimen>
+    <dimen name="menu_item_height">44dp</dimen>
+    <!-- Above card_elevation: siblings draw and take touches in elevation order, not child order. -->
+    <dimen name="menu_elevation">28dp</dimen>
+    <dimen name="menu_gap">4dp</dimen>
 </resources>

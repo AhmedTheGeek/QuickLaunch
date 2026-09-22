@@ -22,6 +22,22 @@
         <item name="android:windowContentTransitions">false</item>
     </style>
 
+    <!-- One action line in the row context menu: glyph, gap, label; pressed state from bg_row. -->
+    <style name="MenuItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/menu_item_height</item>
+        <item name="android:background">@drawable/bg_row</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">false</item>
+        <item name="android:drawablePadding">14dp</item>
+        <item name="android:drawableTint">@color/text_secondary</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
     <style name="NoWindowAnim">
         <item name="android:activityOpenEnterAnimation">@anim/ql_none</item>
         <item name="android:activityOpenExitAnimation">@anim/ql_none</item>

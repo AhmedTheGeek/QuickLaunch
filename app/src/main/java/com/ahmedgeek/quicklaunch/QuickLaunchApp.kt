@@ -19,6 +19,7 @@ class QuickLaunchApp : Application() {
     lateinit var icons: IconLoader
         private set
     lateinit var launcher: AppLauncher
+    lateinit var homeShortcuts: com.ahmedgeek.quicklaunch.launch.HomeShortcuts
         private set
     lateinit var overlay: OverlayController
         private set
@@ -32,6 +33,7 @@ class QuickLaunchApp : Application() {
         index = AppIndex(this)
         icons = IconLoader(this, index)
         launcher = AppLauncher(this, index)
+        homeShortcuts = com.ahmedgeek.quicklaunch.launch.HomeShortcuts(this, index)
         overlay = OverlayController(this)
         clipboardLinks = ClipboardLinkSource(this)
 

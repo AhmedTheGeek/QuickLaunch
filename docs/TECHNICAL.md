@@ -36,10 +36,20 @@ How it works, why it is built the way it is, and how to build it. For the short 
   only when the pinned boundary moves. The footer (physical keyboards only) shows Enter, Ctrl+D and
   Esc keycaps; the Ctrl+D hint hides itself when the row would not fit, using the widths of the laid
   out hints rather than re-measuring them.
+- **Long-press a result** for a small menu with *App info* (the system screen, via
+  `LauncherApps.startAppDetailsActivity`) and *Add to Home screen*. The menu is drawn inside the
+  panel's own window (`RowMenu`): a PopupWindow would take window focus, and the overlay reads focus
+  loss as "dismiss". A transparent catcher under the menu makes the first tap anywhere else close only
+  the menu. Add to Home screen pins a shortcut published by Quick Launch whose intent is the app's own
+  launcher activity (`HomeShortcuts`); only the default home app may pin another app's shortcuts. The
+  icon is passed as the full 108dp adaptive layer so the home app masks it like the real one. Personal
+  profile only, since the pinned shortcut runs in our user.
 - **Long-press a result and drag it** to open it in split screen next to the app you came from.
-  This uses the same system drag protocol a launcher uses, so Android shows its own drop zones.
-  Personal profile apps only, Android 12+, and it needs instant mode: in the fallback activity the
-  system pairs the drop with our own window, so the app simply opens full screen.
+  The long press opens the menu at once and keeps the row armed; move past the touch slop while still
+  holding and the menu closes and the row starts a system drag instead (`ResultsView`), the way a home
+  screen icon works. This uses the same system drag protocol a launcher uses, so Android shows
+  its own drop zones. Personal profile apps only, Android 12+, and it needs instant mode: in the
+  fallback activity the system pairs the drop with our own window, so the app simply opens full screen.
 - Translucent floating card that follows the system light/dark setting, with blur behind (Android 12+). Full width on phones; on tablets, foldables
   and landscape it is a centered 560dp palette.
 - No settings, no network, no analytics.

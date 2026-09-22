@@ -1,10 +1,13 @@
 package com.ahmedgeek.quicklaunch.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -38,13 +41,20 @@ class ResultsView @JvmOverloads constructor(
     var iconLoader: IconLoader? = null
     var onRowClick: ((AppEntry) -> Unit)? = null
     var onLinkClick: ((String) -> Unit)? = null
-    /** Long-press: return true if a drag was started for this entry. */
-    var onRowLongPress: ((AppEntry, android.view.View) -> Boolean)? = null
+    /** Long press fired, finger still down: show the row's context menu. */
+    var onRowLongPress: ((AppEntry, View) -> Unit)? = null
+    /** Moved after the long press while still held: return true if a drag was started for this entry. */
+    var onRowDrag: ((AppEntry, View) -> Boolean)? = null
     /** Tap on a row's pin button; the view is passed for haptic feedback. */
     var onPinClick: ((AppEntry, android.view.View) -> Unit)? = null
 
     /** Rows that fit on screen; recomputed from window insets. */
     var maxVisible: Int = Ranker.MAX_RESULTS
+
+    private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
+
+    private fun moved(ev: MotionEvent, downX: Float, downY: Float): Boolean =
+        Math.abs(ev.x - downX) > touchSlop || Math.abs(ev.y - downY) > touchSlop
 
     init {
         orientation = VERTICAL
@@ -59,8 +69,8 @@ class ResultsView @JvmOverloads constructor(
                 row.entry?.let { e -> onRowClick?.invoke(e) }
                 row.link?.let { url -> onLinkClick?.invoke(url) }
             }
-            v.setOnLongClickListener { row.entry?.let { e -> onRowLongPress?.invoke(e, v) } ?: false }
-            // While clickable, the pin owns its touches, so a long press on it never starts a drag.
+            installLongPress(v, row)
+            // While clickable, the pin owns its touches, so a long press on it never arms the row.
             // It must not be long-clickable on its own: that would make the hidden pin eat taps too.
             row.pin.setOnClickListener { row.entry?.let { e -> onPinClick?.invoke(e, row.pin) } }
             row.hide()
@@ -73,6 +83,44 @@ class ResultsView @JvmOverloads constructor(
         separator = inflater.inflate(R.layout.section_separator, this, false)
         separator.visibility = GONE
         addView(separator, 1)
+    }
+
+    /**
+     * The long press opens the context menu at once via [onRowLongPress], the way a home screen icon
+     * does, and keeps the row armed while the finger is still down. Move past the touch slop from there
+     * and the row starts a system drag via [onRowDrag] (the host closes the menu first); lift and the
+     * menu simply stays open.
+     *
+     * The touch listener only watches for movement after the long press and always returns false, so
+     * the view's own click, long-click and accessibility handling run untouched.
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    private fun installLongPress(v: View, row: ResultRow) {
+        var armed = false
+        var downX = 0f
+        var downY = 0f
+        v.setOnLongClickListener {
+            val e = row.entry ?: return@setOnLongClickListener false
+            armed = true
+            v.parent?.requestDisallowInterceptTouchEvent(true)
+            onRowLongPress?.invoke(e, v)
+            true // the view gives the long-press haptic itself when the listener consumes it
+        }
+        v.setOnTouchListener { _, ev ->
+            when (ev.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    armed = false
+                    downX = ev.x
+                    downY = ev.y
+                }
+                MotionEvent.ACTION_MOVE -> if (armed && moved(ev, downX, downY)) {
+                    armed = false
+                    row.entry?.let { e -> onRowDrag?.invoke(e, v) }
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> armed = false
+            }
+            false
+        }
     }
 
     /**

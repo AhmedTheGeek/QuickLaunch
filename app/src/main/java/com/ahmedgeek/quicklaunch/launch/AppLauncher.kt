@@ -31,6 +31,18 @@ class AppLauncher(context: Context, private val index: AppIndex) {
         }
     }
 
+    /** Opens the system App info screen for [entry]; false when the app or its user is gone. */
+    fun showDetails(entry: AppEntry, sourceBounds: Rect?): Boolean {
+        val user = index.userHandle(entry.userSerial) ?: return false
+        return try {
+            launcherApps.startAppDetailsActivity(entry.component, user, sourceBounds, null)
+            true
+        } catch (e: RuntimeException) {
+            Log.w(TAG, "app info failed for ${entry.key}", e)
+            false
+        }
+    }
+
     private companion object {
         const val TAG = "QL"
     }

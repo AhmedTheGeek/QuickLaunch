@@ -3,6 +3,7 @@ package com.ahmedgeek.quicklaunch.ui
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.net.Uri
 import android.os.SystemClock
 import android.os.Trace
@@ -15,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -60,6 +62,7 @@ class LauncherPanel(
     private val res = windowRoot.resources
 
     private val scrim: View = windowRoot.findViewById(R.id.root)
+    private val rowMenu = RowMenu(windowRoot.findViewById<FrameLayout>(R.id.root))
     private val card: View = windowRoot.findViewById(R.id.card)
     val input: EditText = windowRoot.findViewById(R.id.input)
     private val resultsView: ResultsView = windowRoot.findViewById(R.id.results)
@@ -103,7 +106,11 @@ class LauncherPanel(
         resultsView.iconLoader = icons
         resultsView.onRowClick = { entry -> launch(entry) }
         resultsView.onLinkClick = { url -> openLink(url) }
-        resultsView.onRowLongPress = { entry, row -> startDrag(entry, row) }
+        resultsView.onRowLongPress = { entry, row -> if (!launched && !dragging) rowMenu.show(entry, row) }
+        resultsView.onRowDrag = { entry, row -> startDrag(entry, row) }
+        rowMenu.canAddToHome = { entry -> app.homeShortcuts.canAdd(entry) }
+        rowMenu.onAppInfo = { entry -> showAppInfo(entry) }
+        rowMenu.onAddToHome = { entry -> addToHome(entry) }
         resultsView.onPinClick = { entry, button -> togglePin(entry, button) }
         windowRoot.setOnDragListener { _, event ->
             if (Log.isLoggable(QuickLaunchApp.TAG, Log.DEBUG)) {
@@ -274,6 +281,7 @@ class LauncherPanel(
 
     fun onHidden() {
         active = false
+        rowMenu.hide()
         dragging = false
         windowRoot.removeCallbacks(dragWatchdog)
         index.listener = null
@@ -399,6 +407,7 @@ class LauncherPanel(
     // ---- Search --------------------------------------------------------------------------------
 
     private fun onQueryChanged(raw: String) {
+        rowMenu.hide()
         query = TextNormalizer.normalize(raw)
         selected = 0
         rerank()
@@ -494,7 +503,7 @@ class LauncherPanel(
                 return true
             }
             KeyEvent.KEYCODE_ESCAPE, KeyEvent.KEYCODE_BACK -> {
-                if (down) host.dismiss()
+                if (down) if (rowMenu.isShowing) rowMenu.hide() else host.dismiss()
                 return true
             }
             KeyEvent.KEYCODE_N, KeyEvent.KEYCODE_J -> if (event.isCtrlPressed) {
@@ -518,6 +527,30 @@ class LauncherPanel(
         return false
     }
 
+    // ---- Long-press menu -----------------------------------------------------------------------
+
+    /** The system App info screen for the app, then close the panel. */
+    private fun showAppInfo(entry: AppEntry) {
+        if (launched) return
+        val bounds = Rect().takeIf { card.getGlobalVisibleRect(it) }
+        if (!launcher.showDetails(entry, bounds)) {
+            Toast.makeText(app, R.string.error_not_available, Toast.LENGTH_SHORT).show()
+            return
+        }
+        launched = true
+        host.dismiss()
+    }
+
+    /** Ask the home app to pin a shortcut to the app. It shows its own confirmation, so the panel closes first. */
+    private fun addToHome(entry: AppEntry) {
+        if (launched) return
+        launched = true
+        app.homeShortcuts.add(entry) { ok ->
+            if (!ok) Toast.makeText(app, R.string.menu_add_home_failed, Toast.LENGTH_SHORT).show()
+        }
+        host.dismiss()
+    }
+
     // ---- Drag to split screen ------------------------------------------------------------------
 
     private companion object {
@@ -530,6 +563,7 @@ class LauncherPanel(
 
     private fun startDrag(entry: AppEntry, row: View): Boolean {
         if (dragging || !AppDrag.canDrag(entry)) return false
+        rowMenu.hide() // the finger slid on from the long press: the drag replaces the menu
         // Hiding the keyboard here must not be read as "user pressed Back" by the insets listener.
         imeWasVisible = false
         KeyboardUtil.hideIme(input)
