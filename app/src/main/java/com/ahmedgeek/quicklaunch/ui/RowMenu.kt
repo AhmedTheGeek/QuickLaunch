@@ -20,6 +20,7 @@ import com.ahmedgeek.quicklaunch.index.AppEntry
 class RowMenu(private val root: FrameLayout) {
     var onAppInfo: ((AppEntry) -> Unit)? = null
     var onAddToHome: ((AppEntry) -> Unit)? = null
+    var onTogglePin: ((AppEntry) -> Unit)? = null
     /** Whether "Add to Home screen" applies to this entry; the item hides otherwise. */
     var canAddToHome: ((AppEntry) -> Boolean)? = null
 
@@ -40,6 +41,7 @@ class RowMenu(private val root: FrameLayout) {
     private val title: TextView = menu.findViewById(R.id.menu_title)
     private val appInfo: TextView = menu.findViewById(R.id.menu_app_info)
     private val addHome: TextView = menu.findViewById(R.id.menu_add_home)
+    private val pin: TextView = menu.findViewById(R.id.menu_pin)
     private val gap = root.resources.getDimensionPixelSize(R.dimen.menu_gap)
 
     private var entry: AppEntry? = null
@@ -49,6 +51,7 @@ class RowMenu(private val root: FrameLayout) {
     init {
         appInfo.setOnClickListener { entry?.let { e -> hide(); onAppInfo?.invoke(e) } }
         addHome.setOnClickListener { entry?.let { e -> hide(); onAddToHome?.invoke(e) } }
+        pin.setOnClickListener { entry?.let { e -> hide(); onTogglePin?.invoke(e) } }
     }
 
     /** Show the menu for [e], hanging off [anchor] (the row): below it when it fits, above it otherwise. */
@@ -57,6 +60,9 @@ class RowMenu(private val root: FrameLayout) {
         entry = e
         title.text = e.label
         addHome.visibility = if (canAddToHome?.invoke(e) == true) View.VISIBLE else View.GONE
+        val pinned = e.pinOrder >= 0
+        pin.setText(if (pinned) R.string.unpin else R.string.pin)
+        pin.setCompoundDrawablesRelativeWithIntrinsicBounds(if (pinned) R.drawable.ic_pin else R.drawable.ic_pin_outline, 0, 0, 0)
         root.addView(catcher)
         root.addView(menu)
 
