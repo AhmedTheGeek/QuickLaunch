@@ -187,7 +187,10 @@ class ResultsView @JvmOverloads constructor(
         if (index == selectedIndex) return
         if (selectedIndex in rows.indices) rows[selectedIndex].setSelected(false)
         selectedIndex = index
-        if (index in 0 until boundCount) rows[index].setSelected(true)
+        if (index in 0 until boundCount) {
+            rows[index].setSelected(true)
+            (parent as? ResultsScroll)?.reveal(rows[index].view, first = index == 0)
+        }
     }
 
     /** Called on main when an icon finishes loading; applies only if that row still shows the same app. */
