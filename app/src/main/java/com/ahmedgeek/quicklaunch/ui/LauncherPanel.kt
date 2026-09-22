@@ -66,6 +66,7 @@ class LauncherPanel(
     private val card: View = windowRoot.findViewById(R.id.card)
     val input: EditText = windowRoot.findViewById(R.id.input)
     private val resultsView: ResultsView = windowRoot.findViewById(R.id.results)
+    private val resultsScroll: ResultsScroll = windowRoot.findViewById(R.id.results_scroll)
     private val emptyView: TextView = windowRoot.findViewById(R.id.empty)
     private val footer: View = windowRoot.findViewById(R.id.footer)
     private val footerMessage: TextView = windowRoot.findViewById(R.id.hint_bar)
@@ -225,7 +226,11 @@ class LauncherPanel(
     private fun updateFooter() {
         val keys = !footerMessageSet && KeyboardUtil.hasHardwareKeyboard(res.configuration)
         footerKeys.visibility = if (keys) View.VISIBLE else View.GONE
-        footer.visibility = if (keys || footerMessageSet) View.VISIBLE else View.GONE
+        val visibility = if (keys || footerMessageSet) View.VISIBLE else View.GONE
+        if (footer.visibility != visibility) {
+            footer.visibility = visibility
+            ViewCompat.requestApplyInsets(windowRoot) // the row budget depends on it
+        }
     }
 
     /** Replace the key hints with a message and an action chip (the fallback activity offers instant mode here). */
@@ -354,8 +359,9 @@ class LauncherPanel(
         val rowHeight = res.getDimensionPixelSize(R.dimen.row_height)
         val headerHeight = res.getDimensionPixelSize(R.dimen.section_header_height)
         val separatorHeight = res.getDimensionPixelSize(R.dimen.section_separator_height)
-        val fixedChrome = res.getDimensionPixelSize(R.dimen.input_height) +
-            (rowHeight * 0.85f).toInt() + res.getDimensionPixelSize(R.dimen.card_padding) * 2
+        val fixedChrome = res.getDimensionPixelSize(R.dimen.input_height) + res.getDimensionPixelSize(R.dimen.card_padding) * 2
+        // The footer (keycaps with a physical keyboard, or the instant mode offer) only takes room when shown.
+        val footerHeight = (rowHeight * 0.85f).toInt()
 
         ViewCompat.setOnApplyWindowInsetsListener(windowRoot) { v, insets ->
             val bars: Insets = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
@@ -390,8 +396,14 @@ class LauncherPanel(
             val hintRows = (if (usageHint.view.visibility == View.VISIBLE) 1 else 0) + (if (shortcutHint.view.visibility == View.VISIBLE) 1 else 0)
             val hintRow = hintRows * rowHeight + (if (hintRows > 0) headerHeight else 0)
             val pinnedSection = if (pinnedCount() > 0) headerHeight + separatorHeight else 0
-            val available = screenHeight - topMargin - bottom - fixedChrome - hintRow - pinnedSection
-            val maxRows = (available / rowHeight).coerceIn(3, Ranker.MAX_RESULTS)
+            val footerSpace = if (footer.visibility == View.VISIBLE) footerHeight else 0
+            val available = screenHeight - topMargin - bottom - fixedChrome - footerSpace - hintRow - pinnedSection
+            // Every result is bound and the list scrolls within the space left, so nothing is dropped. The
+            // viewport is that exact space: a half-visible last row shows there is more.
+            val maxRows = Ranker.MAX_RESULTS
+            // The Pinned header and hairline scroll with the rows, so they are part of the viewport.
+            val inList = if (pinnedCount() > 0) headerHeight + separatorHeight else 0
+            resultsScroll.maxHeight = maxOf(rowHeight, available + inList)
             if (resultsView.maxVisible != maxRows) {
                 resultsView.maxVisible = maxRows
                 bindResults()
