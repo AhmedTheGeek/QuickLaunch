@@ -46,6 +46,7 @@ disappears the moment you launch something.
   toggles the flashlight. Give them aliases too, like `fl`.
 - **Your own shortcuts.** Give an app an alias in settings (`sp` for Spotify) and typing it always
   puts that app first.
+- **Type `?`** to see every keyword, alias and trick; pick one and it's typed in for you.
 - **Settings when you want them.** Type `settings` (or `qls`) to open Quick Launch Settings: turn
   features off, change keywords, add your own search engines.
 - **Big screens welcome.** A centered palette on tablets, foldables and DeX. Full width on phones.

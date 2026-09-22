@@ -29,6 +29,7 @@ import com.ahmedgeek.quicklaunch.search.Ranker
 import com.ahmedgeek.quicklaunch.search.TextNormalizer
 import com.ahmedgeek.quicklaunch.settings.Prefs
 import com.ahmedgeek.quicklaunch.suggest.Suggestion
+import com.ahmedgeek.quicklaunch.suggest.Suggestions
 
 /**
  * The search UI, independent of how it is hosted. [LaunchActivity] hosts it in an activity window
@@ -379,6 +380,12 @@ class LauncherPanel(
     }
 
     private fun run(s: Suggestion) {
+        val fill = s.fill
+        if (fill != null) {
+            input.setText(fill)
+            input.setSelection(fill.length)
+            return
+        }
         if (launched) return
         launched = true
         if (s.run(app)) host.dismiss() else launched = false
@@ -465,6 +472,8 @@ class LauncherPanel(
         Trace.beginSection("ql.rank")
         val entries = index.awaitSnapshot()
         Ranker.rank(entries, query, System.currentTimeMillis(), results, app.aliases.target(query))
+        // The ? list stands alone; "?" normalizes to an empty query, which would list the usual apps under it.
+        if (rawQuery.startsWith(Suggestions.HELP)) results.clear()
         collectSuggestions()
         Trace.endSection()
 

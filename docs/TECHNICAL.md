@@ -76,6 +76,9 @@ How it works, why it is built the way it is, and how to build it. For the short 
   alias puts the row above the apps; a partial name (3+ letters) puts it below them via
   `Suggestion.belowApps`, so `dis` still opens Discord first. `ResultsView` gives trailing rows their
   place and trims the app rows instead.
+- **`?` list.** Lists aliases, enabled search keywords and one example per enabled feature; `?y`
+  filters. Rows carry `Suggestion.fill`, so choosing one types it into the box instead of running
+  anything (like Flow Launcher's plugin indicator). App results are hidden while it is up.
 - **App aliases.** Set in settings; `AliasStore` maps a normalized alias to an entry key. When the
   whole query is an alias, that entry gets `TIER_ALIAS`, above an exact name match. Anything else
   ranks as before. The map is parsed once and again only after it changes.

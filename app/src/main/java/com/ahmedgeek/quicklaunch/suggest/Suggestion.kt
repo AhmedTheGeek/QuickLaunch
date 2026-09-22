@@ -27,6 +27,8 @@ class Suggestion(
     @JvmField val handlerUrl: String?,
     /** Shown after the app results instead of before them: a weaker match than the apps. */
     @JvmField val belowApps: Boolean = false,
+    /** When set, choosing the row types this into the search box instead of running it. */
+    @JvmField val fill: String? = null,
     /** Main thread. Returns true when the panel should close. */
     @JvmField val run: (Context) -> Boolean,
 ) {
