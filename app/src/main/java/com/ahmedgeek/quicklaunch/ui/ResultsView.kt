@@ -14,13 +14,14 @@ import androidx.core.content.ContextCompat
 import com.ahmedgeek.quicklaunch.R
 import com.ahmedgeek.quicklaunch.index.AppEntry
 import com.ahmedgeek.quicklaunch.search.Ranker
+import com.ahmedgeek.quicklaunch.suggest.Suggestion
 
 /**
  * Fixed pool of pre-inflated rows. No adapter, no recycling, no animations: results are capped at
  * [Ranker.MAX_RESULTS] and always fit on screen, so toggling visibility is the cheapest possible list.
  *
- * Row 0 can hold a clipboard link instead of an app; app results then start at row 1. Selection
- * indices are over the combined list, so the host never has to know which rows are which.
+ * Leading rows can hold suggestions (the clipboard link, ...) instead of apps; app results follow
+ * them. Selection indices are over the combined list, so the host never has to know which rows are which.
  *
  * On the empty query, pinned apps form their own section: a "Pinned" header above them and a
  * hairline below, both plain child views that are re-inserted at the right child index only when
@@ -35,12 +36,12 @@ class ResultsView @JvmOverloads constructor(
     private val pinnedHeader: TextView
     private val separator: View
     private var selectedIndex = -1
-    /** Rows currently visible: the link row (if any) plus bound app results. */
+    /** Rows currently visible: suggestions plus bound app results. */
     private var boundCount = 0
 
     var iconLoader: IconLoader? = null
     var onRowClick: ((AppEntry) -> Unit)? = null
-    var onLinkClick: ((String) -> Unit)? = null
+    var onSuggestionClick: ((Suggestion) -> Unit)? = null
     /** Long press fired, finger still down: show the row's context menu. */
     var onRowLongPress: ((AppEntry, View) -> Unit)? = null
     /** Moved after the long press while still held: return true if a drag was started for this entry. */
@@ -60,14 +61,14 @@ class ResultsView @JvmOverloads constructor(
         orientation = VERTICAL
         val inflater = LayoutInflater.from(context)
         val placeholder = ContextCompat.getDrawable(context, R.drawable.bg_icon_placeholder)!!
-        // One spare row so a clipboard link never displaces the full set of app results.
-        rows = Array(Ranker.MAX_RESULTS + 1) { i ->
+        // Suggestions and apps share these rows; together they never exceed maxVisible.
+        rows = Array(Ranker.MAX_RESULTS) { i ->
             val v = inflater.inflate(R.layout.row_result, this, false)
             addView(v)
             val row = ResultRow(v, placeholder)
             v.setOnClickListener {
                 row.entry?.let { e -> onRowClick?.invoke(e) }
-                row.link?.let { url -> onLinkClick?.invoke(url) }
+                row.suggestion?.let { s -> onSuggestionClick?.invoke(s) }
             }
             installLongPress(v, row)
             // While clickable, the pin owns its touches, so a long press on it never arms the row.
@@ -124,38 +125,50 @@ class ResultsView @JvmOverloads constructor(
     }
 
     /**
-     * @param link clipboard URL shown as the first row, or null
+     * @param suggestions rows shown before the apps
+     * @param trailing rows shown after the apps; they keep their place and the apps give way
      * @param pinned how many leading [results] form the pinned section; 0 hides the section
-     * @param selected index over the combined list (link row first when present)
+     * @param selected index over the combined list (suggestions first)
      */
-    fun bind(link: String?, results: List<AppEntry>, pinned: Int, selected: Int, onIcon: (String, Bitmap) -> Unit) {
+    fun bind(
+        suggestions: List<Suggestion>,
+        results: List<AppEntry>,
+        trailing: List<Suggestion>,
+        pinned: Int,
+        selected: Int,
+        onIcon: (String, Bitmap) -> Unit,
+    ) {
         val loader = iconLoader
-        val offset = if (link != null) 1 else 0
+        val offset = minOf(suggestions.size, maxVisible)
+        val tail = minOf(trailing.size, maxVisible - offset)
         // Rows are reused by position: clear the old highlight before it lands on a different app.
         if (selectedIndex in rows.indices) rows[selectedIndex].setSelected(false)
-        if (link != null) {
-            val key = ResultRow.linkKey(link)
-            val cached = loader?.peek(key)
-            rows[0].bindLink(link, cached)
-            if (cached == null) loader?.requestLinkIcon(link, key, onIcon)
-        }
-        val count = minOf(results.size, maxVisible - offset)
-        for (i in 0 until Ranker.MAX_RESULTS) {
-            val row = rows[i + offset]
-            if (i < count) {
-                val e = results[i]
-                val cached = loader?.peek(e.key)
-                row.bind(e, cached)
-                if (cached == null) loader?.request(e, onIcon)
-            } else {
-                row.hide()
+        val count = minOf(results.size, maxVisible - offset - tail)
+        for (i in rows.indices) {
+            val row = rows[i]
+            val app = i - offset
+            when {
+                i < offset -> bindSuggestion(row, suggestions[i], onIcon)
+                app < count -> {
+                    val e = results[app]
+                    val cached = loader?.peek(e.key)
+                    row.bind(e, cached)
+                    if (cached == null) loader?.request(e, onIcon)
+                }
+                app - count < tail -> bindSuggestion(row, trailing[app - count], onIcon)
+                else -> row.hide()
             }
         }
-        if (link == null) rows[Ranker.MAX_RESULTS].hide()
-        boundCount = offset + count
+        boundCount = offset + count + tail
         placeSection(offset, minOf(pinned, count), count)
         selectedIndex = -1
         setSelected(selected)
+    }
+
+    private fun bindSuggestion(row: ResultRow, s: Suggestion, onIcon: (String, Bitmap) -> Unit) {
+        val cached = iconLoader?.peek(s.key)
+        row.bindSuggestion(s, cached)
+        if (cached == null && s.handlerUrl != null) iconLoader?.requestLinkIcon(s.handlerUrl, s.key, onIcon)
     }
 
     /** Header before the first pinned row, hairline before the first suggestion after them. */

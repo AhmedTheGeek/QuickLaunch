@@ -14,6 +14,11 @@ val keystoreProps = Properties().apply {
 }
 val hasUploadKey = keystoreProps.containsKey("storeFile")
 
+// File search ("f invoice") needs MANAGE_EXTERNAL_STORAGE, which Play only allows for some kinds of apps
+// and asks to justify in the console. Off by default: the permission isn't even in the manifest and the
+// feature is hidden. Build with -Pquicklaunch.fileSearch=true (or put it in gradle.properties) to include it.
+val fileSearch = providers.gradleProperty("quicklaunch.fileSearch").map { it.toBoolean() }.getOrElse(false)
+
 android {
     namespace = "com.ahmedgeek.quicklaunch"
     compileSdk = 36
@@ -24,6 +29,13 @@ android {
         targetSdk = 36
         versionCode = 8
         versionName = "1.0.0"
+        resValue("bool", "file_search_build", fileSearch.toString())
+    }
+
+    if (fileSearch) {
+        // Build-type source sets merge on top of main, so this adds just the permission.
+        sourceSets.getByName("debug").manifest.srcFile("src/fileSearch/AndroidManifest.xml")
+        sourceSets.getByName("release").manifest.srcFile("src/fileSearch/AndroidManifest.xml")
     }
 
     signingConfigs {

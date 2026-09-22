@@ -20,6 +20,17 @@ How it works, why it is built the way it is, and how to build it. For the short 
   done at most once per clip (keyed by the clip timestamp) to keep the Android 12+ "pasted from your
   clipboard" toast to one per copy. Sensitive clips and clips the system has classified as URL-free
   are skipped from the description alone, without reading the content.
+- **Calculator.** Input with at least one operation (`3x3`, `2^10`, `15% * 80`, `sqrt(2)`, `2pi`)
+  shows its result as the first row; Enter copies it and closes. `Calculator` is a small recursive
+  descent parser on the raw input (the ranker only sees normalized text, which drops symbols). A
+  character-class check rejects most app queries before parsing, and a bare number is never a result.
+- **Unit conversion.** `<amount> <unit> in|to|as <unit>`: length, mass, volume, area, speed, time,
+  data, temperature, energy, pressure, angle. The amount can be any calculator expression. Fixed
+  factor tables in `UnitConverter`; no currencies, since those need live rates.
+- **Web search keywords.** `<keyword> <terms>` (`g`, `yt`, `ddg`, `wiki`, `maps`, `play`, `gh`)
+  shows a search row that opens the engine's URL with `ACTION_VIEW`, so App Links send YouTube or Maps
+  searches to their apps. The row icon is that handler app's, resolved once per engine. Nothing is
+  fetched by Quick Launch itself, so there is still no INTERNET permission.
 - Enter launches the top or arrow-selected result. Up/Down (also Tab, Ctrl+N/P, Ctrl+J/K) move
   the selection. Ctrl+1..9 launch that row directly. Esc, Back, tapping outside, Home or Recents close it.
 - **Pins.** The highlighted row carries a 48dp pin button at its trailing edge (outline when the
@@ -52,7 +63,36 @@ How it works, why it is built the way it is, and how to build it. For the short 
   fallback activity the system pairs the drop with our own window, so the app simply opens full screen.
 - Translucent floating card that follows the system light/dark setting, with blur behind (Android 12+). Full width on phones; on tablets, foldables
   and landscape it is a centered 560dp palette.
-- No settings, no network, no analytics.
+- **Settings.** `SettingsActivity` is a launcher activity, so the index lists it like any app
+  ("Quick Launch Settings": `settings`, `qls`) and it gets ranking, pins and icons for free; the
+  system App info gear opens it too (`APPLICATION_PREFERENCES`). Every feature defaults to on. Sources
+  re-read preferences lazily after a change, never on the show path. With the clipboard link off, the
+  clipboard is not read at all.
+- **Typed links.** Input that passes `LinkDetector` (the clipboard row's strict check) gets an
+  "Open link" row. A bare domain goes below the apps, so an app named "Booking.com" stays first;
+  with a path, a scheme or `www.` it goes on top.
+- **Phone settings.** `SystemShortcuts` lists public `Settings.ACTION_*` pages with a few keywords
+  each, plus the flashlight (`CameraManager.setTorchMode`, no permission). An exact name, keyword or
+  alias puts the row above the apps; a partial name (3+ letters) puts it below them via
+  `Suggestion.belowApps`, so `dis` still opens Discord first. `ResultsView` gives trailing rows their
+  place and trims the app rows instead.
+- **File search (optional build).** `f invoice` lists files whose name contains every word, newest
+  first, from `MediaStore.Files`; Enter opens the file with `ACTION_VIEW`. It needs All files access
+  (`MANAGE_EXTERNAL_STORAGE`), which Play only allows for some kinds of apps, so it is behind two
+  switches. At build time `-Pquicklaunch.fileSearch=true` (or `quicklaunch.fileSearch=true` in
+  `gradle.properties`) merges `src/fileSearch/AndroidManifest.xml` with the permission and sets
+  `R.bool.file_search_build`; without it the permission is not in the manifest and the feature and its
+  settings rows don't exist. In such a build it is still off until the user turns on *File search* in
+  settings, which opens the system All files access screen. The query only runs after the `f` keyword,
+  on its own thread, 150 ms after the last keystroke, and a newer query cancels the running one;
+  meanwhile the previous rows are narrowed locally so the list doesn't blink. Android 11+.
+- **`?` list.** Lists aliases, enabled search keywords and one example per enabled feature; `?y`
+  filters. Rows carry `Suggestion.fill`, so choosing one types it into the box instead of running
+  anything (like Flow Launcher's plugin indicator). App results are hidden while it is up.
+- **App aliases.** Set in settings; `AliasStore` maps a normalized alias to an entry key. When the
+  whole query is an alias, that entry gets `TIER_ALIAS`, above an exact name match. Anything else
+  ranks as before. The map is parsed once and again only after it changes.
+- No network, no analytics.
 
 ## Two ways it can appear
 
@@ -117,6 +157,8 @@ adb shell cmd package compile -m speed-profile -f com.ahmedgeek.quicklaunch
 
 ## Build
 
+File search is left out by default; add `-Pquicklaunch.fileSearch=true` to include it (see above).
+
 ```
 JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:assembleRelease :app:testDebugUnitTest
 adb install -r app/build/outputs/apk/release/app-release.apk
@@ -134,12 +176,14 @@ EntryActivity         launcher entry, never draws: shows the overlay or the fall
 LaunchActivity        fallback host for the panel (activity window)
 overlay/              OverlayController (TYPE_APPLICATION_OVERLAY window), OverlayRootView
 ui/LauncherPanel      the search UI shared by both hosts: input, ranking, keys, launch
-ui/ResultsView        8 pre-inflated rows plus one link slot, no adapter, no animations
+ui/ResultsView        8 pre-inflated rows shared by suggestions and apps, no adapter, no animations
 ui/IconLoader         icons rasterized off-main, memory + disk cache
 index/                AppIndex (enumerate, revalidate, snapshot), IndexStore (binary cache)
 search/               TextNormalizer, Ranker (tiered scorer), FrecencyStore, PinStore
 clipboard/            LinkDetector (pure URL check), ClipboardLinkSource (focus-gated read, per-clip cache)
 launch/AppLauncher    LauncherApps.startMainActivity, handles work profiles
+settings/             SettingsActivity (plain views), Prefs keys
+suggest/              Suggestion rows above the results; SuggestionSource per feature (Calculator, UnitConverter, WebSearch, SystemShortcuts)
 ```
 
 ## Known limits
