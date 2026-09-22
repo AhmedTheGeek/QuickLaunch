@@ -92,6 +92,8 @@ class LauncherPanel(
     /** URL on the clipboard when the panel opened, offered as the first row while the query is empty. */
     private var link: Suggestion? = null
     private var linkChecked = false
+    /** Input as typed (trimmed), for sources that care about symbols; [query] is normalized. */
+    private var rawQuery = ""
     private var query = ""
     /** Index over the combined list: suggestions first, app results follow. */
     private var selected = 0
@@ -316,11 +318,14 @@ class LauncherPanel(
         handlerUrl = url,
     ) { context -> Suggestion.openUrl(context, url) }
 
-    /** The link row only competes with the empty-query list; typing means the user wants an app. */
+    /** The link row only competes with the empty-query list; typing hands over to the sources. */
     private fun collectSuggestions() {
         suggestions.clear()
-        val l = link
-        if (query.isEmpty() && l != null) suggestions.add(l)
+        if (rawQuery.isEmpty()) {
+            link?.let { suggestions.add(it) }
+        } else {
+            app.suggestions.collect(rawQuery, query, suggestions)
+        }
     }
 
     /**
@@ -408,6 +413,7 @@ class LauncherPanel(
 
     private fun onQueryChanged(raw: String) {
         rowMenu.hide()
+        rawQuery = raw.trim()
         query = TextNormalizer.normalize(raw)
         selected = 0
         rerank()
@@ -439,7 +445,7 @@ class LauncherPanel(
 
         Trace.beginSection("ql.bind")
         bindResults()
-        emptyView.visibility = if (results.isEmpty() && query.isNotEmpty()) View.VISIBLE else View.GONE
+        emptyView.visibility = if (rowCount() == 0 && rawQuery.isNotEmpty()) View.VISIBLE else View.GONE
         updateUsageHint()
         // The pinned section takes header space away from rows; recompute the row budget when it toggles.
         val sectioned = pinnedCount() > 0

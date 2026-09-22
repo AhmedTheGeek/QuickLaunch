@@ -1,16 +1,19 @@
 package com.ahmedgeek.quicklaunch.suggest
 
 import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import com.ahmedgeek.quicklaunch.QuickLaunchApp
 import com.ahmedgeek.quicklaunch.R
 
 /**
- * A row that is not an app: the clipboard link today, later a calculator answer or a web search.
+ * A row that is not an app: the clipboard link, a calculator answer, a web search.
  * Suggestions sit above the app results and are built per query, so they stay small and cheap.
  */
 class Suggestion(
@@ -42,6 +45,16 @@ class Suggestion(
                 Toast.makeText(context, R.string.error_no_browser, Toast.LENGTH_SHORT).show()
                 false
             }
+        }
+
+        fun copy(context: Context, text: String): Boolean {
+            val cm = context.getSystemService(ClipboardManager::class.java) ?: return false
+            cm.setPrimaryClip(ClipData.newPlainText(text, text))
+            // Android 13+ confirms clipboard writes itself.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
+            }
+            return true
         }
     }
 }

@@ -20,6 +20,10 @@ How it works, why it is built the way it is, and how to build it. For the short 
   done at most once per clip (keyed by the clip timestamp) to keep the Android 12+ "pasted from your
   clipboard" toast to one per copy. Sensitive clips and clips the system has classified as URL-free
   are skipped from the description alone, without reading the content.
+- **Calculator.** Input with at least one operation (`3x3`, `2^10`, `15% * 80`, `sqrt(2)`, `2pi`)
+  shows its result as the first row; Enter copies it and closes. `Calculator` is a small recursive
+  descent parser on the raw input (the ranker only sees normalized text, which drops symbols). A
+  character-class check rejects most app queries before parsing, and a bare number is never a result.
 - Enter launches the top or arrow-selected result. Up/Down (also Tab, Ctrl+N/P, Ctrl+J/K) move
   the selection. Ctrl+1..9 launch that row directly. Esc, Back, tapping outside, Home or Recents close it.
 - **Pins.** The highlighted row carries a 48dp pin button at its trailing edge (outline when the
@@ -140,7 +144,7 @@ index/                AppIndex (enumerate, revalidate, snapshot), IndexStore (bi
 search/               TextNormalizer, Ranker (tiered scorer), FrecencyStore, PinStore
 clipboard/            LinkDetector (pure URL check), ClipboardLinkSource (focus-gated read, per-clip cache)
 launch/AppLauncher    LauncherApps.startMainActivity, handles work profiles
-suggest/              Suggestion: non-app rows above the results (clipboard link)
+suggest/              Suggestion rows above the results; SuggestionSource per feature (Calculator)
 ```
 
 ## Known limits

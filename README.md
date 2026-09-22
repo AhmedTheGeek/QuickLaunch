@@ -37,6 +37,7 @@ disappears the moment you launch something.
 - **Split screen by drag.** Long-press a result and drag it to open it next to the current app.
 - **Long-press for more.** Hold a result for App info or Add to Home screen.
 - **Copied a link?** It shows up as the first row. Press Enter to open it.
+- **Quick math.** Type `3x3` or `(12+4)/2` and the answer is the first row. Enter copies it.
 - **Big screens welcome.** A centered palette on tablets, foldables and DeX. Full width on phones.
 - **Private by design.** No internet permission. No analytics. No ads. About 90 KB.
 
