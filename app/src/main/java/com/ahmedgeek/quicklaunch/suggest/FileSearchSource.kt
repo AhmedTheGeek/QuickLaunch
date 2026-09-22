@@ -65,7 +65,14 @@ class FileSearchSource(private val context: Context) : SuggestionSource {
         schedule(terms)
     }
 
-    private fun row(h: Hit) = Suggestion("files|${h.id}", h.name, h.folder, R.drawable.ic_file, null) { c -> open(c, h) }
+    private fun row(h: Hit): Suggestion {
+        val uri = ContentUris.withAppendedId(FILES, h.id)
+        val visual = h.mime != null && (h.mime.startsWith("image/") || h.mime.startsWith("video/"))
+        return Suggestion(
+            "files|${h.id}", h.name, h.folder, R.drawable.ic_file, null,
+            content = uri, contentMime = h.mime, thumbnail = if (visual) uri else null,
+        ) { c -> open(c, h) }
+    }
 
     private fun schedule(terms: String) {
         pending?.let { worker.removeCallbacks(it) }

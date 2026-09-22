@@ -29,6 +29,11 @@ class Suggestion(
     @JvmField val belowApps: Boolean = false,
     /** When set, choosing the row types this into the search box instead of running it. */
     @JvmField val fill: String? = null,
+    /** A file behind the row: long press and slide drags it into the app underneath. */
+    @JvmField val content: android.net.Uri? = null,
+    @JvmField val contentMime: String? = null,
+    /** Shown as the row icon, loaded off-main (images and videos). */
+    @JvmField val thumbnail: android.net.Uri? = null,
     /** Main thread. Returns true when the panel should close. */
     @JvmField val run: (Context) -> Boolean,
 ) {

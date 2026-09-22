@@ -46,6 +46,8 @@ class ResultsView @JvmOverloads constructor(
     var onRowLongPress: ((AppEntry, View) -> Unit)? = null
     /** Moved after the long press while still held: return true if a drag was started for this entry. */
     var onRowDrag: ((AppEntry, View) -> Boolean)? = null
+    /** Moved after a long press on a file row: return true if a drag was started. */
+    var onContentDrag: ((Suggestion, View) -> Boolean)? = null
     /** Tap on a row's pin button; the view is passed for haptic feedback. */
     var onPinClick: ((AppEntry, android.view.View) -> Unit)? = null
 
@@ -101,10 +103,12 @@ class ResultsView @JvmOverloads constructor(
         var downX = 0f
         var downY = 0f
         v.setOnLongClickListener {
-            val e = row.entry ?: return@setOnLongClickListener false
+            val e = row.entry
+            // File rows have no menu: the long press only arms the drag.
+            if (e == null && row.suggestion?.content == null) return@setOnLongClickListener false
             armed = true
             v.parent?.requestDisallowInterceptTouchEvent(true)
-            onRowLongPress?.invoke(e, v)
+            if (e != null) onRowLongPress?.invoke(e, v)
             true // the view gives the long-press haptic itself when the listener consumes it
         }
         v.setOnTouchListener { _, ev ->
@@ -116,7 +120,8 @@ class ResultsView @JvmOverloads constructor(
                 }
                 MotionEvent.ACTION_MOVE -> if (armed && moved(ev, downX, downY)) {
                     armed = false
-                    row.entry?.let { e -> onRowDrag?.invoke(e, v) }
+                    val e = row.entry
+                    if (e != null) onRowDrag?.invoke(e, v) else row.suggestion?.let { s -> onContentDrag?.invoke(s, v) }
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> armed = false
             }
@@ -168,7 +173,9 @@ class ResultsView @JvmOverloads constructor(
     private fun bindSuggestion(row: ResultRow, s: Suggestion, onIcon: (String, Bitmap) -> Unit) {
         val cached = iconLoader?.peek(s.key)
         row.bindSuggestion(s, cached)
-        if (cached == null && s.handlerUrl != null) iconLoader?.requestLinkIcon(s.handlerUrl, s.key, onIcon)
+        if (cached != null) return
+        if (s.handlerUrl != null) iconLoader?.requestLinkIcon(s.handlerUrl, s.key, onIcon)
+        else if (s.thumbnail != null) iconLoader?.requestThumbnail(s.thumbnail, s.key, onIcon)
     }
 
     /** Header before the first pinned row, hairline before the first suggestion after them. */

@@ -114,6 +114,7 @@ class LauncherPanel(
         resultsView.onSuggestionClick = { s -> run(s) }
         resultsView.onRowLongPress = { entry, row -> if (!launched && !dragging) rowMenu.show(entry, row) }
         resultsView.onRowDrag = { entry, row -> startDrag(entry, row) }
+        resultsView.onContentDrag = { s, row -> startContentDrag(s, row) }
         rowMenu.canAddToHome = { entry -> app.homeShortcuts.canAdd(entry) }
         rowMenu.onAppInfo = { entry -> showAppInfo(entry) }
         rowMenu.onAddToHome = { entry -> addToHome(entry) }
@@ -123,7 +124,7 @@ class LauncherPanel(
                 Log.d(QuickLaunchApp.TAG, "drag event action=${event.action} result=${event.result} dragging=$dragging")
             }
             when (event.action) {
-                android.view.DragEvent.ACTION_DRAG_STARTED -> event.localState is AppEntry
+                android.view.DragEvent.ACTION_DRAG_STARTED -> event.localState is AppEntry || event.localState is Suggestion
                 android.view.DragEvent.ACTION_DRAG_ENDED -> {
                     endDrag(dropped = event.result)
                     true
@@ -627,6 +628,22 @@ class LauncherPanel(
         dragging = true
         host.onDragStarted()
         // Safety net: if the system never reports the end of the drag, never leave an invisible window behind.
+        windowRoot.postDelayed(dragWatchdog, 15_000L)
+        return true
+    }
+
+    /** A file row: same see-through window as an app drag, so the drop lands in the app underneath. */
+    private fun startContentDrag(s: Suggestion, row: View): Boolean {
+        val uri = s.content ?: return false
+        if (dragging) return false
+        imeWasVisible = false
+        KeyboardUtil.hideIme(input)
+        if (!AppDrag.startContent(row, uri, s.contentMime, s.title, s)) {
+            Log.w(QuickLaunchApp.TAG, "file drag refused for ${s.key}")
+            return false
+        }
+        dragging = true
+        host.onDragStarted()
         windowRoot.postDelayed(dragWatchdog, 15_000L)
         return true
     }
