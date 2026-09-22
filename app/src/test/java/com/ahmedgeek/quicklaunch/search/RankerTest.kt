@@ -22,6 +22,12 @@ class RankerTest {
         return out.map { it.label }
     }
 
+    private fun rankAlias(q: String, alias: AppEntry, vararg apps: AppEntry): List<String> {
+        val out = ArrayList<AppEntry>()
+        Ranker.rank(apps.toList(), TextNormalizer.normalize(q), now, out, alias.key)
+        return out.map { it.label }
+    }
+
     private val catalog = arrayOf(
         app("Messenger"), app("Messages"), app("Meta Business Suite"), app("Slack"), app("Spotify"),
         app("YouTube"), app("YouTube Music"), app("WhatsApp"), app("Google Maps"), app("Samsung Notes"),
@@ -141,5 +147,13 @@ class RankerTest {
     @Test fun pinNeverCrossesTiers() {
         val r = rank("mes", app("Messages"), app("Some Messy App", pin = 0, launches = 500))
         assertEquals("Messages", r.first())
+    }
+
+    /** Keys need a distinct user serial here: ComponentName is stubbed in JVM tests, so its part of the key is null. */
+    private fun aliased(label: String) = AppEntry(7, ComponentName("pkg", "Main"), label, false, false)
+
+    @Test fun aliasBeatsExactMatch() {
+        val spotify = aliased("Spotify")
+        assertEquals("Spotify", rankAlias("sp", spotify, app("Sp", launches = 20), spotify, app("Speedtest")).first())
     }
 }
