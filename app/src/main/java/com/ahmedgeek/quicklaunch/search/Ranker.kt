@@ -25,7 +25,7 @@ object Ranker {
     const val PIN_BOOST = 120
 
     /**
-     * @param query already normalized via [TextNormalizer.normalize]
+     * @param query already normalized via [TextNormalizer.normalizeQuery]
      * @param out cleared and filled with at most [MAX_RESULTS] entries, best first
      */
     fun rank(entries: List<AppEntry>, query: String, now: Long, out: MutableList<AppEntry>) {
@@ -91,6 +91,7 @@ object Ranker {
         val lengthPenalty = label.length.coerceAtMost(200)
 
         if (label == q) return TIER_EXACT + boost - lengthPenalty
+        if (q[q.length - 1] == ' ') return completeWord(label, q, boost, lengthPenalty)
         if (label.startsWith(q)) return TIER_PREFIX + boost - lengthPenalty
 
         val wordIndex = wordPrefixIndex(e.words, q)
@@ -101,7 +102,8 @@ object Ranker {
         val sub = label.indexOf(q)
         if (sub >= 0) return TIER_SUBSTRING + boost - (sub * 4).coerceAtMost(400) - lengthPenalty
 
-        if (q.length >= 2) {
+        // A space in the query separates words; letting fuzzy match it anywhere made "my o" find "My Tello".
+        if (q.length >= 2 && q.indexOf(' ') < 0) {
             val fuzzy = subsequence(label, q)
             if (fuzzy != NO_MATCH) {
                 val first = fuzzy ushr 16
@@ -110,6 +112,23 @@ object Ranker {
             }
         }
         return NO_MATCH
+    }
+
+    /**
+     * Query ending in a space: the typed words are complete and must appear literally at a word start,
+     * so "my " finds "My Tello" but not "MyDyson". Split camelCase words don't count here.
+     */
+    private fun completeWord(label: String, q: String, boost: Int, lengthPenalty: Int): Int {
+        if (label.length == q.length - 1 && label.regionMatches(0, q, 0, label.length)) {
+            return TIER_EXACT + boost - lengthPenalty
+        }
+        var at = label.indexOf(q)
+        while (at > 0 && label[at - 1] != ' ') at = label.indexOf(q, at + 1)
+        return when {
+            at == 0 -> TIER_PREFIX + boost - lengthPenalty
+            at > 0 -> TIER_WORD_PREFIX + boost - (at * 4).coerceAtMost(400) - lengthPenalty
+            else -> NO_MATCH
+        }
     }
 
     /**

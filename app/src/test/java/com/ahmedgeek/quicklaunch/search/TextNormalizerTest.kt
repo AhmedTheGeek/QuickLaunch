@@ -10,6 +10,8 @@ class TextNormalizerTest {
     @Test fun collapsesPunctuation() = assertEquals("meta business suite", TextNormalizer.normalize("Meta - Business_Suite"))
     @Test fun keepsDigits() = assertEquals("1password", TextNormalizer.normalize("1Password"))
     @Test fun emptyStaysEmpty() = assertEquals("", TextNormalizer.normalize(""))
+    @Test fun queryKeepsOneTrailingSpace() = assertEquals("my ", TextNormalizer.normalizeQuery("My  "))
+    @Test fun queryWithOnlySpacesIsEmpty() = assertEquals("", TextNormalizer.normalizeQuery("   "))
 
     @Test fun splitsCamelCase() = assertArrayEquals(arrayOf("you", "tube"), TextNormalizer.splitWords("YouTube"))
     @Test fun splitsCamelCaseWithSpaces() =
