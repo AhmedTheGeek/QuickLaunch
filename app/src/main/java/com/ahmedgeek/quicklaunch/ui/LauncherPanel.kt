@@ -1,10 +1,7 @@
 package com.ahmedgeek.quicklaunch.ui
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Rect
-import android.net.Uri
 import android.os.SystemClock
 import android.os.Trace
 import android.text.Editable
@@ -25,11 +22,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ahmedgeek.quicklaunch.QuickLaunchApp
 import com.ahmedgeek.quicklaunch.R
-import com.ahmedgeek.quicklaunch.clipboard.ClipboardLinkSource
+import com.ahmedgeek.quicklaunch.clipboard.LinkDetector
 import com.ahmedgeek.quicklaunch.index.AppEntry
 import com.ahmedgeek.quicklaunch.launch.LaunchResult
 import com.ahmedgeek.quicklaunch.search.Ranker
 import com.ahmedgeek.quicklaunch.search.TextNormalizer
+import com.ahmedgeek.quicklaunch.settings.Prefs
+import com.ahmedgeek.quicklaunch.suggest.Suggestion
 
 /**
  * The search UI, independent of how it is hosted. [LaunchActivity] hosts it in an activity window
@@ -89,11 +88,15 @@ class LauncherPanel(
     private val prefs = app.getSharedPreferences("ql", android.content.Context.MODE_PRIVATE)
 
     private val results = ArrayList<AppEntry>(Ranker.MAX_RESULTS)
+    /** Rows shown above the apps for the current query. */
+    private val suggestions = ArrayList<Suggestion>(4)
     /** URL on the clipboard when the panel opened, offered as the first row while the query is empty. */
-    private var link: String? = null
+    private var link: Suggestion? = null
     private var linkChecked = false
+    /** Input as typed (trimmed), for sources that care about symbols; [query] is normalized. */
+    private var rawQuery = ""
     private var query = ""
-    /** Index over the combined list: the link row (when shown) is 0, app results follow. */
+    /** Index over the combined list: suggestions first, app results follow. */
     private var selected = 0
     private var launched = false
     private var active = false
@@ -105,7 +108,7 @@ class LauncherPanel(
     init {
         resultsView.iconLoader = icons
         resultsView.onRowClick = { entry -> launch(entry) }
-        resultsView.onLinkClick = { url -> openLink(url) }
+        resultsView.onSuggestionClick = { s -> run(s) }
         resultsView.onRowLongPress = { entry, row -> if (!launched && !dragging) rowMenu.show(entry, row) }
         resultsView.onRowDrag = { entry, row -> startDrag(entry, row) }
         rowMenu.canAddToHome = { entry -> app.homeShortcuts.canAdd(entry) }
@@ -297,18 +300,38 @@ class LauncherPanel(
 
     /** Reads the clipboard once per show. A dropped drag or a refocus never re-reads. */
     private fun refreshLink() {
+        if (!prefs.getBoolean(Prefs.CLIPBOARD_LINK, true)) {
+            linkChecked = true
+            return
+        }
         val found = clipboard.currentLink()
         if (found == null && !windowRoot.hasWindowFocus()) return // not yet allowed to read; try again on focus
         linkChecked = true
-        if (found == link) return
-        link = found
+        if (found == link?.handlerUrl) return
+        link = found?.let { linkSuggestion(it) }
         if (Log.isLoggable(QuickLaunchApp.TAG, Log.DEBUG)) Log.d(QuickLaunchApp.TAG, "clipboard link=${found != null}")
         selected = 0
+        collectSuggestions()
         bindResults()
     }
 
-    /** The link row only competes with the empty-query list; typing means the user wants an app. */
-    private fun visibleLink(): String? = if (query.isEmpty()) link else null
+    private fun linkSuggestion(url: String) = Suggestion(
+        key = "link|$url",
+        title = LinkDetector.display(url),
+        badge = res.getText(R.string.link_open),
+        glyph = R.drawable.ic_link,
+        handlerUrl = url,
+    ) { context -> Suggestion.openUrl(context, url) }
+
+    /** The link row only competes with the empty-query list; typing hands over to the sources. */
+    private fun collectSuggestions() {
+        suggestions.clear()
+        if (rawQuery.isEmpty()) {
+            link?.let { suggestions.add(it) }
+        } else {
+            app.suggestions.collect(rawQuery, query, suggestions)
+        }
+    }
 
     /**
      * Pinned apps lead the empty-query list (the ranker puts them first), shown as their own section.
@@ -321,28 +344,15 @@ class LauncherPanel(
         return n
     }
 
-    private fun bindResults() = resultsView.bind(visibleLink(), results, pinnedCount(), selected, iconCallback)
+    private fun bindResults() = resultsView.bind(suggestions, results, pinnedCount(), selected, iconCallback)
 
-    /** Rows the user can select: the link row plus app results. */
-    private fun rowCount(): Int = (if (visibleLink() != null) 1 else 0) + results.size
+    /** Rows the user can select: suggestions plus app results. */
+    private fun rowCount(): Int = suggestions.size + results.size
 
-    private fun openLink(url: String) {
+    private fun run(s: Suggestion) {
         if (launched) return
         launched = true
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            .addCategory(Intent.CATEGORY_BROWSABLE)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        try {
-            app.startActivity(intent)
-            host.dismiss()
-        } catch (e: ActivityNotFoundException) {
-            launched = false
-            Toast.makeText(app, R.string.error_no_browser, Toast.LENGTH_SHORT).show()
-        } catch (e: RuntimeException) {
-            launched = false
-            Log.w(QuickLaunchApp.TAG, "open link failed", e)
-            Toast.makeText(app, R.string.error_no_browser, Toast.LENGTH_SHORT).show()
-        }
+        if (s.run(app)) host.dismiss() else launched = false
     }
 
     // ---- Insets --------------------------------------------------------------------------------
@@ -408,6 +418,7 @@ class LauncherPanel(
 
     private fun onQueryChanged(raw: String) {
         rowMenu.hide()
+        rawQuery = raw.trim()
         query = TextNormalizer.normalize(raw)
         selected = 0
         rerank()
@@ -424,21 +435,22 @@ class LauncherPanel(
     private fun rerank(keepSelection: Boolean = false, follow: AppEntry? = null) {
         Trace.beginSection("ql.rank")
         val entries = index.awaitSnapshot()
-        Ranker.rank(entries, query, System.currentTimeMillis(), results)
+        Ranker.rank(entries, query, System.currentTimeMillis(), results, app.aliases.target(query))
+        collectSuggestions()
         Trace.endSection()
 
         val rows = rowCount()
         val followed = if (follow != null) results.indexOf(follow) else -1
         selected = when {
             rows == 0 -> 0
-            followed >= 0 -> (followed + (if (visibleLink() != null) 1 else 0)).coerceAtMost(resultsView.maxVisible - 1)
+            followed >= 0 -> (followed + suggestions.size).coerceAtMost(resultsView.maxVisible - 1)
             keepSelection -> selected.coerceIn(0, rows - 1)
             else -> 0
         }
 
         Trace.beginSection("ql.bind")
         bindResults()
-        emptyView.visibility = if (results.isEmpty() && query.isNotEmpty()) View.VISIBLE else View.GONE
+        emptyView.visibility = if (rowCount() == 0 && rawQuery.isNotEmpty()) View.VISIBLE else View.GONE
         updateUsageHint()
         // The pinned section takes header space away from rows; recompute the row budget when it toggles.
         val sectioned = pinnedCount() > 0
@@ -460,11 +472,8 @@ class LauncherPanel(
 
     // ---- Pins ----------------------------------------------------------------------------------
 
-    /** The app entry at a combined-list row index, or null for the link row / out of range. */
-    private fun entryAt(row: Int): AppEntry? {
-        val offset = if (visibleLink() != null) 1 else 0
-        return results.getOrNull(row - offset)
-    }
+    /** The app entry at a combined-list row index, or null for a suggestion / out of range. */
+    private fun entryAt(row: Int): AppEntry? = results.getOrNull(row - suggestions.size)
 
     /**
      * Pin or unpin and re-rank so the row moves where it now belongs, keeping the selection on it.
@@ -590,12 +599,11 @@ class LauncherPanel(
 
     private fun launchSelected() = launchRow(selected)
 
-    /** Launch whatever sits at a combined-list row index: the link row or an app. Ignores rows not on screen. */
+    /** Launch whatever sits at a combined-list row index: a suggestion or an app. Ignores rows not on screen. */
     private fun launchRow(row: Int) {
         if (row < 0 || row >= minOf(rowCount(), resultsView.maxVisible)) return
-        val url = visibleLink()
-        if (url != null && row == 0) {
-            openLink(url)
+        if (row < suggestions.size) {
+            run(suggestions[row])
             return
         }
         launch(entryAt(row) ?: return)
