@@ -41,6 +41,8 @@ disappears the moment you launch something.
   Units too: `10cm in inch`, `70f to c`, `5 kg in lb`.
 - **Search keywords.** `g pizza near me` searches Google, `yt funny cat` YouTube. Also `ddg`,
   `wiki`, `maps`, `play` and `gh`. Opens in the matching app when you have it.
+- **Phone settings and the flashlight.** `wifi`, `bluetooth`, `battery` open that page; `torch`
+  toggles the flashlight. Give them aliases too, like `fl`.
 - **Your own shortcuts.** Give an app an alias in settings (`sp` for Spotify) and typing it always
   puts that app first.
 - **Settings when you want them.** Type `settings` (or `qls`) to open Quick Launch Settings: turn

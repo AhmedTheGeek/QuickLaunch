@@ -27,6 +27,12 @@
     <!-- Web search row, e.g. "Search YouTube". -->
     <string name="web_search_badge">Search %1$s</string>
 
+    <!-- System settings rows and the flashlight. -->
+    <string name="system_setting">Setting</string>
+    <string name="torch_turn_on">Turn on</string>
+    <string name="torch_turn_off">Turn off</string>
+    <string name="error_setting_missing">Not available on this phone</string>
+
     <!-- Settings screen. Also searchable from the card as "Quick Launch Settings". -->
     <string name="settings_title">Quick Launch Settings</string>
     <string name="settings_search">Search</string>
@@ -38,6 +44,8 @@
     <string name="settings_clipboard_summary">If you copied a link, it’s the first row until you start typing. When off, the clipboard is never read</string>
     <string name="settings_web">Search keywords</string>
     <string name="settings_web_summary">yt funny cat, g pizza near me</string>
+    <string name="settings_system">Phone settings</string>
+    <string name="settings_system_summary">wifi, bluetooth, battery, flashlight</string>
     <string name="settings_engines">Search engines</string>
     <string name="settings_engine_summary">%1$s …</string>
     <string name="settings_engine_add">Add search engine</string>
@@ -55,6 +63,7 @@
     <string name="settings_alias_add_summary">A short word that always puts an app first, like sp for Spotify</string>
     <string name="settings_alias_pick">Choose an app</string>
     <string name="settings_alias_work">%1$s (work)</string>
+    <string name="settings_alias_system">%1$s (setting)</string>
     <string name="settings_alias_hint">Alias, e.g. sp</string>
     <string name="settings_alias_bad">Needs a letter or digit</string>
     <string name="settings_permissions">Permissions</string>

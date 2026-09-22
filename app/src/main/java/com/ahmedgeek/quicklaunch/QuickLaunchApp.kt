@@ -43,8 +43,8 @@ class QuickLaunchApp : Application() {
         homeShortcuts = com.ahmedgeek.quicklaunch.launch.HomeShortcuts(this, index)
         overlay = OverlayController(this)
         clipboardLinks = ClipboardLinkSource(this)
-        suggestions = Suggestions(this)
         aliases = AliasStore(Prefs.get(this))
+        suggestions = Suggestions(this, aliases)
 
         // Cache load runs concurrently with LaunchActivity.onCreate; the activity waits a few ms at most.
         Bg.bg.post { index.loadCache() }

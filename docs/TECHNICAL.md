@@ -68,6 +68,11 @@ How it works, why it is built the way it is, and how to build it. For the short 
   system App info gear opens it too (`APPLICATION_PREFERENCES`). Every feature defaults to on. Sources
   re-read preferences lazily after a change, never on the show path. With the clipboard link off, the
   clipboard is not read at all.
+- **Phone settings.** `SystemShortcuts` lists public `Settings.ACTION_*` pages with a few keywords
+  each, plus the flashlight (`CameraManager.setTorchMode`, no permission). An exact name, keyword or
+  alias puts the row above the apps; a partial name (3+ letters) puts it below them via
+  `Suggestion.belowApps`, so `dis` still opens Discord first. `ResultsView` gives trailing rows their
+  place and trims the app rows instead.
 - **App aliases.** Set in settings; `AliasStore` maps a normalized alias to an entry key. When the
   whole query is an alias, that entry gets `TIER_ALIAS`, above an exact name match. Anything else
   ranks as before. The map is parsed once and again only after it changes.
@@ -160,7 +165,7 @@ search/               TextNormalizer, Ranker (tiered scorer), FrecencyStore, Pin
 clipboard/            LinkDetector (pure URL check), ClipboardLinkSource (focus-gated read, per-clip cache)
 launch/AppLauncher    LauncherApps.startMainActivity, handles work profiles
 settings/             SettingsActivity (plain views), Prefs keys
-suggest/              Suggestion rows above the results; SuggestionSource per feature (Calculator, UnitConverter, WebSearch)
+suggest/              Suggestion rows above the results; SuggestionSource per feature (Calculator, UnitConverter, WebSearch, SystemShortcuts)
 ```
 
 ## Known limits

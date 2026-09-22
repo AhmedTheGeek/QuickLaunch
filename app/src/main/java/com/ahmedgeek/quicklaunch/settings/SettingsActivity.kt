@@ -19,10 +19,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ahmedgeek.quicklaunch.QuickLaunchApp
 import com.ahmedgeek.quicklaunch.R
-import com.ahmedgeek.quicklaunch.index.AppEntry
 import com.ahmedgeek.quicklaunch.index.UsageSource
 import com.ahmedgeek.quicklaunch.shortcut.KeyboardShortcutService
 import com.ahmedgeek.quicklaunch.shortcut.ShortcutDisclosureActivity
+import com.ahmedgeek.quicklaunch.suggest.SystemShortcuts
 import com.ahmedgeek.quicklaunch.suggest.WebSearch
 
 /**
@@ -64,6 +64,7 @@ class SettingsActivity : Activity() {
         toggle(R.string.settings_units, R.string.settings_units_summary, Prefs.UNITS)
         toggle(R.string.settings_clipboard, R.string.settings_clipboard_summary, Prefs.CLIPBOARD_LINK)
         toggle(R.string.settings_web, R.string.settings_web_summary, Prefs.WEB_SEARCH)
+        toggle(R.string.settings_system, R.string.settings_system_summary, Prefs.SYSTEM_SETTINGS)
 
         if (prefs.getBoolean(Prefs.WEB_SEARCH, true)) {
             header(R.string.settings_engines)
@@ -87,6 +88,7 @@ class SettingsActivity : Activity() {
         header(R.string.settings_aliases)
         val labels = HashMap<String, String>()
         for (e in QuickLaunchApp.get(this).index.awaitSnapshot()) labels[e.key] = e.label
+        for (s in SystemShortcuts.ALL) labels[s.key] = s.title
         for ((alias, key) in QuickLaunchApp.get(this).aliases.all()) {
             row(alias, labels[key] ?: key.substringAfter('|')) { removeAlias(alias) }
         }
@@ -181,20 +183,25 @@ class SettingsActivity : Activity() {
 
     // ---- Aliases -------------------------------------------------------------------------------
 
+    /** Settings pages and the flashlight first, then every app. */
     private fun pickApp() {
         val apps = QuickLaunchApp.get(this).index.awaitSnapshot()
-        val names = Array<CharSequence>(apps.size) { i ->
-            val e = apps[i]
+        val system = SystemShortcuts.ALL
+        val names = Array<CharSequence>(system.size + apps.size) { i ->
+            if (i < system.size) return@Array getString(R.string.settings_alias_system, system[i].title)
+            val e = apps[i - system.size]
             if (e.isWork) getString(R.string.settings_alias_work, e.label) else e.label
         }
         AlertDialog.Builder(this)
             .setTitle(R.string.settings_alias_pick)
-            .setItems(names) { _, i -> askAlias(apps[i]) }
+            .setItems(names) { _, i ->
+                if (i < system.size) askAlias(system[i].title, system[i].key) else askAlias(apps[i - system.size].label, apps[i - system.size].key)
+            }
             .setNegativeButton(R.string.settings_cancel, null)
             .show()
     }
 
-    private fun askAlias(entry: AppEntry) {
+    private fun askAlias(title: String, key: String) {
         val pad = (resources.displayMetrics.density * 20).toInt()
         val input = EditText(this).apply {
             setHint(R.string.settings_alias_hint)
@@ -206,14 +213,14 @@ class SettingsActivity : Activity() {
             addView(input, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         }
         val dialog = AlertDialog.Builder(this)
-            .setTitle(entry.label)
+            .setTitle(title)
             .setView(frame)
             .setPositiveButton(R.string.settings_save, null)
             .setNegativeButton(R.string.settings_cancel, null)
             .create()
         dialog.setOnShowListener {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                if (QuickLaunchApp.get(this).aliases.set(input.text.toString(), entry.key)) {
+                if (QuickLaunchApp.get(this).aliases.set(input.text.toString(), key)) {
                     dialog.dismiss()
                     render()
                 } else {

@@ -13,8 +13,8 @@ import com.ahmedgeek.quicklaunch.QuickLaunchApp
 import com.ahmedgeek.quicklaunch.R
 
 /**
- * A row that is not an app: the clipboard link, a calculator answer, a web search.
- * Suggestions sit above the app results and are built per query, so they stay small and cheap.
+ * A row that is not an app: the clipboard link, a calculator answer, a web search, a system setting.
+ * Suggestions sit above the app results, or below them with [belowApps], and are built per query.
  */
 class Suggestion(
     /** Row tag and icon cache key. App keys start with a user serial, so these start with a letter. */
@@ -25,6 +25,8 @@ class Suggestion(
     @JvmField val glyph: Int,
     /** When set, the row shows the icon of the app that opens this URL instead of [glyph]. */
     @JvmField val handlerUrl: String?,
+    /** Shown after the app results instead of before them: a weaker match than the apps. */
+    @JvmField val belowApps: Boolean = false,
     /** Main thread. Returns true when the panel should close. */
     @JvmField val run: (Context) -> Boolean,
 ) {

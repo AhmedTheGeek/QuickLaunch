@@ -90,13 +90,15 @@ class LauncherPanel(
     private val results = ArrayList<AppEntry>(Ranker.MAX_RESULTS)
     /** Rows shown above the apps for the current query. */
     private val suggestions = ArrayList<Suggestion>(4)
+    /** Rows shown below the apps: matches weaker than an app name. */
+    private val trailing = ArrayList<Suggestion>(4)
     /** URL on the clipboard when the panel opened, offered as the first row while the query is empty. */
     private var link: Suggestion? = null
     private var linkChecked = false
     /** Input as typed (trimmed), for sources that care about symbols; [query] is normalized. */
     private var rawQuery = ""
     private var query = ""
-    /** Index over the combined list: suggestions first, app results follow. */
+    /** Index over the combined list: suggestions, app results, trailing suggestions. */
     private var selected = 0
     private var launched = false
     private var active = false
@@ -326,10 +328,19 @@ class LauncherPanel(
     /** The link row only competes with the empty-query list; typing hands over to the sources. */
     private fun collectSuggestions() {
         suggestions.clear()
+        trailing.clear()
         if (rawQuery.isEmpty()) {
             link?.let { suggestions.add(it) }
-        } else {
-            app.suggestions.collect(rawQuery, query, suggestions)
+            return
+        }
+        app.suggestions.collect(rawQuery, query, suggestions)
+        val it = suggestions.iterator()
+        while (it.hasNext()) {
+            val s = it.next()
+            if (s.belowApps) {
+                trailing.add(s)
+                it.remove()
+            }
         }
     }
 
@@ -344,10 +355,28 @@ class LauncherPanel(
         return n
     }
 
-    private fun bindResults() = resultsView.bind(suggestions, results, pinnedCount(), selected, iconCallback)
+    private fun bindResults() = resultsView.bind(suggestions, results, trailing, pinnedCount(), selected, iconCallback)
 
-    /** Rows the user can select: suggestions plus app results. */
-    private fun rowCount(): Int = suggestions.size + results.size
+    /** App rows on screen once leading and trailing suggestions have taken theirs; mirrors [ResultsView.bind]. */
+    private fun visibleApps(): Int {
+        val max = resultsView.maxVisible
+        val lead = minOf(suggestions.size, max)
+        val tail = minOf(trailing.size, max - lead)
+        return minOf(results.size, max - lead - tail)
+    }
+
+    /** Rows the user can select. */
+    private fun rowCount(): Int {
+        val max = resultsView.maxVisible
+        val lead = minOf(suggestions.size, max)
+        return lead + visibleApps() + minOf(trailing.size, max - lead)
+    }
+
+    /** The suggestion at a combined-list row index, or null for an app. */
+    private fun suggestionAt(row: Int): Suggestion? {
+        if (row < suggestions.size) return suggestions.getOrNull(row)
+        return trailing.getOrNull(row - suggestions.size - visibleApps())
+    }
 
     private fun run(s: Suggestion) {
         if (launched) return
@@ -473,7 +502,10 @@ class LauncherPanel(
     // ---- Pins ----------------------------------------------------------------------------------
 
     /** The app entry at a combined-list row index, or null for a suggestion / out of range. */
-    private fun entryAt(row: Int): AppEntry? = results.getOrNull(row - suggestions.size)
+    private fun entryAt(row: Int): AppEntry? {
+        val i = row - suggestions.size
+        return if (i >= 0 && i < visibleApps()) results[i] else null
+    }
 
     /**
      * Pin or unpin and re-rank so the row moves where it now belongs, keeping the selection on it.
@@ -602,8 +634,8 @@ class LauncherPanel(
     /** Launch whatever sits at a combined-list row index: a suggestion or an app. Ignores rows not on screen. */
     private fun launchRow(row: Int) {
         if (row < 0 || row >= minOf(rowCount(), resultsView.maxVisible)) return
-        if (row < suggestions.size) {
-            run(suggestions[row])
+        suggestionAt(row)?.let {
+            run(it)
             return
         }
         launch(entryAt(row) ?: return)

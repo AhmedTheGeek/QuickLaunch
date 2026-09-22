@@ -2,17 +2,19 @@ package com.ahmedgeek.quicklaunch.suggest
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.ahmedgeek.quicklaunch.search.AliasStore
 import com.ahmedgeek.quicklaunch.settings.Prefs
 
 /**
  * The built-in sources, in display order, filtered by the user's settings. App-scoped: the overlay
  * rebuilds its panel on every show. Settings are re-read lazily after they change, never on the show path.
  */
-class Suggestions(context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
+class Suggestions(context: Context, aliases: AliasStore) : SharedPreferences.OnSharedPreferenceChangeListener {
     private val prefs = Prefs.get(context)
     private val calculator = CalculatorSource(context)
     private val units = UnitSource(context)
     private val web = WebSearchSource(context)
+    private val system = SystemSettingsSource(context, aliases)
 
     private var sources: List<SuggestionSource> = emptyList()
     @Volatile private var stale = true
@@ -35,10 +37,11 @@ class Suggestions(context: Context) : SharedPreferences.OnSharedPreferenceChange
     private fun reload() {
         stale = false
         web.engines = WebSearch.parse(prefs.getString(Prefs.WEB_ENGINES, null))
-        val list = ArrayList<SuggestionSource>(3)
+        val list = ArrayList<SuggestionSource>(4)
         if (prefs.getBoolean(Prefs.CALCULATOR, true)) list.add(calculator)
         if (prefs.getBoolean(Prefs.UNITS, true)) list.add(units)
         if (prefs.getBoolean(Prefs.WEB_SEARCH, true)) list.add(web)
+        if (prefs.getBoolean(Prefs.SYSTEM_SETTINGS, true)) list.add(system)
         sources = list
     }
 }

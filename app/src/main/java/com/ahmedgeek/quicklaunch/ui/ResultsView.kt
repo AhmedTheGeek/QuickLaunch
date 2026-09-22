@@ -126,35 +126,49 @@ class ResultsView @JvmOverloads constructor(
 
     /**
      * @param suggestions rows shown before the apps
+     * @param trailing rows shown after the apps; they keep their place and the apps give way
      * @param pinned how many leading [results] form the pinned section; 0 hides the section
      * @param selected index over the combined list (suggestions first)
      */
-    fun bind(suggestions: List<Suggestion>, results: List<AppEntry>, pinned: Int, selected: Int, onIcon: (String, Bitmap) -> Unit) {
+    fun bind(
+        suggestions: List<Suggestion>,
+        results: List<AppEntry>,
+        trailing: List<Suggestion>,
+        pinned: Int,
+        selected: Int,
+        onIcon: (String, Bitmap) -> Unit,
+    ) {
         val loader = iconLoader
         val offset = minOf(suggestions.size, maxVisible)
+        val tail = minOf(trailing.size, maxVisible - offset)
         // Rows are reused by position: clear the old highlight before it lands on a different app.
         if (selectedIndex in rows.indices) rows[selectedIndex].setSelected(false)
-        val count = minOf(results.size, maxVisible - offset)
+        val count = minOf(results.size, maxVisible - offset - tail)
         for (i in rows.indices) {
             val row = rows[i]
-            if (i < offset) {
-                val s = suggestions[i]
-                val cached = loader?.peek(s.key)
-                row.bindSuggestion(s, cached)
-                if (cached == null && s.handlerUrl != null) loader?.requestLinkIcon(s.handlerUrl, s.key, onIcon)
-            } else if (i - offset < count) {
-                val e = results[i - offset]
-                val cached = loader?.peek(e.key)
-                row.bind(e, cached)
-                if (cached == null) loader?.request(e, onIcon)
-            } else {
-                row.hide()
+            val app = i - offset
+            when {
+                i < offset -> bindSuggestion(row, suggestions[i], onIcon)
+                app < count -> {
+                    val e = results[app]
+                    val cached = loader?.peek(e.key)
+                    row.bind(e, cached)
+                    if (cached == null) loader?.request(e, onIcon)
+                }
+                app - count < tail -> bindSuggestion(row, trailing[app - count], onIcon)
+                else -> row.hide()
             }
         }
-        boundCount = offset + count
+        boundCount = offset + count + tail
         placeSection(offset, minOf(pinned, count), count)
         selectedIndex = -1
         setSelected(selected)
+    }
+
+    private fun bindSuggestion(row: ResultRow, s: Suggestion, onIcon: (String, Bitmap) -> Unit) {
+        val cached = iconLoader?.peek(s.key)
+        row.bindSuggestion(s, cached)
+        if (cached == null && s.handlerUrl != null) iconLoader?.requestLinkIcon(s.handlerUrl, s.key, onIcon)
     }
 
     /** Header before the first pinned row, hairline before the first suggestion after them. */
