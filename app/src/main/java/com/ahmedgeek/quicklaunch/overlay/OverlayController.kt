@@ -15,6 +15,7 @@ import android.view.ContextThemeWrapper
 import android.view.WindowManager
 import com.ahmedgeek.quicklaunch.QuickLaunchApp
 import com.ahmedgeek.quicklaunch.R
+import com.ahmedgeek.quicklaunch.diag.Stats
 import com.ahmedgeek.quicklaunch.ui.KeyboardUtil
 import com.ahmedgeek.quicklaunch.ui.LauncherPanel
 import java.util.function.Consumer
@@ -59,6 +60,7 @@ class OverlayController(private val app: QuickLaunchApp) {
             onOutcome(true)
             return
         }
+        Stats.openStarted(android.os.SystemClock.elapsedRealtime())
         val themed: Context = ContextThemeWrapper(app, R.style.Theme_QuickLaunch)
         val newRoot = OverlayRootView(themed)
         LayoutInflater.from(themed).inflate(R.layout.activity_launch, newRoot, true)
@@ -107,6 +109,8 @@ class OverlayController(private val app: QuickLaunchApp) {
         newRoot.viewTreeObserver.addOnPreDrawListener(object : android.view.ViewTreeObserver.OnPreDrawListener {
             override fun onPreDraw(): Boolean {
                 newRoot.viewTreeObserver.removeOnPreDrawListener(this)
+                val now = android.os.SystemClock.elapsedRealtime()
+                Stats.openDrawn(now, now - android.os.Process.getStartElapsedRealtime())
                 newRoot.postDelayed({
                     if (!decided && root === newRoot) {
                         decided = true

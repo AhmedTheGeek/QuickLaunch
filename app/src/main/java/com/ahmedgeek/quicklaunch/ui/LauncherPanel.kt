@@ -22,6 +22,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ahmedgeek.quicklaunch.QuickLaunchApp
 import com.ahmedgeek.quicklaunch.R
+import com.ahmedgeek.quicklaunch.diag.Stats
 import com.ahmedgeek.quicklaunch.clipboard.LinkDetector
 import com.ahmedgeek.quicklaunch.index.AppEntry
 import com.ahmedgeek.quicklaunch.launch.LaunchResult
@@ -287,6 +288,7 @@ class LauncherPanel(
 
     fun onHidden() {
         active = false
+        Stats.flush(app)
         rowMenu.hide()
         dragging = false
         windowRoot.removeCallbacks(dragWatchdog)
@@ -388,7 +390,12 @@ class LauncherPanel(
         }
         if (launched) return
         launched = true
-        if (s.run(app)) host.dismiss() else launched = false
+        if (s.run(app)) {
+            Stats.actionRun()
+            host.dismiss()
+        } else {
+            launched = false
+        }
     }
 
     // ---- Insets --------------------------------------------------------------------------------
@@ -457,7 +464,9 @@ class LauncherPanel(
         rawQuery = raw.trim()
         query = TextNormalizer.normalize(raw)
         selected = 0
+        val t0 = SystemClock.elapsedRealtimeNanos()
         rerank()
+        Stats.keystroke(SystemClock.elapsedRealtimeNanos() - t0)
     }
 
     private fun onIndexChanged() {
@@ -657,6 +666,7 @@ class LauncherPanel(
         when (launcher.launch(entry, null)) {
             LaunchResult.OK -> {
                 index.recordLaunch(entry)
+                Stats.launched()
                 if (Log.isLoggable(QuickLaunchApp.TAG, Log.DEBUG)) {
                     Log.d(QuickLaunchApp.TAG, "launch ${entry.component.flattenToShortString()} in ${(SystemClock.elapsedRealtimeNanos() - t0) / 1000} us")
                 }

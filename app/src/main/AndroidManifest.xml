@@ -85,6 +85,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Hidden diagnostics, opened from settings after tapping the version 7 times. -->
+        <activity
+            android:name=".diag.DiagnosticsActivity"
+            android:exported="false"
+            android:label="@string/diag_title"
+            android:theme="@style/Theme.QuickLaunchSettings" />
+
         <!-- Prominent disclosure shown before the user is sent to enable the accessibility service. -->
         <activity
             android:name=".shortcut.ShortcutDisclosureActivity"

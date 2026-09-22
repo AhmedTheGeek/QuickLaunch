@@ -46,6 +46,9 @@ class FrecencyStore(file: File) {
     private val atomicFile = AtomicFile(file)
     private val map = ConcurrentHashMap<String, FrecencyEntry>(64)
 
+    /** Apps with launch history. */
+    val size: Int get() = map.size
+
     /** Background: read the file. Safe to call once before any attach(). */
     fun load() {
         if (!atomicFile.baseFile.exists()) return

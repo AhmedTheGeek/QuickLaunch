@@ -15,6 +15,8 @@ object Prefs {
     const val WEB_ENGINES = "web_engines"
     /** Serialized app aliases, see [com.ahmedgeek.quicklaunch.search.AliasStore]. */
     const val ALIASES = "aliases"
+    /** Set after tapping the version 7 times: shows the Diagnostics row. */
+    const val DIAGNOSTICS = "diagnostics"
 
     fun get(context: Context): SharedPreferences = context.getSharedPreferences("ql", Context.MODE_PRIVATE)
 }

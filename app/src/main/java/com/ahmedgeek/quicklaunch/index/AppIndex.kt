@@ -168,6 +168,9 @@ class AppIndex(context: Context) {
         return true
     }
 
+    /** For diagnostics: how long ago the list was last checked against the system, -1 if not yet. */
+    fun lastRevalidateAgoMs(): Long = if (lastRevalidateMs == 0L) -1L else SystemClock.elapsedRealtime() - lastRevalidateMs
+
     fun usagePermitted(): Boolean = UsageSource.isGranted(appContext)
 
     private fun sameAs(a: List<AppEntry>, b: List<AppEntry>): Boolean {

@@ -15,6 +15,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ahmedgeek.quicklaunch.QuickLaunchApp
@@ -34,6 +35,7 @@ class SettingsActivity : Activity() {
     private lateinit var prefs: SharedPreferences
     private lateinit var list: LinearLayout
     private lateinit var inflater: LayoutInflater
+    private var versionTaps = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,7 +114,21 @@ class SettingsActivity : Activity() {
         } catch (e: Exception) {
             null
         }
-        row(getString(R.string.settings_version, version ?: "?"))
+        // Tap the version 7 times for Diagnostics, like Android's developer options.
+        row(getString(R.string.settings_version, version ?: "?")) {
+            if (prefs.getBoolean(Prefs.DIAGNOSTICS, false)) return@row
+            versionTaps++
+            if (versionTaps >= 7) {
+                prefs.edit().putBoolean(Prefs.DIAGNOSTICS, true).apply()
+                Toast.makeText(this, R.string.diag_unlocked, Toast.LENGTH_SHORT).show()
+                render()
+            }
+        }
+        if (prefs.getBoolean(Prefs.DIAGNOSTICS, false)) {
+            row(getString(R.string.diag_title), getString(R.string.diag_row_summary)) {
+                open(Intent(this, com.ahmedgeek.quicklaunch.diag.DiagnosticsActivity::class.java))
+            }
+        }
         row(getString(R.string.settings_author), getString(R.string.settings_source)) {
             open(Intent(Intent.ACTION_VIEW, Uri.parse(SOURCE_URL)))
         }
