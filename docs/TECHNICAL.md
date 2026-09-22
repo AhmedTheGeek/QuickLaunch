@@ -24,6 +24,9 @@ How it works, why it is built the way it is, and how to build it. For the short 
   shows its result as the first row; Enter copies it and closes. `Calculator` is a small recursive
   descent parser on the raw input (the ranker only sees normalized text, which drops symbols). A
   character-class check rejects most app queries before parsing, and a bare number is never a result.
+- **Unit conversion.** `<amount> <unit> in|to|as <unit>`: length, mass, volume, area, speed, time,
+  data, temperature, energy, pressure, angle. The amount can be any calculator expression. Fixed
+  factor tables in `UnitConverter`; no currencies, since those need live rates.
 - Enter launches the top or arrow-selected result. Up/Down (also Tab, Ctrl+N/P, Ctrl+J/K) move
   the selection. Ctrl+1..9 launch that row directly. Esc, Back, tapping outside, Home or Recents close it.
 - **Pins.** The highlighted row carries a 48dp pin button at its trailing edge (outline when the
@@ -144,7 +147,7 @@ index/                AppIndex (enumerate, revalidate, snapshot), IndexStore (bi
 search/               TextNormalizer, Ranker (tiered scorer), FrecencyStore, PinStore
 clipboard/            LinkDetector (pure URL check), ClipboardLinkSource (focus-gated read, per-clip cache)
 launch/AppLauncher    LauncherApps.startMainActivity, handles work profiles
-suggest/              Suggestion rows above the results; SuggestionSource per feature (Calculator)
+suggest/              Suggestion rows above the results; SuggestionSource per feature (Calculator, UnitConverter)
 ```
 
 ## Known limits
