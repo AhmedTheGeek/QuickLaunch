@@ -12,6 +12,7 @@ import android.util.Log
 import com.ahmedgeek.quicklaunch.Bg
 import com.ahmedgeek.quicklaunch.search.FrecencyStore
 import com.ahmedgeek.quicklaunch.search.PinStore
+import com.ahmedgeek.quicklaunch.settings.SettingsActivity
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -139,7 +140,8 @@ class AppIndex(context: Context) {
             }
             for (info in activities) {
                 val component = info.componentName
-                if (component.packageName == ownPackage) continue
+                // Our own launcher entry is how the card was opened; only the settings screen is worth finding.
+                if (component.packageName == ownPackage && component.className != SettingsActivity::class.java.name) continue
                 val label = info.label?.toString()?.trim().orEmpty()
                 if (label.isEmpty()) continue
                 out.add(AppEntry(serial, component, label, isWork, paused))
@@ -165,6 +167,9 @@ class AppIndex(context: Context) {
         }
         return true
     }
+
+    /** For diagnostics: how long ago the list was last checked against the system, -1 if not yet. */
+    fun lastRevalidateAgoMs(): Long = if (lastRevalidateMs == 0L) -1L else SystemClock.elapsedRealtime() - lastRevalidateMs
 
     fun usagePermitted(): Boolean = UsageSource.isGranted(appContext)
 

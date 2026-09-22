@@ -66,6 +66,32 @@
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|smallestScreenSize|screenLayout|density|locale|layoutDirection"
             android:theme="@style/Theme.QuickLaunch" />
 
+        <!--
+          Settings. A launcher activity on purpose: the card indexes it like any app, so "settings" or
+          "qls" finds it. APPLICATION_PREFERENCES puts it behind the gear in the system App info page.
+        -->
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:exported="true"
+            android:label="@string/settings_title"
+            android:theme="@style/Theme.QuickLaunchSettings">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Hidden diagnostics, opened from settings after tapping the version 7 times. -->
+        <activity
+            android:name=".diag.DiagnosticsActivity"
+            android:exported="false"
+            android:label="@string/diag_title"
+            android:theme="@style/Theme.QuickLaunchSettings" />
+
         <!-- Prominent disclosure shown before the user is sent to enable the accessibility service. -->
         <activity
             android:name=".shortcut.ShortcutDisclosureActivity"

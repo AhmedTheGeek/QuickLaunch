@@ -19,6 +19,112 @@
 
     <!-- Clipboard link row: shown first when the clipboard holds a URL. -->
     <string name="link_open">Open link</string>
+
+    <!-- Calculator row: Enter copies the result. -->
+    <string name="copy">Copy</string>
+    <string name="copied">Copied</string>
+
+    <!-- Web search row, e.g. "Search YouTube". -->
+    <string name="web_search_badge">Search %1$s</string>
+
+    <!-- System settings rows and the flashlight. -->
+    <string name="system_setting">Setting</string>
+    <string name="torch_turn_on">Turn on</string>
+    <string name="torch_turn_off">Turn off</string>
+    <string name="error_setting_missing">Not available on this phone</string>
+
+    <!-- Settings screen. Also searchable from the card as "Quick Launch Settings". -->
+    <string name="settings_title">Quick Launch Settings</string>
+    <string name="settings_search">Search</string>
+    <string name="settings_calculator">Calculator</string>
+    <string name="settings_calculator_summary">3x3, (12+4)/2, sqrt(2). Enter copies the result</string>
+    <string name="settings_units">Unit conversion</string>
+    <string name="settings_units_summary">10cm in inch, 70f to c, 5 kg in lb</string>
+    <string name="settings_clipboard">Clipboard link</string>
+    <string name="settings_clipboard_summary">If you copied a link, it’s the first row until you start typing. When off, the clipboard is never read</string>
+    <string name="settings_typed_url">Typed links</string>
+    <string name="settings_typed_url_summary">Type github.com/… or example.org and open it directly</string>
+    <string name="settings_web">Search keywords</string>
+    <string name="settings_web_summary">yt funny cat, g pizza near me</string>
+    <string name="settings_system">Phone settings</string>
+    <string name="settings_system_summary">wifi, bluetooth, battery, flashlight</string>
+    <string name="settings_engines">Search engines</string>
+    <string name="settings_engine_summary">%1$s …</string>
+    <string name="settings_engine_add">Add search engine</string>
+    <string name="settings_engine_reset">Restore default engines</string>
+    <string name="settings_engine_name">Name</string>
+    <string name="settings_engine_keyword">Keyword</string>
+    <string name="settings_engine_url" formatted="false">URL, %s for the search terms</string>
+    <string name="settings_engine_bad_keyword">One word, not used by another engine</string>
+    <string name="settings_engine_bad_url" formatted="false">Needs http(s):// and %s</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_delete">Delete</string>
+    <string name="settings_aliases">App aliases</string>
+    <string name="settings_alias_add">Add alias</string>
+    <string name="settings_alias_add_summary">A short word that always puts an app first, like sp for Spotify</string>
+    <string name="settings_alias_pick">Choose an app</string>
+    <string name="settings_alias_work">%1$s (work)</string>
+    <string name="settings_alias_system">%1$s (setting)</string>
+    <string name="settings_alias_hint">Alias, e.g. sp</string>
+    <string name="settings_alias_bad">Needs a letter or digit</string>
+    <string name="settings_permissions">Permissions</string>
+
+    <!-- Diagnostics: hidden, tap the version 7 times. -->
+    <string name="diag_unlocked">Diagnostics on</string>
+    <string name="diag_title">Diagnostics</string>
+    <string name="diag_row_summary">Usage, speed on this phone, self-test</string>
+    <string name="diag_device">This phone</string>
+    <string name="diag_app">Quick Launch</string>
+    <string name="diag_phone">Phone</string>
+    <string name="diag_profile">Startup code</string>
+    <string name="diag_profile_compiled">compiled ahead of time</string>
+    <string name="diag_profile_pending">waiting for the phone to compile it</string>
+    <string name="diag_profile_none">not compiled yet (code %1$d)</string>
+    <string name="diag_profile_unknown">unknown</string>
+    <string name="diag_usage">Usage</string>
+    <string name="diag_opens">Opened</string>
+    <string name="diag_since">since %1$s</string>
+    <string name="diag_today">today</string>
+    <string name="diag_launches">Apps launched</string>
+    <string name="diag_actions">Other actions</string>
+    <string name="diag_actions_summary">copies, searches, links, settings, files</string>
+    <string name="diag_session">Since Quick Launch last started</string>
+    <string name="diag_last_open">Last open</string>
+    <string name="diag_cold_open">First open</string>
+    <string name="diag_cold_open_summary">when Quick Launch had to start first: from process start to the card on screen</string>
+    <string name="diag_keystroke">Per keystroke</string>
+    <string name="diag_keystroke_summary">search and redraw, last %1$d keystrokes</string>
+    <string name="diag_index">Index</string>
+    <string name="diag_apps">Apps</string>
+    <string name="diag_apps_summary">%1$d in the work profile</string>
+    <string name="diag_refreshed">Checked for new apps</string>
+    <string name="diag_history">Launch history</string>
+    <string name="diag_history_summary">pinned: %1$d, aliases: %2$d</string>
+    <string name="diag_icons">Icons</string>
+    <string name="diag_checks">Checks</string>
+    <string name="diag_run">Run checks</string>
+    <string name="diag_run_summary">Tests permissions, the app list, speed and what this phone supports</string>
+    <string name="diag_run_again">Run again</string>
+    <string name="diag_running">Running…</string>
+    <string name="diag_share">Report</string>
+    <string name="diag_copy">Copy report</string>
+    <string name="diag_copy_summary">Plain text with counts and timings only, no app names</string>
+    <string name="diag_share_action">Share report</string>
+    <string name="diag_reindex">Re-index apps</string>
+    <string name="diag_reindex_done">Re-indexing</string>
+    <string name="diag_clear_icons">Clear icon cache</string>
+    <string name="diag_clear_icons_summary">Icons are redrawn the next time they show</string>
+    <string name="diag_reset">Reset usage counts</string>
+    <string name="settings_overlay">Instant mode</string>
+    <string name="settings_usage">Most used apps</string>
+    <string name="settings_shortcut">Ctrl+Space shortcut</string>
+    <string name="settings_on">On</string>
+    <string name="settings_off">Off, tap to turn on</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_author">Created by Ahmed Hussein</string>
+    <string name="settings_source">Source code on GitHub, GPL-3.0</string>
     <string name="a11y_label">Quick Launch keyboard shortcut</string>
     <string name="a11y_summary">Ctrl+Space opens Quick Launch from anywhere</string>
     <string name="a11y_description">Lets Quick Launch open when you press Ctrl+Space on a physical keyboard, from any app. Quick Launch only listens for that key combination. It does not read screen content, observe your activity, or receive any other accessibility events.</string>

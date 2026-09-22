@@ -38,6 +38,15 @@ class IconLoader(context: Context, private val index: AppIndex) {
 
     fun peek(key: String): Bitmap? = memory.get(key)
 
+    /** Main thread, for diagnostics. */
+    fun memoryCount(): Int = memory.snapshot().size
+
+    /** Main thread: drop every cached icon; they re-render on next use. */
+    fun clear() {
+        memory.evictAll()
+        Bg.icons.execute { dir.listFiles()?.forEach { it.delete() } }
+    }
+
     fun request(entry: AppEntry, callback: (String, Bitmap) -> Unit) {
         val key = entry.key
         if (memory.get(key) != null || !inFlight.add(key)) return

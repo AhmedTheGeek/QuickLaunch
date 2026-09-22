@@ -25,6 +25,8 @@ class PinStore(file: File) {
     @Volatile
     private var keys: List<String> = emptyList()
 
+    val count: Int get() = keys.size
+
     /** Background: read the file. Safe to call once before any attach(). */
     fun load() {
         if (!atomicFile.baseFile.exists()) return
