@@ -23,6 +23,9 @@
     <!-- Calculator row: Enter copies the result. -->
     <string name="copy">Copy</string>
     <string name="copied">Copied</string>
+
+    <!-- Web search row, e.g. "Search YouTube". -->
+    <string name="web_search_badge">Search %1$s</string>
     <string name="a11y_label">Quick Launch keyboard shortcut</string>
     <string name="a11y_summary">Ctrl+Space opens Quick Launch from anywhere</string>
     <string name="a11y_description">Lets Quick Launch open when you press Ctrl+Space on a physical keyboard, from any app. Quick Launch only listens for that key combination. It does not read screen content, observe your activity, or receive any other accessibility events.</string>

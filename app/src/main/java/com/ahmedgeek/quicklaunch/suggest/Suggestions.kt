@@ -7,6 +7,7 @@ class Suggestions(context: Context) {
     private val sources: List<SuggestionSource> = listOf(
         CalculatorSource(context),
         UnitSource(context),
+        WebSearchSource(context),
     )
 
     fun collect(raw: String, query: String, out: MutableList<Suggestion>) {

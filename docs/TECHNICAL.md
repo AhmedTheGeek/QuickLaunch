@@ -27,6 +27,10 @@ How it works, why it is built the way it is, and how to build it. For the short 
 - **Unit conversion.** `<amount> <unit> in|to|as <unit>`: length, mass, volume, area, speed, time,
   data, temperature, energy, pressure, angle. The amount can be any calculator expression. Fixed
   factor tables in `UnitConverter`; no currencies, since those need live rates.
+- **Web search keywords.** `<keyword> <terms>` (`g`, `yt`, `ddg`, `wiki`, `maps`, `play`, `gh`)
+  shows a search row that opens the engine's URL with `ACTION_VIEW`, so App Links send YouTube or Maps
+  searches to their apps. The row icon is that handler app's, resolved once per engine. Nothing is
+  fetched by Quick Launch itself, so there is still no INTERNET permission.
 - Enter launches the top or arrow-selected result. Up/Down (also Tab, Ctrl+N/P, Ctrl+J/K) move
   the selection. Ctrl+1..9 launch that row directly. Esc, Back, tapping outside, Home or Recents close it.
 - **Pins.** The highlighted row carries a 48dp pin button at its trailing edge (outline when the
@@ -147,7 +151,7 @@ index/                AppIndex (enumerate, revalidate, snapshot), IndexStore (bi
 search/               TextNormalizer, Ranker (tiered scorer), FrecencyStore, PinStore
 clipboard/            LinkDetector (pure URL check), ClipboardLinkSource (focus-gated read, per-clip cache)
 launch/AppLauncher    LauncherApps.startMainActivity, handles work profiles
-suggest/              Suggestion rows above the results; SuggestionSource per feature (Calculator, UnitConverter)
+suggest/              Suggestion rows above the results; SuggestionSource per feature (Calculator, UnitConverter, WebSearch)
 ```
 
 ## Known limits

@@ -39,6 +39,8 @@ disappears the moment you launch something.
 - **Copied a link?** It shows up as the first row. Press Enter to open it.
 - **Quick math.** Type `3x3` or `(12+4)/2` and the answer is the first row. Enter copies it.
   Units too: `10cm in inch`, `70f to c`, `5 kg in lb`.
+- **Search keywords.** `g pizza near me` searches Google, `yt funny cat` YouTube. Also `ddg`,
+  `wiki`, `maps`, `play` and `gh`. Opens in the matching app when you have it.
 - **Big screens welcome.** A centered palette on tablets, foldables and DeX. Full width on phones.
 - **Private by design.** No internet permission. No analytics. No ads. About 90 KB.
 
