@@ -160,6 +160,17 @@ class RankerTest {
         assertEquals(listOf("Slack"), rank("slack ", app("Slack"), app("Slacker Radio")))
     }
 
+    @Test fun trailingSpaceAfterLastWord() {
+        assertEquals(listOf("Google Maps"), rank("maps ", app("Google Maps"), app("Mapster")))
+        assertEquals(listOf("My Tello"), rank("tello ", *myApps))
+        assertEquals(listOf("Meta Business Suite"), rank("business suite ", app("Meta Business Suite")))
+    }
+
+    @Test fun trailingSpaceNeedsWholeWord() {
+        assertTrue(rank("spo ", app("Spotify")).isEmpty())
+        assertTrue(rank("map ", app("Google Maps")).isEmpty())
+    }
+
     @Test fun camelCaseWordsStillMatchMultiToken() {
         assertEquals("WhatsApp", rank("whats app", app("WhatsApp"), app("Maps")).first())
     }

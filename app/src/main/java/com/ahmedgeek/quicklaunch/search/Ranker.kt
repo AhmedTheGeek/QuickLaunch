@@ -115,20 +115,28 @@ object Ranker {
     }
 
     /**
-     * Query ending in a space: the typed words are complete and must appear literally at a word start,
-     * so "my " finds "My Tello" but not "MyDyson". Split camelCase words don't count here.
+     * Query ending in a space: the typed words are complete and must appear literally as whole words,
+     * so "my " finds "My Tello" but not "MyDyson", and "maps " still finds "Google Maps".
+     * Split camelCase words don't count here.
      */
     private fun completeWord(label: String, q: String, boost: Int, lengthPenalty: Int): Int {
-        if (label.length == q.length - 1 && label.regionMatches(0, q, 0, label.length)) {
-            return TIER_EXACT + boost - lengthPenalty
+        val n = q.length - 1 // without the trailing space; the end of the label counts as a word end too
+        if (label.length == n && label.regionMatches(0, q, 0, n)) return TIER_EXACT + boost - lengthPenalty
+        var at = 0
+        while (at + n <= label.length) {
+            if ((at == 0 || label[at - 1] == ' ') &&
+                (at + n == label.length || label[at + n] == ' ') &&
+                label.regionMatches(at, q, 0, n)
+            ) {
+                return if (at == 0) {
+                    TIER_PREFIX + boost - lengthPenalty
+                } else {
+                    TIER_WORD_PREFIX + boost - (at * 4).coerceAtMost(400) - lengthPenalty
+                }
+            }
+            at++
         }
-        var at = label.indexOf(q)
-        while (at > 0 && label[at - 1] != ' ') at = label.indexOf(q, at + 1)
-        return when {
-            at == 0 -> TIER_PREFIX + boost - lengthPenalty
-            at > 0 -> TIER_WORD_PREFIX + boost - (at * 4).coerceAtMost(400) - lengthPenalty
-            else -> NO_MATCH
-        }
+        return NO_MATCH
     }
 
     /**
