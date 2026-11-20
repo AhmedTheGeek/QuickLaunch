@@ -14,8 +14,6 @@
 
     <!-- Row context menu, shown on long press. -->
     <string name="menu_app_info">App info</string>
-    <string name="menu_add_home">Add to Home screen</string>
-    <string name="menu_add_home_failed">Couldn’t add to Home screen</string>
 
     <!-- Clipboard link row: shown first when the clipboard holds a URL. -->
     <string name="link_open">Open link</string>

@@ -19,9 +19,6 @@ import com.ahmedgeek.quicklaunch.index.AppEntry
  */
 class RowMenu(private val root: FrameLayout) {
     var onAppInfo: ((AppEntry) -> Unit)? = null
-    var onAddToHome: ((AppEntry) -> Unit)? = null
-    /** Whether "Add to Home screen" applies to this entry; the item hides otherwise. */
-    var canAddToHome: ((AppEntry) -> Boolean)? = null
 
     private val catcher = View(root.context).apply {
         layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
@@ -39,7 +36,6 @@ class RowMenu(private val root: FrameLayout) {
     }
     private val title: TextView = menu.findViewById(R.id.menu_title)
     private val appInfo: TextView = menu.findViewById(R.id.menu_app_info)
-    private val addHome: TextView = menu.findViewById(R.id.menu_add_home)
     private val gap = root.resources.getDimensionPixelSize(R.dimen.menu_gap)
 
     private var entry: AppEntry? = null
@@ -48,7 +44,6 @@ class RowMenu(private val root: FrameLayout) {
 
     init {
         appInfo.setOnClickListener { entry?.let { e -> hide(); onAppInfo?.invoke(e) } }
-        addHome.setOnClickListener { entry?.let { e -> hide(); onAddToHome?.invoke(e) } }
     }
 
     /** Show the menu for [e], hanging off [anchor] (the row): below it when it fits, above it otherwise. */
@@ -56,7 +51,6 @@ class RowMenu(private val root: FrameLayout) {
         if (entry != null) hide()
         entry = e
         title.text = e.label
-        addHome.visibility = if (canAddToHome?.invoke(e) == true) View.VISIBLE else View.GONE
         root.addView(catcher)
         root.addView(menu)
 

@@ -37,10 +37,4 @@
         style="@style/MenuItem"
         android:drawableStart="@drawable/ic_info"
         android:text="@string/menu_app_info" />
-
-    <TextView
-        android:id="@+id/menu_add_home"
-        style="@style/MenuItem"
-        android:drawableStart="@drawable/ic_add_home"
-        android:text="@string/menu_add_home" />
 </LinearLayout>

@@ -109,9 +109,7 @@ class LauncherPanel(
         resultsView.onLinkClick = { url -> openLink(url) }
         resultsView.onRowLongPress = { entry, row -> if (!launched && !dragging) rowMenu.show(entry, row) }
         resultsView.onRowDrag = { entry, row -> startDrag(entry, row) }
-        rowMenu.canAddToHome = { entry -> app.homeShortcuts.canAdd(entry) }
         rowMenu.onAppInfo = { entry -> showAppInfo(entry) }
-        rowMenu.onAddToHome = { entry -> addToHome(entry) }
         resultsView.onPinClick = { entry, button -> togglePin(entry, button) }
         windowRoot.setOnDragListener { _, event ->
             if (Log.isLoggable(QuickLaunchApp.TAG, Log.DEBUG)) {
@@ -550,16 +548,6 @@ class LauncherPanel(
             return
         }
         launched = true
-        host.dismiss()
-    }
-
-    /** Ask the home app to pin a shortcut to the app. It shows its own confirmation, so the panel closes first. */
-    private fun addToHome(entry: AppEntry) {
-        if (launched) return
-        launched = true
-        app.homeShortcuts.add(entry) { ok ->
-            if (!ok) Toast.makeText(app, R.string.menu_add_home_failed, Toast.LENGTH_SHORT).show()
-        }
         host.dismiss()
     }
 
